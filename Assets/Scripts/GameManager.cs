@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -7,13 +9,17 @@ public class GameManager : MonoBehaviour
     //  Altezza visibile = 2 * 5.5 = 11 unità
     //  Con 16:9, larghezza visibile ≈ 11 * 16/9 = 19.56 unità
 
-
-    public static GameManager Instance;
+    [Header("Gameplay")]
     public AsteroidSpawner spawner;
-    public GameObject gameOverUI;
+
+    [Header("Game Over UI")]
+    public GameObject gameOverPanel;
+    public TMP_Text goScoreText;
+    public TMP_Text goBestText;
 
     private bool isGameOver = false;
 
+    public static GameManager Instance;
     public static GameManager GetInstance()
     {
         return Instance;
@@ -30,10 +36,39 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
 
         isGameOver = true;
-        spawner.enabled = false;
+
+        if (spawner != null)
+            spawner.enabled = false;
+        
         Time.timeScale = 0f;
 
-        if (gameOverUI != null)
-            gameOverUI.SetActive(true);
+        // Aggiorna testi della schermata
+        if (ScoreManager.Instance != null)
+        {
+            int score = ScoreManager.Instance.GetCurrentScore();
+            int best = ScoreManager.Instance.GetHighscore();
+            if (goScoreText != null)
+                goScoreText.text = $"SCORE: {score}";
+            if (goBestText != null)
+                goBestText.text = $"BEST: {best}";
+        }
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+        Scene current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.name);
+    }
+    void Update()
+    {
+        // Restart da tastiera
+        if (isGameOver && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        {
+            RestartGame();
+        }
     }
 }
