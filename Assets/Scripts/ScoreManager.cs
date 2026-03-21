@@ -6,11 +6,12 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager Instance;
 
     [Header("UI")]
-    //public Text scoreText;
     public TMP_Text scoreText;
 
+    [Header("UI")]
+    public TMP_Text livesText;
+
     public Text highscoreText;
-    public Text livesText;
 
     [Header("References")]
     public PlayerHealth playerHealth;  // gliela colleghiamo dall Inspector
@@ -46,21 +47,21 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreUI();
     }
 
+    private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+            scoreText.text = score.ToString();
+
+        if (highscoreText != null)
+            highscoreText.text = highscore.ToString();
+    }
+
     public void UpdateLivesUI()
     {
         if (livesText != null && playerHealth != null)
         {
-            livesText.text = "Lives: " + playerHealth.CurrentHealth;
+            livesText.text = playerHealth.CurrentHealth.ToString();
         }
-    }
-
-    private void UpdateScoreUI()
-    {
-        if (scoreText != null)
-            scoreText.text = "Score: " + score;
-
-        if (highscoreText != null)
-            highscoreText.text = "Best: " + highscore;
     }
 
     public int GetCurrentScore() => score;
