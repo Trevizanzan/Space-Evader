@@ -43,7 +43,7 @@ public class SoundManager : MonoBehaviour
 
     public void PlayGameOver()
     {
-        PlayOneShot(gameOverClip, 1.0f);
+        PlayOneShot(gameOverClip, .7f);
     }
 
     private void PlayOneShot(AudioClip clip, float volume = 1f)
