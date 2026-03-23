@@ -21,6 +21,12 @@ public class PlayerHealth : MonoBehaviour
             SoundManager.Instance.PlayPlayerHit();
         }
 
+        // mostra esplosione grande (animazione)
+        if (ExplosionManager.Instance != null)
+        {
+            ExplosionManager.Instance.SpawnBig(transform.position, 2.0f);
+        }
+
         // aggiorna UI vite
         if (ScoreManager.Instance != null)
         {
@@ -31,6 +37,11 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             //Destroy(gameObject);
+
+            // disabilita il player (invece di distruggerlo) per mostrare esplosione e suono
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
+
             GameManager.GetInstance().GameOver();
         }
     }

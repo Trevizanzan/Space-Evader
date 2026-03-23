@@ -25,6 +25,16 @@ public class AsteroidHealth : MonoBehaviour
                 SoundManager.Instance.PlayAsteroidExplode();
             }
 
+            // Fai esplodere l'asteroide (animazione)
+            if (ExplosionManager.Instance != null)
+            {
+                // Se vuoi distinguere piccoli/grandi:
+                // TODO: aggiungere un parametro "size" o "type" per decidere quale esplosione spawnare
+                // TODO: aggiungere tipo un boolean "isLarge" o un enum "AsteroidType { Small, Medium, Large }"
+                if (maxHealth >= 3) ExplosionManager.Instance.SpawnBig(transform.position, 1.8f);
+                else ExplosionManager.Instance.SpawnSmall(transform.position, 0.8f);
+            }
+
             // Aggiungi punti allo score UI
             if (ScoreManager.Instance != null)
             {

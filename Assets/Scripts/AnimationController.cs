@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ExplosionController : MonoBehaviour
+public class AnimationController : MonoBehaviour
 {
     [SerializeField] private float lifetime = 0.5f; // durata animazione
 
