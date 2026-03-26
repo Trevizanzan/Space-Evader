@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // Restart da tastiera
-        if (isGameOver && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        if (isGameOver && Input.GetKeyDown(KeyCode.Return))
         {
             RestartGame();
         }

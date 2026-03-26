@@ -7,9 +7,11 @@ public class ScoreManager : MonoBehaviour
 
     [Header("UI")]
     public TMP_Text scoreText;
-
-    [Header("UI")]
     public TMP_Text livesText;
+
+    [Header("Level UI")]
+    public TMP_Text levelText;
+    public TMP_Text timerText;
 
     public Text highscoreText;
 
@@ -31,6 +33,11 @@ public class ScoreManager : MonoBehaviour
         highscore = PlayerPrefs.GetInt("highscore", 0);
         UpdateScoreUI();
         UpdateLivesUI();
+    }
+
+    void Update()
+    {
+        UpdateLevelUI();
     }
 
     public void AddScore(int amount)
@@ -61,6 +68,24 @@ public class ScoreManager : MonoBehaviour
         if (livesText != null && playerHealth != null)
         {
             livesText.text = playerHealth.CurrentHealth.ToString();
+        }
+    }
+
+    void UpdateLevelUI()
+    {
+        if (DifficultyManager.Instance != null)
+        {
+            if (levelText != null)
+            {
+                int level = DifficultyManager.Instance.GetCurrentLevel();
+                levelText.text = $"LEVEL {level}";
+            }
+        }
+
+        if (timerText != null)
+        {
+            float timeLeft = DifficultyManager.Instance.GetTimeRemaining();
+            timerText.text = Mathf.CeilToInt(timeLeft).ToString();
         }
     }
 
