@@ -3,7 +3,7 @@ using UnityEngine;
 public class AsteroidSpawner : MonoBehaviour
 {
     public GameObject[] asteroidPrefabs;  // array di prefab
-    public float spawnRate = 1.25f;          // 2 secondi tra uno spawn e l'altro
+    public float defaultSpawnRate = 1f;       // tempo in secondi tra uno spawn e l'altro
 
     private float timer;
     private float minX;
@@ -24,12 +24,17 @@ public class AsteroidSpawner : MonoBehaviour
 
     void Update()
     {
+        // Prendi spawn rate dinamico dal DifficultyManager
+        float currentSpawnRate = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.GetSpawnRate()
+            : defaultSpawnRate; // fallback se non c'è manager
+
         timer += Time.deltaTime;
 
         // Aggiungiamo una leggera variazione al tempo di spawn per rendere il gioco più dinamico e imprevedibile
         //float randomSpawnRate = spawnRate + Random.Range(1.5f, 3f);
 
-        if (timer >= spawnRate)
+        if (timer >= currentSpawnRate)
         {
             SpawnAsteroid();
             timer = 0f;

@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class Spaceship : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 30f;
+    [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float padding = 0.1f; // margine extra dai bordi
 
     private float minX, maxX, minY, maxY;

@@ -10,6 +10,12 @@ public class AsteroidHealth : MonoBehaviour
     void Awake()
     {
         currentHealth = maxHealth;
+
+        //// Opzionale: scalare la salute in base alla difficoltà attuale
+        //float multiplier = DifficultyManager.Instance != null
+        //    ? DifficultyManager.Instance.GetHealthMultiplier()
+        //    : 1f;
+        //currentHealth = Mathf.RoundToInt(maxHealth * multiplier);
     }
 
     // Applica danno all'asteroide, se muore, aggiungi punteggio

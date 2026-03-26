@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     public TMP_Text goBestText;
 
     private bool isGameOver = false;
+    public bool IsGameOver() => isGameOver;
+
 
     public static GameManager Instance;
     public static GameManager GetInstance()
@@ -79,6 +81,13 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+
+        // Reset difficulty (se vuoi ricominciare da zero)
+        if (DifficultyManager.Instance != null)
+        {
+            // Il modo più semplice: ricarica scena (già lo fai)
+        }
+
         Scene current = SceneManager.GetActiveScene();
         SceneManager.LoadScene(current.name);
     }

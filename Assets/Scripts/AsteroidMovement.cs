@@ -41,7 +41,7 @@ using UnityEngine;
 
 public class AsteroidMovement : MonoBehaviour
 {
-    public float fallSpeed = 3f;
+    public float defalutFallSpeed = 3f;
     private float rotationSpeed;
     private float destroyY;
     private Rigidbody2D rb;
@@ -53,12 +53,21 @@ public class AsteroidMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         // Rotazione casuale (in gradi al secondo)
-        rotationSpeed = Random.Range(-9f, 9f);
-        //Debug.Log("rotationSpeed: " + rotationSpeed);
-        rb.angularVelocity = rotationSpeed;                 // rotazione su se stessa
+        rotationSpeed = Random.Range(-180f, 180f);
+        rb.angularVelocity = rotationSpeed; // rotazione su se stessa
 
-        // Velocità caduta con leggera variazione
-        float randomFallSpeed = fallSpeed + Random.Range(-1f, 2.5f);
+        // OLD
+        //// Velocità caduta con leggera variazione
+        //float randomFallSpeed = fallSpeed + Random.Range(-1f, 2.5f);
+        //rb.linearVelocity = new Vector2(0, -randomFallSpeed);   
+
+        // NEW
+        // Prendi velocità base dal DifficultyManager e aggiungi una variazione casuale
+        float baseFallSpeed = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.GetFallSpeed()
+            : defalutFallSpeed;   // fallback se non c'è manager
+
+        float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
         rb.linearVelocity = new Vector2(0, -randomFallSpeed);   // direzione verso il basso
 
         // Calcola bordo inferiore camera
