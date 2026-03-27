@@ -183,8 +183,10 @@ MonoBehaviour:
   maxHealth: 60
   moveSpeed: 3
   explosionDiePrefab: {fileID: 5670646399192729188, guid: c776b2872c4679e4e8f72fbe60c24c1f, type: 3}
-  shootInterval: 1
+  shootIntervalMin: 0.25
+  shootIntervalMax: 0.8
   enemyBulletPrefab: {fileID: 2093506508120260160, guid: 8eb7cba3c948f594c86bc62e06db91ce, type: 3}
   cameraEdgeOffset: 0.25
-  centerY: 0
-  timeAtEachLevel: 10
+  centerY: -1
+  timeAtCenterMin: 2
+  timeAtCenterMax: 5

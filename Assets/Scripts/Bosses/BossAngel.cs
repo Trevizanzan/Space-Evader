@@ -1,28 +1,25 @@
-﻿using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
+﻿using UnityEngine;
+using System.Collections;
 
 public class BossAngel : BossBase
 {
     [Header("BossAngel Specifics")]
-    [SerializeField] private float shootInterval = 1f;
+    [SerializeField] private float shootIntervalMin = 0.25f;
+    [SerializeField] private float shootIntervalMax = 1.25f;
     [SerializeField] private GameObject enemyBulletPrefab;
-    [SerializeField] private float cameraEdgeOffset = 0.25f; // Distanza dal bordo camera (.5 è un quadrattino)
-    [SerializeField] private float centerY = -1f; // Quanto scende (appena sopra il centro)
-    [SerializeField] private float timeAtEachLevel = 10f; // Tempo a ogni livello
+    [SerializeField] private float cameraEdgeOffset = 1f;    // Distanza dal bordo camera (.5 è un quadrattino)
+    [SerializeField] private float centerY = -2f;   // Quanto scende (appena sopra il centro)
+    [SerializeField] private float timeAtCenterMin = 2f;
+    [SerializeField] private float timeAtCenterMax = 5f;
 
-    private float targetX; 
+    private float targetX;
     private float targetY;
     private float shootTimer;
-    private float minX; // Limite sinistro
-    private float maxX; // Limite destro
-    private float startY; // Posizione Y di partenza (dove arriva l'entrata)
+    private float currentShootInterval; // Intervallo corrente (varia)
+    private float minX; // limite sinistro
+    private float maxX; // limite destro
+    private float startY;   // Posizione Y di partenza (dove arriva l'entrata)
 
-    /// <summary>
-    /// Questo metodo viene chiamato alla fine dell'entrata del boss, quando ha raggiunto la posizione centrale. 
-    /// Qui iniziamo il pattern di movimento e attacco specifico di questo boss.
-    /// </summary>
     protected override void OnEntranceComplete()
     {
         // Calcola i limiti orizzontali della camera
@@ -36,9 +33,9 @@ public class BossAngel : BossBase
         targetX = transform.position.x;
 
         // Scegli subito un nuovo target random
-        ChooseNewTargetX();
+        ChooseNewXTarget();
+        ChooseNewShootInterval(); // Inizializza il primo intervallo
 
-        // Inizia il pattern di movimento
         StartCoroutine(VerticalMovementPattern());
     }
 
@@ -47,22 +44,21 @@ public class BossAngel : BossBase
     {
         while (!isDead)
         {
-            // Rimane al livello più alto
-            yield return new WaitForSeconds(timeAtEachLevel);
-
             // Scende
             targetY = centerY;
             yield return new WaitUntil(() => Mathf.Abs(transform.position.y - centerY) < 0.1f);
 
-            // Rimane giù
-            yield return new WaitForSeconds(timeAtEachLevel);
+            // Rimane giù per un tempo random
+            float timeDown = Random.Range(timeAtCenterMin, timeAtCenterMax);
+            yield return new WaitForSeconds(timeDown);
 
             // Risale
             targetY = startY;
             yield return new WaitUntil(() => Mathf.Abs(transform.position.y - startY) < 0.1f);
 
-            // Rimane su
-            yield return new WaitForSeconds(timeAtEachLevel);
+            // Rimane su per un tempo random
+            float timeUp = Random.Range(timeAtCenterMin, timeAtCenterMax);
+            yield return new WaitForSeconds(timeUp);
         }
     }
 
@@ -78,10 +74,9 @@ public class BossAngel : BossBase
         // Se ha raggiunto il target (o è molto vicino), scegline uno nuovo
         if (Mathf.Abs(currentX - targetX) < 0.1f)
         {
-            ChooseNewTargetX();
+            ChooseNewXTarget();
         }
 
-        // Muovi verso il target
         float newX = Mathf.MoveTowards(currentX, targetX, moveSpeed * Time.deltaTime);
 
         // Movimento Y verso targetY a velocità moveSpeed
@@ -93,17 +88,24 @@ public class BossAngel : BossBase
         // 2) ATTACCO
         // Pattern attacco: spara verso il basso ogni N secondi
         shootTimer += Time.deltaTime;
-        if (shootTimer >= shootInterval)
+        if (shootTimer >= currentShootInterval)
         {
             Shoot();
             shootTimer = 0f;
+            ChooseNewShootInterval(); // Cambia intervallo ogni colpo
         }
     }
 
-    void ChooseNewTargetX()
+    void ChooseNewXTarget()
     {
         // Sceglie un X random entro i limiti della camera
         targetX = Random.Range(minX, maxX);
+    }
+
+    // Sceglie un nuovo intervallo random per lo sparo
+    void ChooseNewShootInterval()
+    {
+        currentShootInterval = Random.Range(shootIntervalMin, shootIntervalMax);
     }
 
     void Shoot()
@@ -123,10 +125,8 @@ public class BossAngel : BossBase
 
     protected override void OnDamageFeedback()
     {
-        // Flash bianco veloce (opzionale)
-        //StartCoroutine(FlashWhite());
+        //StartCoroutine(FlashCyan());
 
-        // Spawna esplosione davanti al boss (z negativo = più avanti)
         Vector3 explosionPos = new Vector3(transform.position.x, transform.position.y, -1f);
         if (ExplosionManager.Instance != null)
         {
@@ -134,24 +134,18 @@ public class BossAngel : BossBase
         }
     }
 
-    System.Collections.IEnumerator FlashWhite()
+    System.Collections.IEnumerator FlashCyan()
     {
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
 
         if (sr == null)
         {
-            Debug.LogWarning("[FLASH] NO SpriteRenderer found!");
             yield break;
         }
 
         Color originalColor = sr.color;
-
-        // Flash bianco
         sr.color = Color.cyan;
         yield return new WaitForSeconds(0.15f);
-
-        // Ripristina il colore
         sr.color = originalColor;
-
     }
 }
