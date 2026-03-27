@@ -18,7 +18,8 @@ public class PlayerShooting : MonoBehaviour
         // Il player non può sparare se il boss sta entrando
         if (BossBase.IsBossEntering) return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // tasto destro del mouse o barra spaziatrice per sparare
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(1))
         {
             if (Time.time - lastShootTime >= shootCooldown)
             {

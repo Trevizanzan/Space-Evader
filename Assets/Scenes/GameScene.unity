@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 74886324}
   - component: {fileID: 74886323}
   - component: {fileID: 74886322}
-  - component: {fileID: 74886321}
+  - component: {fileID: 74886329}
   - component: {fileID: 74886325}
   - component: {fileID: 74886326}
   - component: {fileID: 74886327}
@@ -233,42 +233,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!58 &74886321
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 74886319}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: -0.03, y: 0}
-  m_Radius: 0.12
 --- !u!50 &74886322
 Rigidbody2D:
   serializedVersion: 5
@@ -427,6 +391,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShipTransitionController
   exitSpeed: 8
   exitHeight: 15
+--- !u!60 &74886329
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74886319}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.90625, y: 1}
+    newSize: {x: 0.33, y: 0.32}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.34933665, y: 0.4430804}
+      - {x: -0.34373054, y: -0.45934376}
+      - {x: -0.18779948, y: -0.45645732}
+      - {x: 0.3879423, y: -0.09131214}
+      - {x: 0.39339855, y: -0.00415986}
+      - {x: 0.38981748, y: 0.08457037}
+      - {x: -0.17292833, y: 0.45053762}
+  m_UseDelaunayMesh: 1
 --- !u!1 &114123442
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,8 +697,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   bossPrefabs:
   - {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
-  levelCompletePanel: {fileID: 1288765921}
-  levelCompleteCountdown: {fileID: 1200715739}
+  skipToFirstBoss: 1
+  levelCompletePanel: {fileID: 0}
+  levelCompleteCountdown: {fileID: 0}
 --- !u!4 &187418848
 Transform:
   m_ObjectHideFlags: 0
@@ -1641,7 +1660,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1050214666}
-  - component: {fileID: 1050214668}
   m_Layer: 0
   m_Name: firePoint
   m_TagString: Untagged
@@ -1664,65 +1682,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 74886324}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
---- !u!212 &1050214668
-SpriteRenderer:
-  serializedVersion: 2
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1050214665}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 2692699521923276179, guid: b3e46fe611fde2349bc16a169a5772d7, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.17, y: 0.12}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
 --- !u!1 &1052158365
 GameObject:
   m_ObjectHideFlags: 0
@@ -1818,9 +1777,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   asteroidSpawner: {fileID: 0}
-  gameOverPanel: {fileID: 1182640876}
-  goScoreText: {fileID: 742400118}
-  goBestText: {fileID: 1389465851}
+  gameOverPanel: {fileID: 0}
+  goScoreText: {fileID: 0}
+  goBestText: {fileID: 0}
 --- !u!1 &1125841082
 GameObject:
   m_ObjectHideFlags: 0
@@ -2467,10 +2426,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f2b824c0cac004f8323e7ca1e68db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
-  scoreText: {fileID: 642127126}
-  livesText: {fileID: 1302838175}
-  levelText: {fileID: 1819227414}
-  timerText: {fileID: 114123444}
+  scoreText: {fileID: 0}
+  livesText: {fileID: 0}
+  levelText: {fileID: 0}
+  timerText: {fileID: 0}
   highscoreText: {fileID: 0}
   playerHealth: {fileID: 74886327}
 --- !u!4 &1498926281
@@ -2620,6 +2579,8 @@ MonoBehaviour:
   asteroidExplodeClip: {fileID: 8300000, guid: c6af8aa23e48a7f49af59a37d4aa0b01, type: 3}
   playerHitClip: {fileID: 8300000, guid: 302a696e67d74134faad35f06e4a7f68, type: 3}
   gameOverClip: {fileID: 8300000, guid: 2c8acab18021e584c9f2ecffc0463f9d, type: 3}
+  bossEntranceClip: {fileID: 8300000, guid: b57285a16184fc742a088543f08bbc35, type: 3}
+  bossDeadClip: {fileID: 8300000, guid: 6e4e3b0420803244c968d2be81c19c7b, type: 3}
 --- !u!4 &1712983331
 Transform:
   m_ObjectHideFlags: 0
