@@ -376,7 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86386dbe2dd8b96498617c988f7db6eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 3
+  maxHealth: 3999
 --- !u!114 &74886328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -699,7 +699,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   bossPrefabs:
   - {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
-  skipToFirstBoss: 0
+  skipToFirstBoss: 1
   levelCompletePanel: {fileID: 1288765921}
   levelCompleteCountdown: {fileID: 1200715739}
 --- !u!4 &187418848
@@ -986,7 +986,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
+  m_AnchoredPosition: {x: 0, y: -20}
   m_SizeDelta: {x: 400, y: 12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &324992350
@@ -1734,7 +1734,7 @@ Transform:
   m_GameObject: {fileID: 1050214665}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.12, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2484,10 +2484,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77f2b824c0cac004f8323e7ca1e68db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager
-  scoreText: {fileID: 0}
-  livesText: {fileID: 0}
-  levelText: {fileID: 0}
-  timerText: {fileID: 0}
+  scoreText: {fileID: 642127126}
+  livesText: {fileID: 1302838175}
+  levelText: {fileID: 1819227414}
+  timerText: {fileID: 114123444}
   highscoreText: {fileID: 0}
   playerHealth: {fileID: 74886327}
 --- !u!4 &1498926281

@@ -8,7 +8,8 @@ public class BossAngel : BossBase
     [SerializeField] private float shootIntervalMax = 0.8f;
     [SerializeField] private GameObject enemyBulletPrefab;
     [SerializeField] private float cameraEdgeOffset = .25f;    // Distanza dal bordo camera (.5 è un quadrattino)
-    [SerializeField] private float centerY = -1f;   // Quanto scende (appena sopra il centro)
+    [SerializeField] private float topY = 5f; //  LIVELLO SUPERIORE (controllabile)
+    [SerializeField] private float centerY = -1f;   // Quanto scende (appena sopra il centro) // LIVELLO INFERIORE (metà camera)
     [SerializeField] private float timeAtCenterMin = 2f;
     [SerializeField] private float timeAtCenterMax = 5f;
 
@@ -34,7 +35,7 @@ public class BossAngel : BossBase
         maxX = cameraWidth - cameraEdgeOffset;
 
         // Salva la posizione iniziale dove è arrivato dopo l'entrata, da cui partirà il pattern di movimento
-        startY = transform.position.y;
+        startY = topY;
         targetY = startY;
         targetX = transform.position.x;
 

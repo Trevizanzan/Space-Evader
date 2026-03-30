@@ -45,8 +45,11 @@ public abstract class BossBase : MonoBehaviour
 
         // Calcola posizioni dinamicamente in base alla camera
         float cameraTop = Camera.main.orthographicSize;
-        Vector3 startPos = new Vector3(0, cameraTop + 1f, 0); // Poco sopra la camera
+
+        Vector3 startPos = new Vector3(0, cameraTop + 2f, 0); // Poco sopra la camera
         Vector3 targetPos = new Vector3(0, cameraTop - 2f, 0); // Dentro la camera
+        //Debug.Log($"cameraTop={cameraTop}");
+        //Debug.Log($"targetPos={targetPos}");
 
         transform.position = startPos;
 

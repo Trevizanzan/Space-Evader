@@ -89,6 +89,16 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+    public void DisableLevelAndTimerText()
+    {
+        // Disabilita i testi
+        if (levelText != null)
+            levelText.gameObject.SetActive(false);
+
+        if (timerText != null)
+            timerText.gameObject.SetActive(false);
+    }
+
     public int GetCurrentScore() => score;
     public int GetHighscore() => highscore;
 }

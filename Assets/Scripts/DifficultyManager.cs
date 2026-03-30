@@ -200,6 +200,14 @@ public class DifficultyManager : MonoBehaviour
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
         if (spawner != null) spawner.enabled = false;
 
+        // Disabilita UI testo (livello e timer)
+        ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
+        if (scoreManager != null)
+        {
+            // Se ScoreManager ha riferimenti pubblici a questi testi
+            scoreManager.DisableLevelAndTimerText();
+        }
+
         // Spawna il primo boss (o quello che vuoi testare) con posizione e rotazione corretta
         if (bossPrefabs.Length > 0 && bossPrefabs[debugBossIndex] != null)
         {
