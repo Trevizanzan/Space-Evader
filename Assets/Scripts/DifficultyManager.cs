@@ -65,6 +65,7 @@ public class DifficultyManager : MonoBehaviour
     {
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(true);
+
         for (int i = 3; i > 0; i--)
         {
             if (levelCompleteCountdown != null)
@@ -220,6 +221,8 @@ public class DifficultyManager : MonoBehaviour
         // Opzionale: nascondi il pannello di level complete se è attivo
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(false);
+        else
+            Debug.LogWarning("[DEBUG] No level complete panel assigned!");
     }
 
     #endregion

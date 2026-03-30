@@ -8,6 +8,9 @@ public abstract class BossBase : MonoBehaviour
     [SerializeField] protected float moveSpeed = 3f;
     [SerializeField] protected GameObject explosionDiePrefab;
 
+    [Header("Boss Info")]
+    [SerializeField] protected string bossDisplayName = "Unknown Boss";
+
     public static bool IsBossEntering { get; private set; } = false;
     protected int currentHealth;
     protected bool isEntering = true;
@@ -19,7 +22,10 @@ public abstract class BossBase : MonoBehaviour
 
         // Mostra la barra della vita
         if (BossHealthBar.Instance != null)
+        {
             BossHealthBar.Instance.ShowBar(maxHealth);
+            BossHealthBar.Instance.SetBossName(bossDisplayName);
+        }
 
         StartCoroutine(EntranceRoutine());
 

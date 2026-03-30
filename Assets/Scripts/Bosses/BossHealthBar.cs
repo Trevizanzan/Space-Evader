@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class BossHealthBar : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject healthBarContainer;
     [SerializeField] private Image fillImage;
+    [SerializeField] private TextMeshProUGUI bossNameText;
 
     [Header("Settings")]
     [SerializeField] private float smoothSpeed = 5f; // Velocità transizione smooth
@@ -59,6 +61,15 @@ public class BossHealthBar : MonoBehaviour
     }
 
     /// <summary>
+    /// Nascondi la barra quando il boss muore
+    /// </summary>
+    public void HideBar()
+    {
+        if (healthBarContainer != null)
+            healthBarContainer.SetActive(false);
+    }
+
+    /// <summary>
     /// Aggiorna la barra quando il boss prende danno
     /// </summary>
     public void UpdateHealth(int currentHP)
@@ -70,12 +81,9 @@ public class BossHealthBar : MonoBehaviour
         targetFillAmount = Mathf.Clamp01(targetFillAmount);
     }
 
-    /// <summary>
-    /// Nascondi la barra quando il boss muore
-    /// </summary>
-    public void HideBar()
+    public void SetBossName(string name)
     {
-        if (healthBarContainer != null)
-            healthBarContainer.SetActive(false);
+        if (bossNameText != null)
+            bossNameText.text = name;
     }
 }

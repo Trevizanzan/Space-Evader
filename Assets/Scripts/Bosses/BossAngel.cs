@@ -20,6 +20,12 @@ public class BossAngel : BossBase
     private float maxX; // limite destro
     private float startY;   // Posizione Y di partenza (dove arriva l'entrata)
 
+    void Start()
+    {
+        bossDisplayName = "The Angel";
+        base.Start();
+    }
+
     protected override void OnEntranceComplete()
     {
         // Calcola i limiti orizzontali della camera
