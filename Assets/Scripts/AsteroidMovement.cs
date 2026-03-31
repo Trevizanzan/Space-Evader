@@ -45,6 +45,7 @@ public class AsteroidMovement : MonoBehaviour
     private float rotationSpeed;
     private float destroyY;
     private Rigidbody2D rb;
+    //private bool velocitySet = false; // Traccia se la velocità è stata già settata
 
     void Start()
     {
@@ -54,33 +55,64 @@ public class AsteroidMovement : MonoBehaviour
 
         // Rotazione casuale (in gradi al secondo)
         rotationSpeed = Random.Range(-180f, 180f);
-        rb.angularVelocity = rotationSpeed; // rotazione su se stessa
+        rb.angularVelocity = rotationSpeed; // rotazione su se stessa 
 
-        // OLD
-        //// Velocità caduta con leggera variazione
-        //float randomFallSpeed = fallSpeed + Random.Range(-1f, 2.5f);
-        //rb.linearVelocity = new Vector2(0, -randomFallSpeed);   
+        //// Prendi velocità base dal DifficultyManager e aggiungi una variazione casuale
+        //float baseFallSpeed = DifficultyManager.Instance != null
+        //    ? DifficultyManager.Instance.GetFallSpeed()
+        //    : defalutFallSpeed;   // fallback se non c'è manager
 
-        // NEW
-        // Prendi velocità base dal DifficultyManager e aggiungi una variazione casuale
-        float baseFallSpeed = DifficultyManager.Instance != null
-            ? DifficultyManager.Instance.GetFallSpeed()
-            : defalutFallSpeed;   // fallback se non c'è manager
+        //float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
+        //rb.linearVelocity = new Vector2(0, -randomFallSpeed);   // direzione verso il basso
 
-        float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
-        rb.linearVelocity = new Vector2(0, -randomFallSpeed);   // direzione verso il basso
+
+
+
+        // Determina la fase corrente
+        int phase = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.GetCurrentPhase()
+            : 1;
+
+        //Debug.Log($"[ASTEROID TEST] Before Update: rb.velocity = {rb.linearVelocity}");
+
+
+        // SOLO in Fase 1: assegna velocità verticale di default
+        if (phase == 1)
+        {
+            float baseFallSpeed = DifficultyManager.Instance != null
+                ? DifficultyManager.Instance.GetFallSpeed()
+                : defalutFallSpeed;
+
+            float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
+            rb.linearVelocity = new Vector2(0, -randomFallSpeed);
+        }
+        // Fase 2 e 3: NON fare niente, lo spawner assegnerà la velocity dopo,
+        // lo spawner assegnerà velocità diagonale/orizzontale DOPO l'istanziazione
+
+        //Debug.Log($"[ASTEROID TEST] After: rb.velocity = {rb.linearVelocity}");
 
         // Calcola bordo inferiore camera
         float camDistance = transform.position.z - Camera.main.transform.position.z;
         //Debug.Log($"camDistance: {camDistance}");
+
         Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
         destroyY = bottomLeft.y - (cameraHeight * 0.2f);
     }
 
     void Update()
     {
-        // Solo controllo distruzione
-        if (transform.position.y < destroyY)
+        //// Forza la velocity OGNI FRAME (solo per debug!)
+        //if (rb.linearVelocity.magnitude > 0)
+        //{
+        //    // Non fare niente, lascia che la physics engine faccia il suo
+        //}
+
+        // Controllo distruzione (ampliato per asteroidi che escono dai lati)
+        float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect;
+
+        // Distruggi se esce dai bordi (in basso O laterali)
+        if (transform.position.y < destroyY ||
+            Mathf.Abs(transform.position.x) > cameraWidth * 2f /*> cameraWidth + 3f*/)
         {
             Destroy(gameObject);
         }

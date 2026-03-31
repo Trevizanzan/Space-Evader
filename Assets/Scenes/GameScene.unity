@@ -613,9 +613,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c2e53082306da444b279b5a050e1e98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
-  levelDuration: 5
-  maxLevels: 3
+  waveDuration: 15
   transitionDuration: 5
+  globalDifficultyMultiplier: 1
+  difficultyIncreasePerLoop: 0.5
+  bossPrefabs:
+  - {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
+  skipToFirstBoss: 0
+  levelCompletePanel: {fileID: 1288765921}
+  levelCompleteCountdown: {fileID: 1200715739}
   spawnRateCurve:
     serializedVersion: 2
     m_Curve:
@@ -697,11 +703,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  bossPrefabs:
-  - {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
-  skipToFirstBoss: 1
-  levelCompletePanel: {fileID: 1288765921}
-  levelCompleteCountdown: {fileID: 1200715739}
 --- !u!4 &187418848
 Transform:
   m_ObjectHideFlags: 0
@@ -1769,11 +1770,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24b2698f5027044f8b8750a4b9f2174, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AsteroidSpawner
-  asteroidPrefabs:
-  - {fileID: 1933450810738102250, guid: 584d4491b285b1b47a5d26669f26f5bc, type: 3}
-  - {fileID: 1557415453779876514, guid: d3d4bca083355eb4a80c53cb8f108485, type: 3}
+  phase1Asteroids:
   - {fileID: 6342991118519517000, guid: aee20b28e8292c842861f365d06e9faa, type: 3}
-  defaultSpawnRate: 1
+  phase2Asteroids:
+  - {fileID: 1557415453779876514, guid: d3d4bca083355eb4a80c53cb8f108485, type: 3}
+  phase3Asteroids:
+  - {fileID: 1933450810738102250, guid: 584d4491b285b1b47a5d26669f26f5bc, type: 3}
+  horizontalOffset: 1
+  topOffset: 2
+  spawnYVariation: 5
 --- !u!4 &1052158367
 Transform:
   m_ObjectHideFlags: 0
