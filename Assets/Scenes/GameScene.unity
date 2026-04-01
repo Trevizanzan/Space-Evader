@@ -615,94 +615,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   waveDuration: 15
   transitionDuration: 5
+  waveProfiles: []
   globalDifficultyMultiplier: 1
   difficultyIncreasePerLoop: 0.5
   bossPrefabs:
   - {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
   skipToFirstBoss: 0
+  debugSpecificWave: 0
+  debugWaveIndex: 0
   levelCompletePanel: {fileID: 1288765921}
   levelCompleteCountdown: {fileID: 1200715739}
-  spawnRateCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3518889
-      value: 1.1161705
-      inSlope: -1.3819222
-      outSlope: -1.3819222
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.97665405
-      value: 0.4355835
-      inSlope: -0.043959938
-      outSlope: -0.043959938
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 1
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  fallSpeedCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 4
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.8699951
-      value: 8.357754
-      inSlope: 4
-      outSlope: 4
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  asteroidHealthMultiplier:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!4 &187418848
 Transform:
   m_ObjectHideFlags: 0
@@ -1770,12 +1692,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24b2698f5027044f8b8750a4b9f2174, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AsteroidSpawner
-  phase1Asteroids:
+  littleAsteroids:
   - {fileID: 6342991118519517000, guid: aee20b28e8292c842861f365d06e9faa, type: 3}
-  phase2Asteroids:
+  mediumAsteroids:
   - {fileID: 1557415453779876514, guid: d3d4bca083355eb4a80c53cb8f108485, type: 3}
-  phase3Asteroids:
+  bigAsteroids:
+  - {fileID: 6342991118519517000, guid: aee20b28e8292c842861f365d06e9faa, type: 3}
+  - {fileID: 1557415453779876514, guid: d3d4bca083355eb4a80c53cb8f108485, type: 3}
   - {fileID: 1933450810738102250, guid: 584d4491b285b1b47a5d26669f26f5bc, type: 3}
+  topSpawnPoints: []
+  leftSpawnPoints: []
+  rightSpawnPoints: []
+  baseNormalInterval: 2
+  baseDiagonalInterval: 3
+  baseHorizontalInterval: 4
+  baseNormalSpeed: 2
+  baseDiagonalSpeed: 2.5
+  baseHorizontalSpeed: 3
+  smallWeight: 0.5
+  mediumWeight: 0.3
+  largeWeight: 0.2
   horizontalOffset: 1
   topOffset: 2
   spawnYVariation: 5

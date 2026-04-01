@@ -2,6 +2,59 @@
 using TMPro;
 using UnityEngine;
 
+[System.Serializable]
+public class PhaseConfig
+{
+    [Header("Spawn Types")]
+    public bool spawnNormal = false;
+    public bool spawnDiagonal = false;
+    public bool spawnHorizontal = false;
+
+    [Header("Spawn Rate Multipliers")]
+    public float normalSpawnMultiplier = 1f;
+    public float diagonalSpawnMultiplier = 1f;
+    public float horizontalSpawnMultiplier = 1f;
+
+    [Header("Enemy Types Unlocked")]
+    public bool allowFighters = false;
+    public bool allowKamikazes = false;
+    public bool allowBombers = false;
+
+    [Header("Difficulty Modifiers")]
+    public float speedMultiplier = 1f; // Velocità asteroidi    // TODO da implementare
+    public float healthMultiplier = 1f; // Vita asteroidi (da implementare)     // TODO da implementare
+
+    [Header("Asteroid Size Focus")]
+    [Tooltip("0 = tutti, 1 = solo piccoli, 2 = solo medi, 3 = solo grandi")]
+    public int asteroidSizeFocus = 0; // 0 = mix, 1 = small only, 2 = medium only, 3 = large only   // TODO Implementare negli spawner
+}
+
+[System.Serializable]
+public class WaveProfile
+{  
+    [Header("Wave Info")]
+    public string waveName = "Default wave";
+    public float waveDuration = 30f; // Durata totale della wave in secondi
+
+    [Header("Phase Configurations")]
+    public PhaseConfig phase1 = new PhaseConfig();
+    public PhaseConfig phase2 = new PhaseConfig();
+    public PhaseConfig phase3 = new PhaseConfig();
+
+    // Helper per ottenere la config della fase corrente
+    public PhaseConfig GetPhaseConfig(int phase)
+    {
+        switch (phase)
+        {
+            case 1: return phase1;
+            case 2: return phase2;
+            case 3: return phase3;
+            default: return phase1;
+        }
+    }
+}
+
+
 public class DifficultyManager : MonoBehaviour
 {
     public static DifficultyManager Instance;
@@ -9,6 +62,9 @@ public class DifficultyManager : MonoBehaviour
     [Header("Wave Settings")]
     [SerializeField] private float waveDuration = 60f; // durata wave in secondi (divisa in 3 fasi)
     [SerializeField] private float transitionDuration = 3f; // pausa tra wave e boss
+
+    [Header("Wave Profiles - Configure Each Wave!")]
+    [SerializeField] private WaveProfile[] waveProfiles = new WaveProfile[6]; // 6 wave (una per boss)
 
     [Header("Difficulty Scaling")]
     [SerializeField] private float globalDifficultyMultiplier = 1f;
@@ -23,37 +79,38 @@ public class DifficultyManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool skipToFirstBoss = false;
     private int debugBossIndex = 0;
+    [SerializeField] private bool debugSpecificWave = false; // Test wave specifica
+    [SerializeField] private int debugWaveIndex = 0; // Quale wave testare (0-5)
 
     // Wave state
     private float waveTime = 0f;
     private float progress = 0f; // 0–1
     private bool isInTransition = false;
+
     // Events
     public System.Action OnWaveComplete;
     public GameObject levelCompletePanel;
     public TMP_Text levelCompleteCountdown;
 
-
-     //OLD
-    //[Header("Level Settings")]
-    //[SerializeField] private float levelDuration = 60f; // durata livello in secondi
-    // TODO: endless mode non serve a nulla 
-    //[SerializeField] private bool endlessMode = false; // se true, continua a scalare oltre levelDuration
-    //[SerializeField] private int maxLevels = 3; // quanti livelli prima di endless
-
-    [Header("Difficulty Curves (0 = inizio, 1 = fine livello)")]
-    [SerializeField] private AnimationCurve spawnRateCurve = AnimationCurve.Linear(0, 1.5f, 1, 0.4f);
-    [SerializeField] private AnimationCurve fallSpeedCurve = AnimationCurve.Linear(0, 4f, 1, 8f);
-    [SerializeField] private AnimationCurve asteroidHealthMultiplier = AnimationCurve.Constant(0, 1, 1f);
+    //[Header("Difficulty Curves (0 = inizio, 1 = fine livello)")]
+    //[SerializeField] private AnimationCurve spawnRateCurve = AnimationCurve.Linear(0, 1.5f, 1, 0.4f);
+    //[SerializeField] private AnimationCurve fallSpeedCurve = AnimationCurve.Linear(0, 4f, 1, 8f);
+    //[SerializeField] private AnimationCurve asteroidHealthMultiplier = AnimationCurve.Constant(0, 1, 1f);
 
     private int currentLevel = 1;
-    private float levelTime = 0f;
+    //private float levelTime = 0f;
     public System.Action OnLevelComplete; // evento per notificare altri sistemi (es. UI) quando un livello è completato
 
 
     void Awake()
     {
         if (Instance == null) Instance = this;
+
+        // Inizializza wave profiles se vuoto (default)
+        if (waveProfiles == null || waveProfiles.Length == 0)
+        {
+            InitializeDefaultWaveProfiles();
+        }
     }
 
     private void Start()
@@ -67,6 +124,10 @@ public class DifficultyManager : MonoBehaviour
         if (skipToFirstBoss)
         {
             StartCoroutine(DebugSkipToBoss());
+        }
+        else if (debugSpecificWave)
+        {
+            StartCoroutine(DebugSkipToWave());
         }
     }
 
@@ -87,6 +148,370 @@ public class DifficultyManager : MonoBehaviour
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(false);
     }
+
+    // Inizializza wave profiles di default (chiamato una volta)
+    void InitializeDefaultWaveProfiles()
+    {
+        waveProfiles = new WaveProfile[6];
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 1 - "WARM UP" - Solo asteroidi normali, introduzione graduale
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[0] = new WaveProfile
+        {
+            waveName = "Wave 1 - Asteroid Field",
+            waveDuration = 45f,
+            phase1 = new PhaseConfig
+            {
+                // Solo asteroidi normali, lenti, mix di dimensioni
+                spawnNormal = true,
+                spawnDiagonal = false,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 0.8f, // Spawn più lento del base
+                speedMultiplier = 0.7f, // 70% velocità base
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 0, // Mix di tutte le dimensioni
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase2 = new PhaseConfig
+            {
+                // Aumenta leggermente spawn rate e velocità
+                spawnNormal = true,
+                spawnDiagonal = false,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1f, // Velocità normale
+                speedMultiplier = 0.85f,
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 1, // Solo piccoli per ora
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase3 = new PhaseConfig
+            {
+                // Incremento finale prima del boss
+                spawnNormal = true,
+                spawnDiagonal = false,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1.2f,
+                speedMultiplier = 1f, // Velocità standard
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 0, // Ritorna a mix
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            }
+        };
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 2 - "DIAGONAL ASSAULT" - Introduzione spawn diagonali
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[1] = new WaveProfile
+        {
+            waveName = "Wave 2 - Diagonal Assault",
+            waveDuration = 50f,
+            phase1 = new PhaseConfig
+            {
+                // Solo normali, ma più veloci di wave 1
+                spawnNormal = true,
+                spawnDiagonal = false,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1f,
+                speedMultiplier = 0.9f,
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 0,
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase2 = new PhaseConfig
+            {
+                // INTRODUZIONE DIAGONALI - primo contatto
+                spawnNormal = true,
+                spawnDiagonal = true, // NOVITÀ!
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1f,
+                diagonalSpawnMultiplier = 0.7f, // Spawn lento per imparare
+                speedMultiplier = 0.95f,
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 0,
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase3 = new PhaseConfig
+            {
+                // Mix normale + diagonale intenso
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1.1f,
+                diagonalSpawnMultiplier = 1f,
+                speedMultiplier = 1.1f,
+                healthMultiplier = 1f,
+                asteroidSizeFocus = 2, // Solo medi per aumentare sfida
+                allowFighters = false,
+                allowKamikazes = false,
+                allowBombers = false
+            }
+        };
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 3 - "TRI-DIRECTIONAL CHAOS" - Tutti i tipi + primi nemici
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[2] = new WaveProfile
+        {
+            waveName = "Wave 3 - Tri-Directional Chaos",
+            waveDuration = 55f,
+            phase1 = new PhaseConfig
+            {
+                // Normale + diagonale insieme
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1f,
+                diagonalSpawnMultiplier = 0.8f,
+                speedMultiplier = 1f,
+                healthMultiplier = 1.1f, // Primi asteroidi più resistenti
+                asteroidSizeFocus = 0,
+                allowFighters = true, // PRIMI NEMICI!
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase2 = new PhaseConfig
+            {
+                // INTRODUZIONE HORIZONTAL
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true, // NOVITÀ!
+                normalSpawnMultiplier = 1f,
+                diagonalSpawnMultiplier = 1f,
+                horizontalSpawnMultiplier = 0.6f, // Lento per introduzione
+                speedMultiplier = 1.05f,
+                healthMultiplier = 1.1f,
+                asteroidSizeFocus = 0,
+                allowFighters = true,
+                allowKamikazes = false,
+                allowBombers = false
+            },
+            phase3 = new PhaseConfig
+            {
+                // TUTTI ATTIVI - primo vero caos
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.2f,
+                diagonalSpawnMultiplier = 1.1f,
+                horizontalSpawnMultiplier = 0.9f,
+                speedMultiplier = 1.15f,
+                healthMultiplier = 1.2f,
+                asteroidSizeFocus = 0,
+                allowFighters = true,
+                allowKamikazes = false,
+                allowBombers = false
+            }
+        };
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 4 - "KAMIKAZE RAIN" - Introduzione kamikazes + focus horizontal
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[3] = new WaveProfile
+        {
+            waveName = "Wave 4 - Kamikaze Rain",
+            waveDuration = 60f,
+            phase1 = new PhaseConfig
+            {
+                // Focus su horizontal + diagonal
+                spawnNormal = false, // Pausa dai normali
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                diagonalSpawnMultiplier = 1.2f,
+                horizontalSpawnMultiplier = 1.1f,
+                speedMultiplier = 1.1f,
+                healthMultiplier = 1.2f,
+                asteroidSizeFocus = 1, // Solo piccoli, veloci e tanti
+                allowFighters = true,
+                allowKamikazes = true, // KAMIKAZES UNLOCKED!
+                allowBombers = false
+            },
+            phase2 = new PhaseConfig
+            {
+                // Tutti attivi ma focus su dimensioni grandi
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1f,
+                diagonalSpawnMultiplier = 1.2f,
+                horizontalSpawnMultiplier = 1.2f,
+                speedMultiplier = 1.15f,
+                healthMultiplier = 1.3f,
+                asteroidSizeFocus = 3, // Solo grandi - muro di asteroidi lenti ma tank
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = false
+            },
+            phase3 = new PhaseConfig
+            {
+                // Caos totale - tutti attivi, alta velocità
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.3f,
+                diagonalSpawnMultiplier = 1.3f,
+                horizontalSpawnMultiplier = 1.2f,
+                speedMultiplier = 1.25f,
+                healthMultiplier = 1.3f,
+                asteroidSizeFocus = 0, // Mix caotico
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = false
+            }
+        };
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 5 - "BOMBING RUN" - Tutti i nemici sbloccati, difficoltà alta
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[4] = new WaveProfile
+        {
+            waveName = "Wave 5 - Bombing Run",
+            waveDuration = 65f,
+            phase1 = new PhaseConfig
+            {
+                // Introduzione bombers con scenario controllato
+                spawnNormal = true,
+                spawnDiagonal = false, // Pausa dai diagonali
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.1f,
+                horizontalSpawnMultiplier = 1f,
+                speedMultiplier = 1.2f,
+                healthMultiplier = 1.4f,
+                asteroidSizeFocus = 2, // Solo medi
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true // BOMBERS UNLOCKED!
+            },
+            phase2 = new PhaseConfig
+            {
+                // Tutti i tipi attivi, focus su asteroidi piccoli veloci
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.4f,
+                diagonalSpawnMultiplier = 1.3f,
+                horizontalSpawnMultiplier = 1.2f,
+                speedMultiplier = 1.35f, // Velocità alta
+                healthMultiplier = 1.3f,
+                asteroidSizeFocus = 1, // Piccoli veloci - bullet hell style
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true
+            },
+            phase3 = new PhaseConfig
+            {
+                // Pre-boss finale - massima intensità
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.5f,
+                diagonalSpawnMultiplier = 1.4f,
+                horizontalSpawnMultiplier = 1.3f,
+                speedMultiplier = 1.4f,
+                healthMultiplier = 1.5f,
+                asteroidSizeFocus = 0, // Mix totale
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true
+            }
+        };
+        // ═══════════════════════════════════════════════════════════════════════
+        // WAVE 6 - "FINAL GAUNTLET" - Massima difficoltà, preparazione al boss
+        // ═══════════════════════════════════════════════════════════════════════
+        waveProfiles[5] = new WaveProfile
+        {
+            waveName = "Wave 6 - Final Gauntlet",
+            waveDuration = 70f,
+            phase1 = new PhaseConfig
+            {
+                // Apertura aggressiva - solo grandi lenti ma tank
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = false,
+                normalSpawnMultiplier = 1.3f,
+                diagonalSpawnMultiplier = 1.2f,
+                speedMultiplier = 1f, // Lenti ma resistenti
+                healthMultiplier = 2f, // DOPPIA VITA
+                asteroidSizeFocus = 3, // Solo grandi
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true
+            },
+            phase2 = new PhaseConfig
+            {
+                // Bullet hell - piccoli velocissimi
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 2f, // DOPPIO SPAWN RATE
+                diagonalSpawnMultiplier = 1.8f,
+                horizontalSpawnMultiplier = 1.6f,
+                speedMultiplier = 1.6f, // Velocissimi
+                healthMultiplier = 1f, // Poca vita ma tanti
+                asteroidSizeFocus = 1, // Solo piccoli
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true
+            },
+            phase3 = new PhaseConfig
+            {
+                // FINALE APOCALITTICO - tutto al massimo
+                spawnNormal = true,
+                spawnDiagonal = true,
+                spawnHorizontal = true,
+                normalSpawnMultiplier = 1.8f,
+                diagonalSpawnMultiplier = 1.8f,
+                horizontalSpawnMultiplier = 1.6f,
+                speedMultiplier = 1.5f,
+                healthMultiplier = 1.8f,
+                asteroidSizeFocus = 0, // Mix caotico totale
+                allowFighters = true,
+                allowKamikazes = true,
+                allowBombers = true
+            }
+        };
+    }
+
+    // Debug: Testa una wave specifica
+    IEnumerator DebugSkipToWave()
+    {
+        yield return null;
+
+        totalBossesDefeated = debugWaveIndex; // Simula progressione
+
+        Debug.Log($"[DEBUG] Starting Wave {debugWaveIndex + 1}: {GetCurrentWaveProfile().waveName}");
+
+        // Disabilita UI testo
+        ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
+        if (scoreManager != null)
+        {
+            scoreManager.DisableLevelAndTimerText();
+        }
+
+        if (levelCompletePanel != null)
+            levelCompletePanel.SetActive(false);
+    }
+
+    // Ottieni il profilo della wave corrente
+    public WaveProfile GetCurrentWaveProfile()
+    {
+        int waveIndex = totalBossesDefeated % waveProfiles.Length;
+
+        if (waveIndex < 0 || waveIndex >= waveProfiles.Length)
+        {
+            Debug.LogWarning($"[DIFFICULTY] Wave index {waveIndex} out of range, using Wave 0");
+            return waveProfiles[0];
+        }
+
+        return waveProfiles[waveIndex];
+    }
+
 
     //void ShowLevelComplete()
     //{
@@ -118,20 +543,6 @@ public class DifficultyManager : MonoBehaviour
         waveTime += Time.deltaTime;
         progress = Mathf.Clamp01(waveTime / waveDuration);  // clamp è importante per evitare valori strani dopo waveDuration
 
-        //// Check se livello finito
-        //if (levelTime >= levelDuration)
-        //{
-        //    // Decidi se è tempo di boss o transizione normale
-        //    if (currentLevel == 3) // dopo livello 3, spawna boss
-        //    {
-        //        StartCoroutine(BossTransition());
-        //    }
-        //    else
-        //    {
-        //        StartCoroutine(LevelTransition()); // transizione normale
-        //    }
-        //}
-
         // Check se wave finita → spawna boss
         if (waveTime >= waveDuration)
         {
@@ -139,25 +550,13 @@ public class DifficultyManager : MonoBehaviour
         }
     }
 
-    //// Gestisce la transizione tra livelli: notifica, aspetta, resetta timer e progress, incrementa livello
-    //IEnumerator LevelTransition()
-    //{
-    //    isInTransition = true;
-        
-    //    // Notifica che il livello è completato
-    //    OnLevelComplete?.Invoke();
-    //    yield return new WaitForSeconds(transitionDuration);
-
-    //    // Avanza livello
-    //    currentLevel++;
-    //    levelTime = 0f;
-    //    progress = 0f;
-    //    isInTransition = false;
-    //}
-
     void OnGUI()
     {
         if (!Application.isPlaying) return;
+
+        WaveProfile currentWave = GetCurrentWaveProfile();
+
+        GUILayout.Label($"Wave: {currentWave.waveName}");
         GUILayout.Label($"Wave Time: {waveTime:F1}s");
         GUILayout.Label($"Progress: {progress:F2}");
         GUILayout.Label($"Phase: {GetCurrentPhase()}");
@@ -230,7 +629,7 @@ public class DifficultyManager : MonoBehaviour
     IEnumerator WaveStartDelay()
     {
         isInTransition = true;
-        yield return new WaitForSeconds(2f); // Breve pausa prima di ricominciare
+        yield return new WaitForSeconds(3f); // Breve pausa prima di ricominciare
         isInTransition = false;
     }
 
@@ -280,7 +679,8 @@ public class DifficultyManager : MonoBehaviour
     #region Public Getters for Spawners
 
     /// <summary>
-    /// Ritorna la fase corrente (1, 2 o 3) in base al progress della wave
+    /// Ritorna la fase corrente della wave
+    /// (1, 2 o 3) in base al progress della wave
     /// </summary>
     public int GetCurrentPhase()
     {
@@ -292,82 +692,12 @@ public class DifficultyManager : MonoBehaviour
         return 3;                       // Fase 3: 40-60s
     }
 
-    /// <summary>
-    /// Controlla se un certo tipo di nemico può spawnare in base a quanti boss sono stati sconfitti
-    /// </summary>
-    public bool CanSpawnEnemyType(string enemyType)
-    {
-        switch (enemyType)
-        {
-            case "Fighter":
-                return totalBossesDefeated >= 0; // Appare da subito (dopo boss 0 = primo ciclo)
-            case "Kamikaze":
-                return totalBossesDefeated >= 3; // Appare solo dopo il boss 3
-            case "Bomber":
-                return totalBossesDefeated >= 6; // Appare solo dopo il boss 6 (secondo loop)
-            default:
-                return true; // Tipi sconosciuti sempre attivi
-        }
-    }
-
-    /// <summary>
-    /// Ritorna true se tutte le fasi dovrebbero essere attive contemporaneamente (chaos mode)
-    /// </summary>
-    public bool IsAllPhasesActive()
-    {
-        // Dopo il boss 6 (secondo loop), tutte le fasi sono sempre attive
-        return totalBossesDefeated >= 6;
-    }
-
-    public float GetSpawnRate()
-    {
-        if (isInTransition) return 999f;
-
-        //// Calcola baseline per questo livello (parte più alta)
-        //float levelBaseline = Mathf.Max(0.4f, 1.5f - (currentLevel - 1) * 0.3f); // livello 1: 1.5, livello 2: 1.2, livello 3: 0.9
-        //float levelEnd = Mathf.Max(0.2f, 0.4f - (currentLevel - 1) * 0.1f);      // livello 1: 0.4, livello 2: 0.3, livello 3: 0.2
-
-        //// Interpola dalla baseline all'end in base al progress del livello
-        ////return Mathf.Lerp(levelBaseline, levelEnd, progress);
-
-        //// baseRate è il tempo tra spawn all'inizio del livello, diminuisce fino a levelEnd alla fine del livello
-        //// nuymero più alto = spawn meno frequente = più facile
-        //// numero più basso = spawn più frequente = più difficile
-        //float baseRate = Mathf.Lerp(levelBaseline, levelEnd, progress);
-        //// Applica il moltiplicatore globale (diminuisce il tempo = più difficile)
-        //return baseRate / globalDifficultyMultiplier;
-
-        // Semplificato: un singolo calcolo scalato dal progress
-        float baseRate = Mathf.Lerp(1.5f, 0.4f, progress); // Da 1.5s a 0.4s durante la wave
-        return baseRate / globalDifficultyMultiplier;
-    }
-
-    public float GetFallSpeed()
-    {
-        //float levelBaseline = 4f + (currentLevel - 1) * 2f;  // livello 1: 4, livello 2: 6, livello 3: 8
-        //float levelEnd = 8f + (currentLevel - 1) * 2f;       // livello 1: 8, livello 2: 10, livello 3: 12
-
-        ////return Mathf.Lerp(levelBaseline, levelEnd, progress);
-
-        //float baseSpeed = Mathf.Lerp(levelBaseline, levelEnd, progress);
-
-        //// Applica il moltiplicatore globale (aumenta velocità)
-        //return baseSpeed * globalDifficultyMultiplier;
-
-        // Semplificato: velocità cresce col progress
-        float baseSpeed = Mathf.Lerp(4f, 8f, progress); // Da 4 a 8 durante la wave
-        return baseSpeed * globalDifficultyMultiplier;
-    }
-
     public float GetProgress() => progress;
     public float GetWaveTime() => waveTime;
     public float GetTimeRemaining() => Mathf.Max(0, waveDuration - waveTime);
     public bool IsInTransition() => isInTransition;
     public int GetTotalBossesDefeated() => totalBossesDefeated;
     public float GetGlobalMultiplier() => globalDifficultyMultiplier;
-
-    public float GetHealthMultiplier() => asteroidHealthMultiplier.Evaluate(progress);
-    public float GetLevelTime() => levelTime;
     public int GetCurrentLevel() => currentLevel;
 
     #endregion

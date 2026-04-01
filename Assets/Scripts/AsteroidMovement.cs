@@ -41,62 +41,44 @@ using UnityEngine;
 
 public class AsteroidMovement : MonoBehaviour
 {
+    [Header("Rotation Settings")]
+    [SerializeField] private float minRotationSpeed = -180f;
+    [SerializeField] private float maxRotationSpeed = 180f;
+
+    [Header("Destroy Boundaries")]
+    [SerializeField] private float destroyBorderMultiplier = 2f; // Quanto fuori dallo schermo può andare prima di essere distrutto
+    private Rigidbody2D rb;
+
+    private float destroyY;
+    private float destroyXLimit;
+
     public float defalutFallSpeed = 3f;
     private float rotationSpeed;
-    private float destroyY;
-    private Rigidbody2D rb;
-    //private bool velocitySet = false; // Traccia se la velocità è stata già settata
 
     void Start()
     {
-        float cameraHeight = Camera.main.orthographicSize * 2f;
-
         rb = GetComponent<Rigidbody2D>();
 
-        // Rotazione casuale (in gradi al secondo)
-        rotationSpeed = Random.Range(-180f, 180f);
-        rb.angularVelocity = rotationSpeed; // rotazione su se stessa 
+        // Rotazione casuale su se stesso
+        float rotationSpeed = Random.Range(minRotationSpeed, maxRotationSpeed);
+        rb.angularVelocity = rotationSpeed;
 
-        //// Prendi velocità base dal DifficultyManager e aggiungi una variazione casuale
-        //float baseFallSpeed = DifficultyManager.Instance != null
-        //    ? DifficultyManager.Instance.GetFallSpeed()
-        //    : defalutFallSpeed;   // fallback se non c'è manager
+        // Calcola i bordi di distruzione (più ampi dello schermo per dare margine)
+        CalculateDestroyBounds();
+    }
 
-        //float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
-        //rb.linearVelocity = new Vector2(0, -randomFallSpeed);   // direzione verso il basso
-
-
-
-
-        // Determina la fase corrente
-        int phase = DifficultyManager.Instance != null
-            ? DifficultyManager.Instance.GetCurrentPhase()
-            : 1;
-
-        //Debug.Log($"[ASTEROID TEST] Before Update: rb.velocity = {rb.linearVelocity}");
-
-
-        // SOLO in Fase 1: assegna velocità verticale di default
-        if (phase == 1)
-        {
-            float baseFallSpeed = DifficultyManager.Instance != null
-                ? DifficultyManager.Instance.GetFallSpeed()
-                : defalutFallSpeed;
-
-            float randomFallSpeed = baseFallSpeed + Random.Range(-0.5f, 0.5f);
-            rb.linearVelocity = new Vector2(0, -randomFallSpeed);
-        }
-        // Fase 2 e 3: NON fare niente, lo spawner assegnerà la velocity dopo,
-        // lo spawner assegnerà velocità diagonale/orizzontale DOPO l'istanziazione
-
-        //Debug.Log($"[ASTEROID TEST] After: rb.velocity = {rb.linearVelocity}");
-
-        // Calcola bordo inferiore camera
+    void CalculateDestroyBounds()
+    {
+        float cameraHeight = Camera.main.orthographicSize;
+        float cameraWidth = cameraHeight * Camera.main.aspect;
         float camDistance = transform.position.z - Camera.main.transform.position.z;
-        //Debug.Log($"camDistance: {camDistance}");
-
         Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
+
+        // Bordo inferiore (con margine)
         destroyY = bottomLeft.y - (cameraHeight * 0.2f);
+
+        // Bordi laterali (più ampi per gestire asteroidi orizzontali/diagonali)
+        destroyXLimit = cameraWidth * destroyBorderMultiplier;
     }
 
     void Update()
@@ -107,12 +89,9 @@ public class AsteroidMovement : MonoBehaviour
         //    // Non fare niente, lascia che la physics engine faccia il suo
         //}
 
-        // Controllo distruzione (ampliato per asteroidi che escono dai lati)
-        float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect;
-
-        // Distruggi se esce dai bordi (in basso O laterali)
+        // Distruggi se l'asteroide esce completamente dallo schermo
         if (transform.position.y < destroyY ||
-            Mathf.Abs(transform.position.x) > cameraWidth * 2f /*> cameraWidth + 3f*/)
+            Mathf.Abs(transform.position.x) > destroyXLimit)
         {
             Destroy(gameObject);
         }

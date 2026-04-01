@@ -2,20 +2,45 @@ using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
 {
-    //[Header("Asteroid Prefabs")]
-    //[SerializeField] private GameObject[] asteroidPrefabs;    // array di prefab di asteroidi (diversi tipi)
-    
-    [Header("Asteroid Prefabs Per Fase")]
-    [SerializeField] private GameObject[] phase1Asteroids; // Fase 1: piccoli
-    [SerializeField] private GameObject[] phase2Asteroids; // Fase 2: medi
-    [SerializeField] private GameObject[] phase3Asteroids; // Fase 3: grandi
+    [Header("Asteroid Prefabs by Size")]
+    [SerializeField] private GameObject[] littleAsteroids;
+    [SerializeField] private GameObject[] mediumAsteroids;
+    [SerializeField] private GameObject[] bigAsteroids;
 
-    [Header("Spawn Settings")]
-    //[SerializeField] private float spawnWidth = 10f; // Larghezza spawn orizzontale
+    [Header("Spawn Points")]
+    [SerializeField] private Transform[] topSpawnPoints; // Per spawn normali (verticali)
+    [SerializeField] private Transform[] leftSpawnPoints; // Per diagonali/orizzontali da sinistra
+    [SerializeField] private Transform[] rightSpawnPoints; // Per diagonali/orizzontali da destra
+
+    [Header("Base Spawn Intervals")]
+    [SerializeField] private float baseNormalInterval = 2f;
+    [SerializeField] private float baseDiagonalInterval = 3f;
+    [SerializeField] private float baseHorizontalInterval = 4f;
+
+    [Header("Base Speeds")]
+    [SerializeField] private float baseNormalSpeed = 2f;
+    [SerializeField] private float baseDiagonalSpeed = 2.5f;
+    [SerializeField] private float baseHorizontalSpeed = 3f;
+
+    [Header("Size Weights (quando asteroidSizeFocus = 0)")]
+    [SerializeField] private float smallWeight = 0.5f;
+    [SerializeField] private float mediumWeight = 0.3f;
+    [SerializeField] private float largeWeight = 0.2f;
+
+    // Timer per i diversi tipi di spawn
+    private float normalSpawnTimer;
+    private float diagonalSpawnTimer;
+    private float horizontalSpawnTimer;
+
     [Header("Spawn Offsets")]
-    [SerializeField] private float horizontalOffset = 1f; // Offset dai bordi laterali
-    [SerializeField] private float topOffset = 2f; // Quanto sopra la camera spawnare
+    [SerializeField] private float horizontalOffset = 1f;
+    [SerializeField] private float topOffset = 2f;
     [SerializeField] private float spawnYVariation = 5f; // Variazione casuale Y per spawn normali
+
+    private DifficultyManager difficultyManager;
+
+    //[Header("Spawn Settings")]
+    ////[SerializeField] private float spawnWidth = 10f; // Larghezza spawn orizzontale
 
     // Bordi camera calcolati una volta
     private float minX;
@@ -24,16 +49,10 @@ public class AsteroidSpawner : MonoBehaviour
     private float cameraWidth;
     private float cameraHeight;
 
-    // Timer per i diversi tipi di spawn
-    private float normalSpawnTimer;
-    private float diagonalSpawnTimer;
-    private float horizontalSpawnTimer;
-
-    //public GameObject[] asteroidPrefabs;  // array di prefab
-    //public float defaultSpawnRate = 1f;       // tempo in secondi tra uno spawn e l'altro
-
     void Start()
     {
+        difficultyManager = FindFirstObjectByType<DifficultyManager>();
+
         // Calcola i bordi della camera UNA VOLTA SOLA
         CalculateCameraBounds();
     }
@@ -52,275 +71,194 @@ public class AsteroidSpawner : MonoBehaviour
 
     void Update()
     {
-        if (DifficultyManager.Instance == null) return;
-        if (DifficultyManager.Instance.IsInTransition()) return;
+        if (difficultyManager == null) return;
 
-        //// Prendi spawn rate dinamico dal DifficultyManager
-        //float currentSpawnRate = DifficultyManager.Instance != null
-        //    ? DifficultyManager.Instance.GetSpawnRate()
-        //    : defaultSpawnRate; // fallback se non c'� manager
+        WaveProfile currentWave = difficultyManager.GetCurrentWaveProfile();
+        PhaseConfig currentPhase = currentWave.GetPhaseConfig(difficultyManager.GetCurrentPhase());
 
-        //timer += Time.deltaTime;
-
-        //// Aggiungiamo una leggera variazione al tempo di spawn per rendere il gioco pi� dinamico e imprevedibile
-        ////float randomSpawnRate = spawnRate + Random.Range(1.5f, 3f);
-
-        //if (timer >= currentSpawnRate)
-        //{
-        //    SpawnAsteroid();
-        //    timer = 0f;
-        //}
-
-        int phase = DifficultyManager.Instance.GetCurrentPhase();
-        bool chaosMode = DifficultyManager.Instance.IsAllPhasesActive();
-        float spawnRate = DifficultyManager.Instance.GetSpawnRate();
-
-        // Chaos Mode: tutto contemporaneamente
-        if (chaosMode)
+        // Gestione spawn normali (verticali)
+        if (currentPhase.spawnNormal)
         {
-            SpawnNormalAsteroids(spawnRate);
-            SpawnDiagonalAsteroids(spawnRate * 1.5f); // pi� lento per dare un po' di respiro al giocatore
-            SpawnHorizontalAsteroids(spawnRate * 2f); // ancora pi� lento per evitare di sovraccaricare il giocatore
+            HandleNormalSpawn(currentPhase);
         }
-        else
+        // Gestione spawn diagonali
+        if (currentPhase.spawnDiagonal)
         {
-            if (phase == 1)
-            {
-                SpawnNormalAsteroids(spawnRate);
-            }
-            else if (phase == 2)
-            {
-                // 50% verticali, 50% diagonali
-                //SpawnNormalAsteroids(spawnRate * 2f); // Meno frequenti
-                //SpawnDiagonalAsteroids(spawnRate * 2f);
-                
-                SpawnDiagonalAsteroids(spawnRate);
-            }
-            else if (phase == 3)
-            {
-                //// Mix di tutti
-                //SpawnNormalAsteroids(spawnRate * 3f); // Rari
-                //SpawnDiagonalAsteroids(spawnRate * 2.5f); // Medi
-                //SpawnHorizontalAsteroids(spawnRate * 1.5f); // Frequenti
-
-                SpawnHorizontalAsteroids(spawnRate);
-
-            }
+            HandleDiagonalSpawn(currentPhase);
+        }
+        // Gestione spawn orizzontali
+        if (currentPhase.spawnHorizontal)
+        {
+            HandleHorizontalSpawn(currentPhase);
         }
     }
 
-    //void SpawnAsteroid()
-    //{
-    //    // TODO mettere offset per evitare spawn troppo vicini ai bordi per la X e per la Y (grandezza asteroide)
-    //    float randomX = Random.Range(minX, maxX);               // X casuale con pi� variet�    
-    //    float randomSpawnY = spawnY + Random.Range(-2.5f, 5f);  // Y spawn con leggera variazione (alcuni pi� alti, altri meno)
+    // ======================== SPAWN NORMALI (VERTICALI) ========================
 
-    //    Vector3 spawnPosition = new Vector3(randomX, spawnY, 0);    // TODO alzare spawnY per evitare spawn troppo vicini alla camera
-
-    //    int i = Random.Range(0, asteroidPrefabs.Length);
-    //    Instantiate(asteroidPrefabs[i], spawnPosition, Quaternion.identity);
-    //}
-
-    /// <summary>
-    /// Sceglie quale asteroide spawnare in base alla fase e difficoltà
-    /// </summary>
-    GameObject GetAsteroidPrefab()
-    {
-        //int phase = DifficultyManager.Instance.GetCurrentPhase();
-        //int totalBosses = DifficultyManager.Instance.GetTotalBossesDefeated();
-
-        //// Logica di selezione in base alla progressione
-        //// Fase 1 (primi 20s): solo i primi 3 tipi (più facili)
-        //if (phase == 1)
-        //{
-        //    int maxIndex = Mathf.Min(3, asteroidPrefabs.Length);
-        //    return asteroidPrefabs[Random.Range(0, maxIndex)];
-        //}
-        //// Fase 2 (20-40s): i primi 6 tipi
-        //else if (phase == 2)
-        //{
-        //    int maxIndex = Mathf.Min(6, asteroidPrefabs.Length);
-        //    return asteroidPrefabs[Random.Range(0, maxIndex)];
-        //}
-        //// Fase 3 (40-60s): tutti i tipi disponibili
-        //else
-        //{
-        //    // Dopo il boss 3, aumenta probabilità di asteroidi più grossi/difficili
-        //    if (totalBosses >= 3)
-        //    {
-        //        // 70% di probabilità di scegliere dalla metà superiore dell'array (più difficili)
-        //        if (Random.value < 0.7f)
-        //        {
-        //            int startIndex = asteroidPrefabs.Length / 2;
-        //            return asteroidPrefabs[Random.Range(startIndex, asteroidPrefabs.Length)];
-        //        }
-        //    }
-        //    // Default: random tra tutti
-        //    return asteroidPrefabs[Random.Range(0, asteroidPrefabs.Length)];
-        //}
-
-        int phase = DifficultyManager.Instance.GetCurrentPhase();
-        int totalBosses = DifficultyManager.Instance.GetTotalBossesDefeated();
-        GameObject[] pool = null;
-
-        // Seleziona l'array corretto in base alla fase
-        if (phase == 1)
-        {
-            pool = phase1Asteroids;
-        }
-        else if (phase == 2)
-        {
-            pool = phase2Asteroids;
-        }
-        else if (phase == 3)
-        {
-            pool = phase3Asteroids;
-        }
-
-        // Controlla se l'array è valido
-        if (pool == null || pool.Length == 0)
-        {
-            Debug.LogWarning($"[ASTEROID_SPAWNER] No asteroids assigned for phase {phase}!");
-            return null;
-        }
-
-        // Dopo il boss 3, aumenta probabilità di asteroidi più difficili
-        if (phase == 3 && totalBosses >= 3)
-        {
-            // 70% di probabilità di scegliere dalla metà superiore dell'array (più difficili)
-            if (Random.value < 0.7f)
-            {
-                int startIndex = pool.Length / 2;
-                return pool[Random.Range(startIndex, pool.Length)];
-            }
-        }
-
-        // Default: random tra tutti gli asteroidi di questa fase
-        return pool[Random.Range(0, pool.Length)];
-    }
-
-    /// <summary>
-    /// Spawna asteroidi normali che cadono dall'alto verso il basso
-    /// </summary>
-    void SpawnNormalAsteroids(float spawnRate)
+    void HandleNormalSpawn(PhaseConfig phase)
     {
         normalSpawnTimer += Time.deltaTime;
 
-        if (normalSpawnTimer >= spawnRate)
+        float adjustedInterval = baseNormalInterval / phase.normalSpawnMultiplier;
+        if (normalSpawnTimer >= adjustedInterval)
         {
+            SpawnNormalAsteroid(phase);
             normalSpawnTimer = 0f;
-
-            // Usa i bordi pre-calcolati
-            float randomX = Random.Range(minX, maxX);
-            float randomSpawnY = spawnY + Random.Range(-2.5f, spawnYVariation); // Variazione Y
-            
-            Vector3 spawnPos = new Vector3(randomX, randomSpawnY, 0);
-
-            // Prendi un asteroide dall'array
-            GameObject asteroidPrefab = GetAsteroidPrefab();
-            if (asteroidPrefab == null) return;
-
-            GameObject asteroid = Instantiate(asteroidPrefab, spawnPos, Quaternion.identity);
-            
-            // Applica velocità verso il basso
-            Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                float speed = DifficultyManager.Instance.GetFallSpeed();
-                rb.linearVelocity = Vector2.down * speed;
-            }
         }
     }
 
-    /// <summary>
-    /// Spawna asteroidi che entrano in diagonale dagli angoli superiori
-    /// </summary>
-    void SpawnDiagonalAsteroids(float spawnRate)
+    void SpawnNormalAsteroid(PhaseConfig phase)
+    {
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        if (asteroidPrefab == null) return;
+        // Usa topSpawnPoints se disponibili, altrimenti calcola posizione casuale
+        Vector3 spawnPosition = GetSpawnPosition(topSpawnPoints, minX, maxX, spawnY);
+        GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        // Applica velocità verticale (verso il basso)
+        Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.down * baseNormalSpeed * phase.speedMultiplier;
+        }
+        ApplyHealthMultiplier(asteroid, phase.healthMultiplier);
+    }
+
+    // ======================== SPAWN DIAGONALI ========================
+    void HandleDiagonalSpawn(PhaseConfig phase)
     {
         diagonalSpawnTimer += Time.deltaTime;
-        if (diagonalSpawnTimer >= spawnRate)
+        float adjustedInterval = baseDiagonalInterval / phase.diagonalSpawnMultiplier;
+        if (diagonalSpawnTimer >= adjustedInterval)
         {
+            SpawnDiagonalAsteroid(phase);
             diagonalSpawnTimer = 0f;
-            
-            // Sceglie random: top-left o top-right
-            bool fromLeft = Random.value > 0.5f;
-            
-            // Usa i bordi pre-calcolati con offset extra
-            float spawnX = fromLeft ? minX - cameraWidth * 0.5f : maxX + cameraWidth * 0.5f;
-            float spawnYPos = spawnY + Random.Range(0f, 2f);
-            
-            Vector3 spawnPos = new Vector3(spawnX, spawnYPos, 0);
+        }
+    }
+    void SpawnDiagonalAsteroid(PhaseConfig phase)
+    {
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        if (asteroidPrefab == null) return;
+        // 50% spawn da sinistra, 50% da destra
+        bool spawnFromLeft = Random.value > 0.5f;
+        Transform[] spawnPoints = spawnFromLeft ? leftSpawnPoints : rightSpawnPoints;
+        Vector3 spawnPosition = GetSpawnPosition(spawnPoints, 0, 0, 0);
+        GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        // Direzione diagonale: da sinistra → giù-destra, da destra → giù-sinistra
+        Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            Vector2 direction = spawnFromLeft ? new Vector2(1f, -1f) : new Vector2(-1f, -1f);
+            rb.linearVelocity = direction.normalized * baseDiagonalSpeed * phase.speedMultiplier;
+        }
+        ApplyHealthMultiplier(asteroid, phase.healthMultiplier);
+    }
+    
+    // ======================== SPAWN ORIZZONTALI ========================
+    void HandleHorizontalSpawn(PhaseConfig phase)
+    {
+        horizontalSpawnTimer += Time.deltaTime;
+        float adjustedInterval = baseHorizontalInterval / phase.horizontalSpawnMultiplier;
+        if (horizontalSpawnTimer >= adjustedInterval)
+        {
+            SpawnHorizontalAsteroid(phase);
+            horizontalSpawnTimer = 0f;
+        }
+    }
+    void SpawnHorizontalAsteroid(PhaseConfig phase)
+    {
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        if (asteroidPrefab == null) return;
+        bool spawnFromLeft = Random.value > 0.5f;
+        Transform[] spawnPoints = spawnFromLeft ? leftSpawnPoints : rightSpawnPoints;
+        Vector3 spawnPosition = GetSpawnPosition(spawnPoints, 0, 0, 0);
+        GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        // Movimento orizzontale puro
+        Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            float direction = spawnFromLeft ? 1f : -1f; // 1 = destra, -1 = sinistra
+            rb.linearVelocity = Vector2.right * direction * baseHorizontalSpeed * phase.speedMultiplier;
+        }
+        ApplyHealthMultiplier(asteroid, phase.healthMultiplier);
+    }
 
-            // Prendi un asteroide dall'array
-            GameObject asteroidPrefab = GetAsteroidPrefab();
-            if (asteroidPrefab == null) return;
+    // ======================== HELPER METHODS ========================
+    
+    /// <summary>
+    /// Seleziona un asteroide in base al asteroidSizeFocus della fase
+    /// </summary>
+    GameObject GetAsteroidBySize(int sizeFocus)
+    {
+        GameObject[] selectedArray = null;
+        switch (sizeFocus)
+        {
+            case 0: // Mix casuale con pesi
+                selectedArray = GetRandomSizeArray();
+                break;
+            case 1: // Solo piccoli
+                selectedArray = littleAsteroids;
+                break;
+            case 2: // Solo medi
+                selectedArray = mediumAsteroids;
+                break;
+            case 3: // Solo grandi
+                selectedArray = bigAsteroids;
+                break;
+        }
+        if (selectedArray == null || selectedArray.Length == 0)
+        {
+            Debug.LogWarning("Nessun asteroide disponibile per sizeFocus: " + sizeFocus);
+            return null;
+        }
+        return selectedArray[Random.Range(0, selectedArray.Length)];
+    }
 
-            GameObject asteroid = Instantiate(asteroidPrefab, spawnPos, Quaternion.identity);
-            
-            // Velocità diagonale verso il centro/basso
-            Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                // Disabilita la gravità per il movimento diagonale
-                rb.gravityScale = 0f;
+    /// <summary>
+    /// Seleziona casualmente un array di asteroidi in base ai pesi configurati
+    /// </summary>
+    GameObject[] GetRandomSizeArray()
+    {
+        float totalWeight = smallWeight + mediumWeight + largeWeight;
+        float randomValue = Random.Range(0f, totalWeight);
 
-                float speed = DifficultyManager.Instance.GetFallSpeed();
+        if (randomValue < smallWeight)
+            return littleAsteroids;
+        else if (randomValue < smallWeight + mediumWeight)
+            return mediumAsteroids;
+        else
+            return bigAsteroids;
+    }
 
-                // Direzione: verso il centro in basso
-                Vector2 targetDirection;
-                if (fromLeft)
-                {
-                    targetDirection = new Vector2(1f, -1.5f).normalized; // Destra-Basso
-                }
-                else
-                {
-                    targetDirection = new Vector2(-1f, -1.5f).normalized; // Sinistra-Basso
-                }
-                rb.linearVelocity = targetDirection * speed;
-
-                Debug.Log($"[DIAGONAL] Spawned from {(fromLeft ? "LEFT" : "RIGHT")}, velocity set to: {rb.linearVelocity}");
-
-            }
+    /// <summary>
+    /// Ottiene una posizione di spawn da un array di spawn points o calcola una casuale
+    /// </summary>
+    Vector3 GetSpawnPosition(Transform[] spawnPoints, float fallbackMinX, float fallbackMaxX, float fallbackY)
+    {
+        if (spawnPoints != null && spawnPoints.Length > 0)
+        {
+            Transform selectedPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            return selectedPoint.position;
+        }
+        else
+        {
+            // Fallback: calcola posizione casuale con i parametri forniti
+            float randomX = Random.Range(fallbackMinX, fallbackMaxX);
+            return new Vector3(randomX, fallbackY, 0f);
         }
     }
 
     /// <summary>
-    /// Spawna asteroidi che entrano orizzontalmente dai lati
+    /// Applica il moltiplicatore di vita all'asteroide (TODO: implementare quando AsteroidHealth esiste)
     /// </summary>
-    void SpawnHorizontalAsteroids(float spawnRate)
+    void ApplyHealthMultiplier(GameObject asteroid, float multiplier)
     {
-        horizontalSpawnTimer += Time.deltaTime;
-
-        if (horizontalSpawnTimer >= spawnRate)
-        {
-            horizontalSpawnTimer = 0f;
-            
-            // Sceglie random: da sinistra o destra
-            bool fromLeft = Random.value > 0.5f;
-            // Y casuale a metà schermo (non troppo in alto, non troppo in basso)
-            float spawnYPos = Random.Range(-cameraHeight * 0.3f, cameraHeight * 0.7f);
-            float spawnX = fromLeft ? minX - 2f : maxX + 2f;
-            
-            Vector3 spawnPos = new Vector3(spawnX, spawnYPos, 0);
-
-            // Prendi un asteroide dall'array
-            GameObject asteroidPrefab = GetAsteroidPrefab();
-            if (asteroidPrefab == null) return;
-
-            GameObject asteroid = Instantiate(asteroidPrefab, spawnPos, Quaternion.identity);
-            
-            // Velocità orizzontale verso l'altro lato
-            Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                // Disabilita la gravità per il movimento orizzontale
-                rb.gravityScale = 0f;
-
-                float speed = DifficultyManager.Instance.GetFallSpeed() * 0.8f; // Leggermente più lento
-                
-                Vector2 direction = fromLeft ? Vector2.right : Vector2.left;
-                rb.linearVelocity = direction * speed;
-            }
-        }
+        // TODO: Implementare quando esiste il sistema di vita
+        // Esempio:
+        // AsteroidHealth health = asteroid.GetComponent<AsteroidHealth>();
+        // if (health != null)
+        // {
+        //     health.maxHealth *= multiplier;
+        //     health.currentHealth = health.maxHealth;
+        // }
     }
 }
