@@ -82,6 +82,16 @@ public class DifficultyManager : MonoBehaviour
     [SerializeField] private bool debugSpecificWave = false; // Test wave specifica
     [SerializeField] private int debugWaveIndex = 0; // Quale wave testare (0-5)
 
+    [Header("Wave UI")]
+    [SerializeField] private TMP_Text waveText; // "WAVE 3/6"
+    [SerializeField] private TMP_Text waveNameText; // "Diagonal Assault"
+    [SerializeField] private UnityEngine.UI.Image waveProgressBarFill; // Barra di progresso
+
+    [Header("Progress Bar Colors")]
+    [SerializeField] private Color barColorStart = new Color(0.2f, 1f, 0.3f); // Verde
+    [SerializeField] private Color barColorMid = new Color(1f, 0.9f, 0.2f); // Giallo
+    [SerializeField] private Color barColorEnd = new Color(1f, 0.3f, 0.2f); // Rosso
+
     // Wave state
     private float waveTime = 0f;
     private float progress = 0f; // 0–1
@@ -137,16 +147,43 @@ public class DifficultyManager : MonoBehaviour
     }
     IEnumerator WaveCompleteRoutine()
     {
+        // ANIMAZIONE BARRA: Pulsa e diventa GOLD quando completi la wave
+        if (waveProgressBarFill != null)
+        {
+            waveProgressBarFill.fillAmount = 1f;
+            Color goldColor = new Color(1f, 0.85f, 0f); // Oro
+
+            // Pulsa 3 volte
+            for (int pulse = 0; pulse < 3; pulse++)
+            {
+                waveProgressBarFill.color = goldColor;
+                yield return new WaitForSeconds(0.15f);
+                waveProgressBarFill.color = Color.white;
+                yield return new WaitForSeconds(0.15f);
+            }
+
+            waveProgressBarFill.color = goldColor; // Lascia oro
+        }
+
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(true);
+
         for (int i = 3; i > 0; i--)
         {
             if (levelCompleteCountdown != null)
                 levelCompleteCountdown.text = $"WAVE COMPLETE! \n Boss incoming in {i}...";
             yield return new WaitForSeconds(1f);
         }
+
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(false);
+
+        // Reset colore barra per la prossima wave
+        if (waveProgressBarFill != null)
+        {
+            waveProgressBarFill.fillAmount = 0f;
+            waveProgressBarFill.color = barColorStart;
+        }
     }
 
     // Inizializza wave profiles di default (chiamato una volta)
@@ -487,12 +524,12 @@ public class DifficultyManager : MonoBehaviour
 
         Debug.Log($"[DEBUG] Starting Wave {debugWaveIndex + 1}: {GetCurrentWaveProfile().waveName}");
 
-        // Disabilita UI testo
-        ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
-        if (scoreManager != null)
-        {
-            scoreManager.DisableLevelAndTimerText();
-        }
+        //// Disabilita UI testo
+        //ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
+        //if (scoreManager != null)
+        //{
+        //    scoreManager.DisableLevelAndTimerText();
+        //}
 
         if (levelCompletePanel != null)
             levelCompletePanel.SetActive(false);
@@ -541,13 +578,56 @@ public class DifficultyManager : MonoBehaviour
         if (isBossFight) return;
 
         waveTime += Time.deltaTime;
-        progress = Mathf.Clamp01(waveTime / waveDuration);  // clamp è importante per evitare valori strani dopo waveDuration
+
+        WaveProfile currentWave = GetCurrentWaveProfile();
+        progress = Mathf.Clamp01(waveTime / currentWave.waveDuration); // USA waveDuration del profilo corrente
+
+        // Aggiorna UI ogni frame
+        UpdateWaveUI();
 
         // Check se wave finita → spawna boss
-        if (waveTime >= waveDuration)
+        if (waveTime >= currentWave.waveDuration)
         {
             StartCoroutine(BossTransition());
         }
+    }
+
+    /// <summary>
+    /// Aggiorna UI della wave: testo, nome, barra di progresso con colori dinamici
+    /// </summary>
+    void UpdateWaveUI()
+    {
+        if (waveText == null || waveProgressBarFill == null) return;
+
+        WaveProfile currentWave = GetCurrentWaveProfile();
+        int currentWaveNumber = (totalBossesDefeated % waveProfiles.Length) + 1; // 1-6
+
+        // Aggiorna testo wave
+        waveText.text = $"WAVE {currentWaveNumber}/{waveProfiles.Length}";
+
+        // Aggiorna nome wave (opzionale)
+        if (waveNameText != null)
+        {
+            waveNameText.text = currentWave.waveName;
+        }
+
+        // Aggiorna barra di progresso
+        waveProgressBarFill.fillAmount = progress;
+
+        // Cambia colore in base al progresso (verde → giallo → rosso)
+        Color barColor;
+        if (progress < 0.5f)
+        {
+            // 0% - 50%: Verde → Giallo
+            barColor = Color.Lerp(barColorStart, barColorMid, progress * 2f);
+        }
+        else
+        {
+            // 50% - 100%: Giallo → Rosso
+            barColor = Color.Lerp(barColorMid, barColorEnd, (progress - 0.5f) * 2f);
+        }
+
+        waveProgressBarFill.color = barColor;
     }
 
     void OnGUI()
@@ -572,6 +652,11 @@ public class DifficultyManager : MonoBehaviour
     {
         isInTransition = true;
         OnLevelComplete?.Invoke();
+
+        // Nascondi UI wave durante il boss fight
+        if (waveText != null) waveText.gameObject.SetActive(false);
+        if (waveNameText != null) waveNameText.gameObject.SetActive(false);
+        if (waveProgressBarFill != null) waveProgressBarFill.transform.parent.gameObject.SetActive(false);
 
         // Ferma spawn asteroidi
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
@@ -602,6 +687,11 @@ public class DifficultyManager : MonoBehaviour
         isBossFight = false;
         bossIndex++;
         totalBossesDefeated++; // Incrementa il contatore totale
+
+        // Riattiva UI wave
+        if (waveText != null) waveText.gameObject.SetActive(true);
+        if (waveNameText != null) waveNameText.gameObject.SetActive(true);
+        if (waveProgressBarFill != null) waveProgressBarFill.transform.parent.gameObject.SetActive(true);
 
         // TODO: game finale??
         // Se hai battuto tutti e 6 i boss, ricomincia loop con difficoltà aumentata
@@ -645,13 +735,13 @@ public class DifficultyManager : MonoBehaviour
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
         if (spawner != null) spawner.enabled = false;
 
-        // Disabilita UI testo (livello e timer)
-        ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
-        if (scoreManager != null)
-        {
-            // Se ScoreManager ha riferimenti pubblici a questi testi
-            scoreManager.DisableLevelAndTimerText();
-        }
+        //// Disabilita UI testo (livello e timer)
+        //ScoreManager scoreManager = FindFirstObjectByType<ScoreManager>();
+        //if (scoreManager != null)
+        //{
+        //    // Se ScoreManager ha riferimenti pubblici a questi testi
+        //    scoreManager.DisableLevelAndTimerText();
+        //}
 
         // Spawna il primo boss (o quello che vuoi testare) con posizione e rotazione corretta
         if (bossPrefabs.Length > 0 && bossPrefabs[debugBossIndex] != null)

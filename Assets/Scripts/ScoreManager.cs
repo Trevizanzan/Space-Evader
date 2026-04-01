@@ -9,10 +9,6 @@ public class ScoreManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text livesText;
 
-    [Header("Level UI")]
-    public TMP_Text levelText;
-    public TMP_Text timerText;
-
     public Text highscoreText;
 
     [Header("References")]
@@ -37,7 +33,9 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        UpdateLevelUI();
+        //UpdateLevelUI();
+        // Ora la wave UI è gestita da DifficultyManager.UpdateWaveUI()
+
     }
 
     public void AddScore(int amount)
@@ -69,34 +67,6 @@ public class ScoreManager : MonoBehaviour
         {
             livesText.text = playerHealth.CurrentHealth.ToString();
         }
-    }
-
-    void UpdateLevelUI()
-    {
-        if (DifficultyManager.Instance != null)
-        {
-            if (levelText != null)
-            {
-                int level = DifficultyManager.Instance.GetCurrentLevel();
-                levelText.text = $"LEVEL {level}";
-            }
-        }
-
-        if (timerText != null)
-        {
-            float timeLeft = DifficultyManager.Instance.GetTimeRemaining();
-            timerText.text = Mathf.CeilToInt(timeLeft).ToString();
-        }
-    }
-
-    public void DisableLevelAndTimerText()
-    {
-        // Disabilita i testi
-        if (levelText != null)
-            levelText.gameObject.SetActive(false);
-
-        if (timerText != null)
-            timerText.gameObject.SetActive(false);
     }
 
     public int GetCurrentScore() => score;
