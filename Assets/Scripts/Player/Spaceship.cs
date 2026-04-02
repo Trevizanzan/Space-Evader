@@ -6,18 +6,15 @@ using UnityEngine;
 /// </summary>
 public class Spaceship : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 20f;
-    [SerializeField] private float padding = 0.1f; // margine extra dai bordi
+    [Header("Movement Bounds")]
+    [SerializeField] private Camera cam;
+    [SerializeField] private SpriteRenderer sr;
+    [SerializeField] private float moveSpeed = 12;
+    [SerializeField] private float padding = 0.5f;  // margine extra dai bordi
+    [SerializeField] private float thrusterExtraHeight = 0.35f; // Altezza motore
 
     private float minX, maxX, minY, maxY;
-
-    //private Rigidbody2D spaceShipRigidbody2D;
-    //public event EventHandler OnDied;
-    private SpriteRenderer sr;
-    private Camera cam;
-
     private int lastScreenWidth, lastScreenHeight;
-
 
     private static Spaceship instanceSpaceShip;
     public static Spaceship GetInstance()
@@ -105,7 +102,7 @@ public class Spaceship : MonoBehaviour
         if (sr != null) ext = sr.bounds.extents; // ext.x metà larghezza, ext.y metà altezza
         minX = bottomLeft.x + ext.x + padding;
         maxX = topRight.x - ext.x - padding;
-        minY = bottomLeft.y + ext.y + padding;
+        minY = bottomLeft.y + ext.y + padding + thrusterExtraHeight; // Aggiunto offset motore
         maxY = topRight.y - ext.y - padding;
     }
 }

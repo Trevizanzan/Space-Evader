@@ -802,14 +802,6 @@ public class DifficultyManager : MonoBehaviour
         waveTime = 0f;
         progress = 0f;
 
-        // Riattiva spawner asteroidi
-        AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
-        if (spawner != null) spawner.enabled = true;
-
-        // TODO: Riattiva EnemySpawner
-        // EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
-        // if (enemySpawner != null) enemySpawner.enabled = true;
-
         // Transizione ritardata con UI Wave che appare dopo
         StartCoroutine(BossDefeatedTransition()); // normale transizione
     }
@@ -840,6 +832,14 @@ public class DifficultyManager : MonoBehaviour
 
         // Mostra Wave UI con il numero corretto (totalBossesDefeated è già aggiornato)
         ShowWaveUI();
+
+        // Riattiva spawner DOPO che la wave bar è apparsa
+        AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
+        if (spawner != null) spawner.enabled = true;
+
+        // TODO: Riattiva EnemySpawner quando lo implementi
+        // EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
+        // if (enemySpawner != null) enemySpawner.enabled = true;
 
         isInTransition = false;
     }
