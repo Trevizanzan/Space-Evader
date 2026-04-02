@@ -8,11 +8,13 @@ public class ScoreManager : MonoBehaviour
     [Header("UI")]
     public TMP_Text scoreText;
     public TMP_Text livesText;
-
-    public Text highscoreText;
+    public TMP_Text highscoreText;
 
     [Header("References")]
     public PlayerHealth playerHealth;  // gliela colleghiamo dall Inspector
+
+    [Header("Debug")]
+    [SerializeField] private bool resetHighscoreOnStart = false;
 
     private int score;
     private int highscore;
@@ -25,6 +27,14 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
+        // Debug: Reset highscore se flag attivo
+        if (resetHighscoreOnStart)
+        {
+            PlayerPrefs.DeleteKey("highscore");
+            PlayerPrefs.Save();
+            resetHighscoreOnStart = false; // Spegni automaticamente
+        }
+
         // Carica highscore salvato (0 se non esiste)
         highscore = PlayerPrefs.GetInt("highscore", 0);
         UpdateScoreUI();
