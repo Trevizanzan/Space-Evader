@@ -26,6 +26,10 @@ public abstract class BossBase : MonoBehaviour
             BossHealthBar.Instance.ShowBar(maxHealth);
             BossHealthBar.Instance.SetBossName(bossDisplayName);
         }
+        else
+        {
+            Debug.LogError("[BossBase] BossHealthBar.Instance è NULL! Non trovato nella scena!");
+        }
 
         StartCoroutine(EntranceRoutine());
 
@@ -91,6 +95,7 @@ public abstract class BossBase : MonoBehaviour
 
         // Applica danno
         currentHealth -= amount;
+        currentHealth = Mathf.Max(0, currentHealth);    // Evita valori negativi
 
         // Aggiorna la barra della vita
         if (BossHealthBar.Instance != null)
@@ -129,11 +134,11 @@ public abstract class BossBase : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Nascondi la barra
-        if (BossHealthBar.Instance != null)
-        {
-            BossHealthBar.Instance.HideBar();
-        }
+        //// Nascondi la barra
+        //if (BossHealthBar.Instance != null)
+        //{
+        //    BossHealthBar.Instance.HideBar();
+        //}
 
         // Posizione davanti al boss
         Vector3 explosionPos = new Vector3(transform.position.x, transform.position.y, -1f);
@@ -154,7 +159,6 @@ public abstract class BossBase : MonoBehaviour
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlayBossDead();
         
-
         // Notifica DifficultyManager
         if (DifficultyManager.Instance != null)
             DifficultyManager.Instance.OnBossDefeated();    // TODO: suono personalizzato

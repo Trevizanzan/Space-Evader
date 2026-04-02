@@ -103,8 +103,8 @@ public class DifficultyManager : MonoBehaviour
 
     // Events
     public System.Action OnWaveComplete;
-    public GameObject levelCompletePanel;
-    public TMP_Text levelCompleteCountdown;
+    //public GameObject levelCompletePanel;
+    //public TMP_Text levelCompleteCountdown;
 
     //[Header("Difficulty Curves (0 = inizio, 1 = fine livello)")]
     //[SerializeField] private AnimationCurve spawnRateCurve = AnimationCurve.Linear(0, 1.5f, 1, 0.4f);
@@ -171,18 +171,18 @@ public class DifficultyManager : MonoBehaviour
             waveProgressBarFill.color = barColorGold; // Lascia oro
         }
 
-        if (levelCompletePanel != null)
-            levelCompletePanel.SetActive(true);
+        //if (levelCompletePanel != null)
+        //    levelCompletePanel.SetActive(true);
 
-        for (int i = 3; i > 0; i--)
-        {
-            if (levelCompleteCountdown != null)
-                levelCompleteCountdown.text = $"⭐ WAVE COMPLETE! ⭐\nBoss incoming in {i}...";
-            yield return new WaitForSeconds(1f);
-        }
+        //for (int i = 3; i > 0; i--)
+        //{
+        //    if (levelCompleteCountdown != null)
+        //        levelCompleteCountdown.text = $"⭐ WAVE COMPLETE! ⭐\nBoss incoming in {i}...";
+        //    yield return new WaitForSeconds(1f);
+        //}
 
-        if (levelCompletePanel != null)
-            levelCompletePanel.SetActive(false);
+        //if (levelCompletePanel != null)
+        //    levelCompletePanel.SetActive(false);
     }
 
     // Inizializza wave profiles di default (chiamato una volta)
@@ -196,7 +196,7 @@ public class DifficultyManager : MonoBehaviour
         waveProfiles[0] = new WaveProfile
         {
             waveName = "Wave 1 - Asteroid Field",
-            waveDuration = 45f,
+            waveDuration = 5f,
             phase1 = new PhaseConfig
             {
                 // Solo asteroidi normali, lenti, mix di dimensioni
@@ -246,7 +246,7 @@ public class DifficultyManager : MonoBehaviour
         waveProfiles[1] = new WaveProfile
         {
             waveName = "Wave 2 - Diagonal Assault",
-            waveDuration = 50f,
+            waveDuration = 15f,
             phase1 = new PhaseConfig
             {
                 // Solo normali, ma più veloci di wave 1
@@ -530,8 +530,8 @@ public class DifficultyManager : MonoBehaviour
         //    scoreManager.DisableLevelAndTimerText();
         //}
 
-        if (levelCompletePanel != null)
-            levelCompletePanel.SetActive(false);
+        //if (levelCompletePanel != null)
+        //    levelCompletePanel.SetActive(false);
     }
 
     // Ottieni il profilo della wave corrente
@@ -610,16 +610,63 @@ public class DifficultyManager : MonoBehaviour
     /// <summary>
     /// Mostra UI Boss, nasconde UI Wave
     /// </summary>
-    void ShowBossUI()
+    public void ShowBossUI()
     {
-        if (waveInfoGroup != null) waveInfoGroup.SetActive(false);
-        if (bossInfoGroup != null) bossInfoGroup.SetActive(true);
+        Debug.Log("[DifficultyManager] ShowBossUI() chiamato!");
+
+        //if (waveInfoGroup != null) waveInfoGroup.SetActive(false);
+        //if (bossInfoGroup != null) bossInfoGroup.SetActive(true);
+
+        if (waveInfoGroup != null)
+        {
+            waveInfoGroup.SetActive(false);
+            Debug.Log("[DifficultyManager] WaveInfoGroup nascosto");
+        }
+        else
+        {
+            Debug.LogError("[DifficultyManager] WaveInfoGroup è NULL!");
+        }
+
+        if (bossInfoGroup != null)
+        {
+            bossInfoGroup.SetActive(true);
+            Debug.Log("[DifficultyManager] BossInfoGroup mostrato");
+        }
+        else
+        {
+            Debug.LogError("[DifficultyManager] BossInfoGroup è NULL!");
+        }
+
 
         // Reset barra boss
         if (bossHealthBarFill != null)
         {
-            bossHealthBarFill.fillAmount = 1f; // Boss a vita piena
+            bossHealthBarFill.fillAmount = 1f;
+            bossHealthBarFill.color = new Color(1f, 0.2f, 0.2f);
+            Debug.Log("[DifficultyManager] Barra boss settata a piena");
         }
+        else
+        {
+            Debug.LogError("[DifficultyManager] BossHealthBarFill è NULL!");
+        }
+    }
+    IEnumerator FadeOutWaveBar()
+    {
+        CanvasGroup cg = waveInfoGroup.GetComponent<CanvasGroup>();
+        if (cg == null) cg = waveInfoGroup.AddComponent<CanvasGroup>();
+
+        float duration = 0.3f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            cg.alpha = 1f - (elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        waveInfoGroup.SetActive(false);
+        cg.alpha = 1f; // Reset per prossima volta
     }
 
     /// <summary>
@@ -654,6 +701,44 @@ public class DifficultyManager : MonoBehaviour
         waveProgressBarFill.color = barColor;
     }
 
+    /// <summary>
+    /// Aggiorna direttamente il fillAmount (usato da BossHealthBar per smooth transition)
+    /// </summary>
+    public void UpdateBossHealthDirect(float fillAmount)
+    {
+        if (bossHealthBarFill != null && isBossFight)
+        {
+            bossHealthBarFill.fillAmount = fillAmount;
+
+            // Cambia colore in base alla vita
+            if (fillAmount > 0.5f)
+                bossHealthBarFill.color = new Color(1f, 0.2f, 0.2f); // Rosso
+            else if (fillAmount > 0.25f)
+                bossHealthBarFill.color = new Color(1f, 0.5f, 0f); // Arancione
+            else
+                bossHealthBarFill.color = new Color(1f, 1f, 0f); // Giallo (critico)
+        }
+    }
+
+    /// <summary>
+    /// Imposta il nome del boss nella UI
+    /// </summary>
+    public void SetBossName(string name)
+    {
+        if (bossNameText != null)
+        {
+            bossNameText.text = name;
+        }
+    }
+
+    /// <summary>
+    /// Verifica se è attivo un boss fight
+    /// </summary>
+    public bool IsBossFightActive()
+    {
+        return isBossFight;
+    }
+
     void OnGUI()
     {
         if (!Application.isPlaying) return;
@@ -674,12 +759,10 @@ public class DifficultyManager : MonoBehaviour
     // Gestisce la transizione al boss: notifica, ferma spawn asteroidi, aspetta, spawna boss, attiva modalità boss fight
     IEnumerator BossTransition()
     {
+        Debug.Log($"[DifficultyManager] BossTransition iniziato - bossIndex={bossIndex}");
+
         isInTransition = true;
         OnLevelComplete?.Invoke();
-
-        //// Nascondi UI wave durante il boss fight
-        //if (waveText != null) waveText.gameObject.SetActive(false);
-        //if (waveProgressBarFill != null) waveProgressBarFill.transform.parent.gameObject.SetActive(false);
 
         // Ferma spawn asteroidi
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
@@ -689,27 +772,30 @@ public class DifficultyManager : MonoBehaviour
         // EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
         // if (enemySpawner != null) enemySpawner.enabled = false;
 
-        // Switch da Wave UI a Boss UI
-        ShowBossUI();
-
-        // Imposta nome boss (se disponibile)
-        if (bossNameText != null && bossIndex < bossPrefabs.Length)
-        {
-            bossNameText.text = $"BOSS {bossIndex + 1}"; // Puoi personalizzare con nomi custom
-        }
         yield return new WaitForSeconds(transitionDuration);
 
         // Spawna il boss corrente con posizione e rotazione corrette
         if (bossIndex < bossPrefabs.Length && bossPrefabs[bossIndex] != null)
         {
+            Debug.Log($"[DifficultyManager] Spawnando boss {bossIndex}: {bossPrefabs[bossIndex].name}");
+
             float cameraTop = Camera.main.orthographicSize;
             Vector3 spawnPos = new Vector3(0, cameraTop + 1f, 0);
-            Instantiate(bossPrefabs[bossIndex], spawnPos, bossPrefabs[bossIndex].transform.rotation);
+            GameObject bossInstance = Instantiate(bossPrefabs[bossIndex], spawnPos, bossPrefabs[bossIndex].transform.rotation);
+
+            Debug.Log($"[DifficultyManager] Boss istanziato: {bossInstance.name}");
+        }
+        else
+        {
+            Debug.LogError($"[DifficultyManager] Boss {bossIndex} non trovato! Array length: {bossPrefabs.Length}");
         }
 
         // Attiva il boss fight mode
         isBossFight = true;
         isInTransition = false;
+
+        Debug.Log("[DifficultyManager] Boss fight mode attivato");
+
     }
 
     public void OnBossDefeated()
@@ -790,11 +876,11 @@ public class DifficultyManager : MonoBehaviour
         // Attiva il boss fight mode
         isBossFight = true;
 
-        // Opzionale: nascondi il pannello di level complete se è attivo
-        if (levelCompletePanel != null)
-            levelCompletePanel.SetActive(false);
-        else
-            Debug.LogWarning("[DEBUG] No level complete panel assigned!");
+        //// Opzionale: nascondi il pannello di level complete se è attivo
+        //if (levelCompletePanel != null)
+        //    levelCompletePanel.SetActive(false);
+        //else
+        //    Debug.LogWarning("[DEBUG] No level complete panel assigned!");
     }
 
     #endregion

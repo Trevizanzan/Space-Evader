@@ -6,39 +6,34 @@ public class BossHealthBar : MonoBehaviour
 {
     public static BossHealthBar Instance;
 
-    [Header("UI References")]
-    [SerializeField] private GameObject healthBarContainer;
-    [SerializeField] private Image fillImage;
-    [SerializeField] private TextMeshProUGUI bossNameText;
 
     [Header("Settings")]
     [SerializeField] private float smoothSpeed = 5f; // Velocità transizione smooth
 
     private int currentHealth;
     private int maxHealth;
-    private float targetFillAmount;
+    private float currentFillAmount; // Attuale fill amount (per smooth lerp)
+    private float targetFillAmount; // Target fill amount
+
 
     void Awake()
     {
         // Singleton
         if (Instance == null)
-        {
             Instance = this;
-        }
         else
             Destroy(gameObject);
-
-        // Nascondi all'inizio
-        if (healthBarContainer != null)
-            healthBarContainer.SetActive(false);
     }
 
     void Update()
     {
         // Smooth transition della barra
-        if (fillImage != null)
+        if (DifficultyManager.Instance != null && DifficultyManager.Instance.IsBossFightActive())
         {
-            fillImage.fillAmount = Mathf.Lerp(fillImage.fillAmount, targetFillAmount, Time.deltaTime * smoothSpeed);
+            currentFillAmount = Mathf.Lerp(currentFillAmount, targetFillAmount, Time.deltaTime * smoothSpeed);
+
+            // Aggiorna il DifficultyManager con il valore smooth
+            DifficultyManager.Instance.UpdateBossHealthDirect(currentFillAmount);
         }
     }
 
@@ -50,24 +45,13 @@ public class BossHealthBar : MonoBehaviour
         maxHealth = maxHP;
         currentHealth = maxHP;
         targetFillAmount = 1f;
-
-        if (fillImage != null)
-        {
-            fillImage.fillAmount = 1f;
-        }
-
-        if (healthBarContainer != null)
-            healthBarContainer.SetActive(true);
+        currentFillAmount = 1f;
+        
+        // Notifica al DifficultyManager (gestisce la UI nella TopBar)
+        if (DifficultyManager.Instance != null)
+            DifficultyManager.Instance.ShowBossUI();
     }
 
-    /// <summary>
-    /// Nascondi la barra quando il boss muore
-    /// </summary>
-    public void HideBar()
-    {
-        if (healthBarContainer != null)
-            healthBarContainer.SetActive(false);
-    }
 
     /// <summary>
     /// Aggiorna la barra quando il boss prende danno
@@ -79,11 +63,18 @@ public class BossHealthBar : MonoBehaviour
 
         // Clamp tra 0 e 1
         targetFillAmount = Mathf.Clamp01(targetFillAmount);
+
+        // L'aggiornamento smooth avviene in Update() tramite Lerp
+
     }
 
+    /// <summary>
+    /// Imposta il nome del boss
+    /// </summary>
     public void SetBossName(string name)
     {
-        if (bossNameText != null)
-            bossNameText.text = name;
+        // Passa il nome al DifficultyManager
+        if (DifficultyManager.Instance != null)
+            DifficultyManager.Instance.SetBossName(name);
     }
 }
