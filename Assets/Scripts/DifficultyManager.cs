@@ -557,6 +557,7 @@ public class DifficultyManager : MonoBehaviour
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver()) return;
         if (isInTransition) return;
         if (isBossFight) return;
+        if (EnemySpawner.IsDebugMode) return; // ← blocca tutto: wave timer, boss transition, ship transition
 
         waveTime += Time.deltaTime;
 
@@ -741,9 +742,9 @@ public class DifficultyManager : MonoBehaviour
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
         if (spawner != null) spawner.enabled = false;
 
-        // TODO: Ferma anche EnemySpawner quando lo crei
-        // EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
-        // if (enemySpawner != null) enemySpawner.enabled = false;
+        // Ferma EnemySpawner 
+        EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
+        if (enemySpawner != null) enemySpawner.enabled = false;
 
         yield return new WaitForSeconds(transitionDuration);
 
@@ -815,13 +816,13 @@ public class DifficultyManager : MonoBehaviour
         // Mostra Wave UI con il numero corretto (totalBossesDefeated è già aggiornato)
         ShowWaveUI();
 
-        // Riattiva spawner DOPO che la wave bar è apparsa
+        // Riattiva AsteroidSpawner DOPO che la wave bar è apparsa
         AsteroidSpawner spawner = FindFirstObjectByType<AsteroidSpawner>();
         if (spawner != null) spawner.enabled = true;
 
-        // TODO: Riattiva EnemySpawner quando lo implementi
-        // EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
-        // if (enemySpawner != null) enemySpawner.enabled = true;
+        // Riattiva EnemySpawner 
+        EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
+        if (enemySpawner != null) enemySpawner.enabled = true;
 
         isInTransition = false;
     }

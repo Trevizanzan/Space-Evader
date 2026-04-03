@@ -328,7 +328,7 @@ Transform:
   m_GameObject: {fileID: 74886319}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.5, y: -2.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -350,7 +350,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Spaceship
   cam: {fileID: 0}
   sr: {fileID: 0}
-  moveSpeed: 12
+  moveSpeed: 9
   padding: 0.1
   thrusterExtraHeight: 0.35
 --- !u!114 &74886326
@@ -379,7 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86386dbe2dd8b96498617c988f7db6eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 3
+  maxHealth: 500
 --- !u!114 &74886328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2307,6 +2307,68 @@ Transform:
   - {fileID: 242193049}
   - {fileID: 74655801}
   - {fileID: 326031113}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1145615751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1145615753}
+  - component: {fileID: 1145615752}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1145615752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145615751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5997002d91a55c4cb0986f94d558912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  baseFighterInterval: 8
+  baseKamikazeInterval: 6
+  baseBomberInterval: 12
+  topSpawnMargin: 0.5
+  sideSpawnMargin: 0.5
+  topHorizontalInset: 1
+  sideVerticalInset: 1
+  minSpawnDistance: 2
+  maxRetries: 10
+  fighterPrefabs:
+  - {fileID: 3359056063305447441, guid: bb1df13e08595ea49b9dd6ce9f1e2a58, type: 3}
+  kamikazePrefabs: []
+  bomberPrefabs: []
+  debugEnemyOnly: 1
+  debugFighterOnly: 1
+  debugKamikazeOnly: 0
+  debugBomberOnly: 0
+  debugSpawnInterval: 0.5
+--- !u!4 &1145615753
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145615751}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.92845, y: -1.04771, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1182640876
@@ -4643,6 +4705,7 @@ SceneRoots:
   - {fileID: 1060262998}
   - {fileID: 74886324}
   - {fileID: 1052158367}
+  - {fileID: 1145615753}
   - {fileID: 1957841473}
   - {fileID: 518504049}
   - {fileID: 1498926281}
