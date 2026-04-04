@@ -120,7 +120,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!60 &3293707535698794416
 PolygonCollider2D:
@@ -194,6 +194,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8e6504de82ab78488a6d1edb0c23c65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AsteroidMovement
+  minRotationSpeed: -180
+  maxRotationSpeed: 180
+  destroyBorderMultiplier: 2
   defalutFallSpeed: 3
 --- !u!114 &-4742545588063804035
 MonoBehaviour:
