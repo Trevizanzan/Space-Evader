@@ -442,8 +442,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   sr: {fileID: 0}
   moveSpeed: 27
-  padding: 0.1
-  thrusterExtraHeight: 0.35
+  padding: 0
+  thrusterExtraHeight: 1.3
 --- !u!114 &74886326
 MonoBehaviour:
   m_ObjectHideFlags: 0

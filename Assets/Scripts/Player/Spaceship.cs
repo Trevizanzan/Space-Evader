@@ -10,8 +10,8 @@ public class Spaceship : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private float moveSpeed = 12;
-    [SerializeField] private float padding = 0.5f;  // margine extra dai bordi
-    [SerializeField] private float thrusterExtraHeight = 0.35f; // Altezza motore
+    [SerializeField] private float padding = 0f;  // margine extra dai bordi
+    [SerializeField] private float thrusterExtraHeight = 1.15f; // Altezza motore
 
     private float minX, maxX, minY, maxY;
     private int lastScreenWidth, lastScreenHeight;
