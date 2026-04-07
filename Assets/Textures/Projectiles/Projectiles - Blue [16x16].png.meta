@@ -87,7 +87,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 2
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -186,9 +186,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 2
-        width: 32
-        height: 12
+        y: 6
+        width: 16
+        height: 4
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -256,7 +256,7 @@ TextureImporter:
         width: 16
         height: 11
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -278,7 +278,7 @@ TextureImporter:
         width: 16
         height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -287,6 +287,28 @@ TextureImporter:
       bones: []
       spriteID: 28e3c834aa009134fac4ae21a6a79ef4
       internalID: -1580630855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Projectiles - Blue [16x16]_7
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 2
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73d0a694423c29941ae3c4417580aba2
+      internalID: -1043529523
       vertices: []
       indices: 
       edges: []
@@ -312,6 +334,7 @@ TextureImporter:
       Projectiles - Blue [16x16]_4: 3273554877292585259
       Projectiles - Blue [16x16]_5: 1823089472
       Projectiles - Blue [16x16]_6: -1580630855
+      Projectiles - Blue [16x16]_7: -1043529523
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
