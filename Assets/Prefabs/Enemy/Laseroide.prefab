@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: 1338985946537083060}
   - component: {fileID: 1812248757572472728}
   - component: {fileID: 1525377838597233150}
-  - component: {fileID: 6047792405631826444}
   m_Layer: 0
-  m_Name: Kamikaze
+  m_Name: Laseroide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -6432412338955033537, guid: 1b5bcb3fe34c6b44fb6d66e4087950f2, type: 3}
+  m_Sprite: {fileID: -499275316207590179, guid: 1b5bcb3fe34c6b44fb6d66e4087950f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -157,23 +156,3 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.12, y: 0}
   m_Radius: 0.3033179
---- !u!114 &6047792405631826444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6169655311992338039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 150bd8857ba9978409935e36cb1ddde6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyKamikaze
-  maxHealth: 2
-  scoreValue: 100
-  damageToPlayer: 1
-  moveSpeed: 15
-  rotationSpeed: 200
-  accelerationTime: 1.5
-  chargeDelay: 0.8
-  chargeSpeedBoost: 2.5
