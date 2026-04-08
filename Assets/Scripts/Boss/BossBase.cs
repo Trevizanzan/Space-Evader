@@ -24,6 +24,20 @@ public abstract class BossBase : MonoBehaviour
     private SpriteRenderer sr;
     private Coroutine flashCoroutine;
 
+    [Header("UI Padding (sincronizzato con Spaceship)")]
+    [SerializeField][Range(0f, 0.2f)] protected float topUIPaddingViewport = 0.08f;
+    // Proprietà read-only usabile dai figli
+    protected float TopUIWorldHeight
+    {
+        get
+        {
+            Camera cam = Camera.main;
+            float top = cam.ViewportToWorldPoint(new Vector3(0f, 1f, 0f)).y;
+            float bottom = cam.ViewportToWorldPoint(new Vector3(0f, 1f - topUIPaddingViewport, 0f)).y;
+            return top - bottom;
+        }
+    }
+
     protected virtual void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -173,12 +187,8 @@ public abstract class BossBase : MonoBehaviour
             float offset = Camera.main.orthographicSize * 0.06f;
 
             ExplosionManager.Instance.SpawnBig(explosionPos, 2.5f);
-            ExplosionManager.Instance.SpawnBig(explosionPos + Vector3.right * offset, 1f);
-            ExplosionManager.Instance.SpawnBig(explosionPos + Vector3.left * offset, 1f);
-        }
-        else
-        {
-            Debug.LogWarning("ExplosionManager.Instance is null!");
+            //ExplosionManager.Instance.SpawnBig(explosionPos + Vector3.right * offset, 1f);
+            //ExplosionManager.Instance.SpawnBig(explosionPos + Vector3.left * offset, 1f);
         }
 
         // Suono di morte

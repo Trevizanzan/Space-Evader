@@ -32,37 +32,16 @@ public class BossAngel : BossBase
         base.Start();   // esegue tutto lo Start() di BossBase
     }
 
-    //protected override void OnEntranceComplete()
-    //{
-    //    // Calcola i limiti orizzontali della camera
-    //    float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect;
-    //    minX = -cameraWidth + cameraEdgeOffset;
-    //    maxX = cameraWidth - cameraEdgeOffset;
-
-    //    // Salva la posizione iniziale dove è arrivato dopo l'entrata, da cui partirà il pattern di movimento
-    //    startY = topY;
-    //    targetY = startY;
-    //    targetX = transform.position.x;
-
-    //    // Scegli subito un nuovo target random
-    //    ChooseNewXTarget();
-    //    ChooseNewShootInterval(); // Inizializza il primo intervallo
-
-    //    StartCoroutine(VerticalMovementPattern());
-    //}
-
     protected override void OnEntranceComplete()
     {
-        float cameraTop = Camera.main.orthographicSize;
+        Camera cam = Camera.main;
+        float cameraTop = cam.orthographicSize;
+        float cameraWidth = cameraTop * cam.aspect;
 
-        // topY = 80% del bordo superiore
-        topY = cameraTop * 0.8f;
+        // topY rispetta il padding UI — calcolato da BossBase
+        topY = cameraTop * topYPercent - TopUIWorldHeight;
+        centerY = cameraTop * centerYPercent;
 
-        // centerY = leggermente sopra il centro
-        centerY = cameraTop * 0.1f;
-
-        // resto del codice invariato...
-        float cameraWidth = Camera.main.orthographicSize * Camera.main.aspect;
         minX = -cameraWidth + cameraEdgeOffset;
         maxX = cameraWidth - cameraEdgeOffset;
 
