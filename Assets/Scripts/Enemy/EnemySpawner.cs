@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float baseFighterInterval = 8f;
     [SerializeField] private float baseKamikazeInterval = 6f;
     [SerializeField] private float baseBomberInterval = 12f;
+    [SerializeField] private float basePulsarInterval = 14f;  // leggermente più raro del Bomber
 
     [Header("Spawn Range Settings")]
     [SerializeField] private float topSpawnMargin = .5f;  // quanto sopra la camera
@@ -19,12 +21,14 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private GameObject[] fighterPrefabs;
     [SerializeField] private GameObject[] kamikazePrefabs;
     [SerializeField] private GameObject[] bomberPrefabs;
+    [SerializeField] private GameObject[] pulsarPrefabs;
 
     [Header("Debug - Enemy Test")]
     [SerializeField] private bool debugEnemyOnly = false;
     [SerializeField] private bool debugFighterOnly = false;
     [SerializeField] private bool debugKamikazeOnly = false;
     [SerializeField] private bool debugBomberOnly = false;
+    [SerializeField] private bool debugPulsarOnly = false;
     [SerializeField] private float debugSpawnInterval = 3f;
     // Proprietà statica leggibile da altri sistemi
     public static bool IsDebugMode => Instance != null && Instance.debugEnemyOnly;
@@ -35,6 +39,7 @@ public class EnemySpawner : MonoBehaviour
     private float fighterTimer;
     private float kamikazeTimer;
     private float bomberTimer;
+    private float pulsarTimer;
     private float debugTimer;
 
     // Ultimi punti di spawn per fascia (per la distanza minima)
@@ -122,6 +127,7 @@ public class EnemySpawner : MonoBehaviour
         if (phase.allowFighters) HandleFighterSpawn(phase);
         if (phase.allowKamikazes) HandleKamikazeSpawn(phase);
         if (phase.allowBombers) HandleBomberSpawn(phase);
+        if (phase.allowPulsars) HandlePulsarSpawn(phase);
     }
 
     // ── DEBUG MODE ────────────────────────────────────────────────────────────
@@ -148,6 +154,11 @@ public class EnemySpawner : MonoBehaviour
         else if (debugBomberOnly)
         {
             SpawnEnemy(bomberPrefabs, GetTopSpawnPosition());
+        }
+        else if (debugPulsarOnly)
+        {
+            // Pulsar: spawna sempre dall'alto per testare il comportamento completo
+            SpawnEnemy(pulsarPrefabs, GetTopSpawnPosition());
         }
         else
         {
@@ -196,6 +207,17 @@ public class EnemySpawner : MonoBehaviour
         Vector3 pos = GetTopSpawnPosition();
         SpawnEnemy(bomberPrefabs, pos);
         bomberTimer = 0f;
+    }
+
+    // ── PULSAR ───────────────────────────────────────────────────────────────
+    // Entra sempre dall'alto, si posiziona e spara burst laser
+    void HandlePulsarSpawn(PhaseConfig phase)
+    {
+        pulsarTimer += Time.deltaTime;
+        if (pulsarTimer < basePulsarInterval / phase.speedMultiplier) return;
+
+        SpawnEnemy(pulsarPrefabs, GetTopSpawnPosition());
+        pulsarTimer = 0f;
     }
 
     // ── SPAWN POSITION HELPERS ────────────────────────────────────────────────

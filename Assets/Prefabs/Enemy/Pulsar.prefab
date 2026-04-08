@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 1338985946537083060}
   - component: {fileID: 1812248757572472728}
   - component: {fileID: 1525377838597233150}
+  - component: {fileID: -7106376280727567924}
   m_Layer: 0
-  m_Name: Laseroide
+  m_Name: Pulsar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 6169655311992338039}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.37431, y: 2.18467, z: 0}
+  m_LocalPosition: {x: 14.83, y: 1.57, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -154,5 +155,33 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.12, y: 0}
-  m_Radius: 0.3033179
+  m_Offset: {x: -0.038321972, y: 0}
+  m_Radius: 0.3321096
+--- !u!114 &-7106376280727567924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6169655311992338039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747a9370400d0ac42b12d3dba5622666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPulsar
+  maxHealth: 2
+  scoreValue: 100
+  damageToPlayer: 1
+  flashMaterial: {fileID: 2100000, guid: b01ab75e2f6accf4c89786fd4eaf4432, type: 2}
+  moveSpeed: 3.5
+  verticalSpeed: 3
+  patrolMinY: 3
+  patrolMaxY: 4.5
+  positionSlowRadius: 1.2
+  aimDuration: 0.5
+  aimRotationSpeed: 180
+  laserPrefab: {fileID: 6485462342135613911, guid: 6f8e2df00f4a5ba4ea34f9db981d6bcf, type: 3}
+  firePoint: {fileID: 0}
+  burstCount: 4
+  burstInterval: 0.12
+  cooldownAfterBurst: 0.6

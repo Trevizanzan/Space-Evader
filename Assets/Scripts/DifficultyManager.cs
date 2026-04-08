@@ -19,6 +19,7 @@ public class PhaseConfig
     public bool allowFighters = false;
     public bool allowKamikazes = false;
     public bool allowBombers = false;
+    public bool allowPulsars = false;
 
     [Header("Difficulty Modifiers")]
     public float speedMultiplier = 1f; // Velocità asteroidi    // TODO da implementare
