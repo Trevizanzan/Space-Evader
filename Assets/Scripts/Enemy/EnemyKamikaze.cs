@@ -12,6 +12,9 @@ public class EnemyKamikaze : EnemyBase
     [SerializeField] private float chargeDelay = 0.8f;  // secondi di "pausa" prima di caricare
     [SerializeField] private float chargeSpeedBoost = 2.5f;  // moltiplicatore velocità durante la carica
 
+    // aggiungi il campo
+    private float hoverY;
+
     // Stato
     private enum KamikazeState { Entering, Hovering, Charging }
     private KamikazeState state = KamikazeState.Entering;
@@ -24,6 +27,12 @@ public class EnemyKamikaze : EnemyBase
     {
         base.Start();
         // playerTransform già popolato da EnemyBase.Start()
+
+        // hoverY è la Y a cui il kamikaze si ferma durante lo stato di hovering, prima di caricare.
+        // hoverY = appena sotto la topbar, con un po' di randomness
+        CameraBounds b = GetCameraBounds();
+        float camHeight = b.topY - b.minY;
+        hoverY = b.topY - Random.Range(camHeight * 0.08f, camHeight * 0.18f);
     }
 
     protected override void UpdateBehavior()
@@ -46,15 +55,14 @@ public class EnemyKamikaze : EnemyBase
     // Scende lentamente verso il centro della camera, poi si ferma brevemente
     void UpdateEntering()
     {
-        // Scende verso Y = 0 (centro camera) a velocità ridotta
-        float targetY = 2f; // si ferma a circa 2 unità sopra il centro
-        float newY = Mathf.MoveTowards(transform.position.y, targetY, moveSpeed * 0.5f * Time.deltaTime);
+        // Scende verso hoverY, ruotando verso il player
+        float newY = Mathf.MoveTowards(transform.position.y, hoverY, moveSpeed * 0.5f * Time.deltaTime);
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
         RotateTowardPlayer();
 
         // Quando ha raggiunto la posizione di hovering, passa allo stato successivo
-        if (Mathf.Abs(transform.position.y - targetY) < 0.1f)
+        if (Mathf.Abs(transform.position.y - hoverY) < 0.1f)
         {
             state = KamikazeState.Hovering;
             stateTimer = 0f;

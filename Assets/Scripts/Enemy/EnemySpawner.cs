@@ -144,12 +144,8 @@ public class EnemySpawner : MonoBehaviour
         }
         else if (debugKamikazeOnly)
         {
-            // Kamikaze: alterna alto/lato per vedere entrambi i comportamenti
-            bool fromTop = Random.value > 0.5f;
-            Vector3 pos = fromTop
-                ? GetTopSpawnPosition()
-                : GetSideSpawnPosition(Random.value > 0.5f);
-            SpawnEnemy(kamikazePrefabs, pos);
+            // Fix: sempre dall'alto, come in HandleKamikazeSpawn()
+            SpawnEnemy(kamikazePrefabs, GetTopSpawnPosition());
         }
         else if (debugBomberOnly)
         {
@@ -181,19 +177,14 @@ public class EnemySpawner : MonoBehaviour
     }
 
     // ── KAMIKAZE ─────────────────────────────────────────────────────────────
-    // 50% dall'alto, 25% da sinistra, 25% da destra
+    // tutti dall'alto hanno variazione di ingresso, quelli laterali entrano sempre a metà camera
     void HandleKamikazeSpawn(PhaseConfig phase)
     {
         kamikazeTimer += Time.deltaTime;
         if (kamikazeTimer < baseKamikazeInterval / phase.speedMultiplier) return;
 
-        float roll = Random.value;
-        Vector3 pos;
-        if (roll < 0.5f) pos = GetTopSpawnPosition();
-        else if (roll < 0.75f) pos = GetSideSpawnPosition(fromLeft: true);
-        else pos = GetSideSpawnPosition(fromLeft: false);
-
-        SpawnEnemy(kamikazePrefabs, pos);
+        // Sempre dall'alto: la variazione di ingresso è già garantita dal range X
+        SpawnEnemy(kamikazePrefabs, GetTopSpawnPosition());
         kamikazeTimer = 0f;
     }
 

@@ -1767,7 +1767,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 12345
+  m_text: 123456789
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a0a5dfad933922d4b837ac68fef16318, type: 2}
   m_sharedMaterial: {fileID: 207248713673495511, guid: a0a5dfad933922d4b837ac68fef16318, type: 2}
@@ -2365,9 +2365,9 @@ MonoBehaviour:
   - {fileID: 6169655311992338039, guid: 812e48ccb2978cc4eb2410548f7ae0a7, type: 3}
   debugEnemyOnly: 1
   debugFighterOnly: 0
-  debugKamikazeOnly: 0
+  debugKamikazeOnly: 1
   debugBomberOnly: 0
-  debugPulsarOnly: 1
+  debugPulsarOnly: 0
   debugSpawnInterval: 1
 --- !u!4 &1145615753
 Transform:
