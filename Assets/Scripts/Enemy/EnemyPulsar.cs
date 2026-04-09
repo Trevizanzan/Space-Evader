@@ -51,8 +51,6 @@ public class EnemyPulsar : EnemyBase
     private float burstTimer;        // timer tra un colpo e l'altro
     private Vector2 frozenAimDir;    // direzione congelata al momento dello sparo
 
-    private Transform playerTransform;
-
     // ── Init ─────────────────────────────────────────────────────────────────
     protected override void Start()
     {
