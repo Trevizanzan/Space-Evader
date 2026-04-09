@@ -5,8 +5,8 @@ public class EnemyBomber : EnemyBase
     [Header("Bomber Movement")]
     [SerializeField] private float moveSpeed = 2f;    // velocità traversata orizzontale
     [SerializeField] private float verticalSpeed = 1f;    // velocità aggiustamento Y
-    [SerializeField] private float patrolMinY = 3f;    // Y minima patrol (terzo superiore camera)
-    [SerializeField] private float patrolMaxY = 5f;    // Y massima patrol (appena sotto il bordo)
+    //[SerializeField] private float patrolMinY = 3f;    // Y minima patrol (terzo superiore camera)
+    //[SerializeField] private float patrolMaxY = 5f;    // Y massima patrol (appena sotto il bordo)
 
     [Header("Patrol Y Range (% camera height, 0=centro, 1=bordo top)")]
     [SerializeField][Range(0f, 1f)] private float patrolMinYPercent = 0.55f; // % altezza camera
@@ -33,24 +33,20 @@ public class EnemyBomber : EnemyBase
     {
         base.Start();
 
-        float camHeight = Camera.main.orthographicSize;
-        float camWidth = camHeight * Camera.main.aspect;
+        CameraBounds b = GetCameraBounds(); // stesso metodo del Pulsar
 
         // Limiti orizzontali (considerando la mezza unità di margine per il bomber)
-        minX = -camWidth + 0.5f;
-        maxX = camWidth - 0.5f;
+        minX = b.minX + 0.5f;
+        maxX = b.maxX - 0.5f;
 
         // Limiti verticali calcolati dalla camera, non hardcodati
         // Il bomber deve stare nel terzo superiore dello schermo
-        float camTop = camHeight; // bordo superiore in world space
-        float clampedPatrolMin = camTop * patrolMinYPercent;  // es. 0.55 → 55% dal centro
-        float clampedPatrolMax = camTop * patrolMaxYPercent;  // es. 0.85 → 85% dal centro
+        float camTop = b.topY;  // bordo superiore in world space (stesso del Pulsar)
+        float patrolMinY = camTop * patrolMinYPercent;
+        float patrolMaxY = camTop * patrolMaxYPercent;
+        targetY = Random.Range(patrolMinY, patrolMaxY);
 
-        targetY = Random.Range(clampedPatrolMin, clampedPatrolMax);
-
-        // Direzione iniziale: se spawna a sinistra va a destra, e viceversa
         moveDirection = transform.position.x < 0 ? 1f : -1f;
-
         currentBombInterval = Random.Range(bombIntervalMin, bombIntervalMax);
     }
 

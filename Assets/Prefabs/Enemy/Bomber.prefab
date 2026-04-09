@@ -174,11 +174,9 @@ MonoBehaviour:
   damageToPlayer: 1
   flashMaterial: {fileID: 2100000, guid: b01ab75e2f6accf4c89786fd4eaf4432, type: 2}
   moveSpeed: 6
-  patrolMinY: 3
-  patrolMaxY: 4.5
   verticalSpeed: 3
   patrolMinYPercent: 0.55
-  patrolMaxYPercent: 0.8
+  patrolMaxYPercent: 0.9
   bombPrefab: {fileID: 8640828698436091449, guid: 817d53ad8101f35438f3aec52596478f, type: 3}
   bombIntervalMin: 1.5
   bombIntervalMax: 4

@@ -16,9 +16,9 @@ public class EnemyPulsar : EnemyBase
     [SerializeField] private float moveSpeed = 3.5f;
     [SerializeField] private float verticalSpeed = 3f;
 
-    [Header("Patrol Y Range (% dal bordo superiore, 0 = top, 1 = fondo schermo)")]
-    [SerializeField][Range(0f, 1f)] private float patrolMinYPercent = 0.10f; // appena sotto il top (% camera)
-    [SerializeField][Range(0f, 1f)] private float patrolMaxYPercent = 0.35f; // terzo superiore (% camera)
+    [Header("Patrol Y Range (% camera height, 0=centro, 1=bordo top)")]
+    [SerializeField][Range(0f, 1f)] private float patrolMinYPercent = 0.55f;
+    [SerializeField][Range(0f, 1f)] private float patrolMaxYPercent = 0.80f;
     [SerializeField] private float positionSlowRadius = 1.2f;   // distanza entro cui inizia a rallentare
 
     //[SerializeField][Range(0f, 1f)] private float patrolMinYPercent = 0.55f; // % altezza camera
@@ -63,10 +63,10 @@ public class EnemyPulsar : EnemyBase
         minX = b.minX + 0.5f;
         maxX = b.maxX - 0.5f;
 
-        // Range calcolato dal bordo superiore verso il basso
-        float camHeight = b.topY - b.minY;
-        float patrolMinY = b.topY - camHeight * patrolMaxYPercent; // max scende di più
-        float patrolMaxY = b.topY - camHeight * patrolMinYPercent; // min scende di meno
+        // Range calcolato in base alla Y massima della camera, per garantire che il Pulsar stia sempre nella parte alta
+        float camTop = b.topY; // bordo superiore in world space (stesso del Bomber)
+        float patrolMinY = camTop * patrolMinYPercent;
+        float patrolMaxY = camTop * patrolMaxYPercent;
 
         targetY = Random.Range(patrolMinY, patrolMaxY);
     }

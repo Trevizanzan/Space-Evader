@@ -173,10 +173,10 @@ MonoBehaviour:
   scoreValue: 100
   damageToPlayer: 1
   flashMaterial: {fileID: 2100000, guid: b01ab75e2f6accf4c89786fd4eaf4432, type: 2}
-  moveSpeed: 3.5
-  verticalSpeed: 3
-  patrolMinY: 3
-  patrolMaxY: 4.5
+  moveSpeed: 30.5
+  verticalSpeed: 30
+  patrolMinYPercent: 0.55
+  patrolMaxYPercent: 0.9
   positionSlowRadius: 1.2
   aimDuration: 0.5
   aimRotationSpeed: 180
