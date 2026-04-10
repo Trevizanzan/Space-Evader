@@ -13,12 +13,12 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] private Transform[] rightSpawnPoints; // Per diagonali/orizzontali da destra
 
     [Header("Base Spawn Intervals")]
-    [SerializeField] private float baseNormalInterval = 2f;
+    [SerializeField] private float baseNormalInterval = 1f;
     [SerializeField] private float baseDiagonalInterval = 3f;
     [SerializeField] private float baseHorizontalInterval = 4f;
 
     [Header("Base Speeds")]
-    [SerializeField] private float baseNormalSpeed = 6f;
+    [SerializeField] private float baseNormalSpeed = 8f;
     [SerializeField] private float baseDiagonalSpeed = 7.5f;
     [SerializeField] private float baseHorizontalSpeed = 9f;
 
