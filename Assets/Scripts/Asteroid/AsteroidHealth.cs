@@ -25,6 +25,9 @@ public class AsteroidHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            if (RunStats.Instance != null)
+                RunStats.Instance.RegisterAsteroidDestroyed();
+
             // suona l'effetto sonoro di esplosione
             if (SoundManager.Instance != null)
             {

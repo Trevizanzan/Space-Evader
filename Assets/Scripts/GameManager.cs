@@ -17,9 +17,17 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPanel;
     public TMP_Text goScoreText;
     public TMP_Text goBestText;
-
+    
     private bool isGameOver = false;
     public bool IsGameOver() => isGameOver;
+
+    [Header("Game Over UI - Stats")]
+    public TMP_Text goTimeText;
+    public TMP_Text goEnemiesText;
+    public TMP_Text goBossesText;
+    public TMP_Text goAsteroidsText;
+    public TMP_Text goShotsText;
+    public TMP_Text goDamageText;
 
 
     public static GameManager Instance;
@@ -58,6 +66,24 @@ public class GameManager : MonoBehaviour
                 goScoreText.text = $"SCORE: {score}";
             if (goBestText != null)
                 goBestText.text = $"BEST: {best}";
+        }
+
+        if (RunStats.Instance != null)
+        {
+            RunStats.Instance.StopTracking();
+
+            if (goTimeText != null)
+                goTimeText.text = $"TIME: {RunStats.Instance.GetTimeFormatted()}";
+            if (goEnemiesText != null)
+                goEnemiesText.text = $"ENEMIES KILLED: {RunStats.Instance.EnemiesKilled}";
+            if (goBossesText != null)
+                goBossesText.text = $"BOSSES KILLED: {RunStats.Instance.BossesKilled}";
+            if (goAsteroidsText != null)
+                goAsteroidsText.text = $"ASTEROIDS: {RunStats.Instance.AsteroidsDestroyed}";
+            if (goShotsText != null)
+                goShotsText.text = $"SHOTS FIRED: {RunStats.Instance.ShotsFired}";
+            if (goDamageText != null)
+                goDamageText.text = $"DAMAGE TAKEN: {RunStats.Instance.DamageTaken}";
         }
 
         // Mostra UI dopo un attimo (usando tempo non scalato),

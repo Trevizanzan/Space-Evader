@@ -107,6 +107,9 @@ public abstract class EnemyBase : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        
+        if (RunStats.Instance != null)
+            RunStats.Instance.RegisterEnemyKilled();
 
         // Esplosione solo alla morte
         if (ExplosionManager.Instance != null)

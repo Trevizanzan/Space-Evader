@@ -24,6 +24,9 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        if (RunStats.Instance != null)
+            RunStats.Instance.RegisterHitReceived(amount);
+
         if (isInvulnerable) return;  // blocca danni durante i-frames
 
         currentHealth -= amount;

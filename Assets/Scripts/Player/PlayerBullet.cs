@@ -9,7 +9,8 @@ public class ProjectileMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //Debug.Log($"[PLAYER_BULLET] Spawned with tag: {gameObject.tag}"); 
+        if (RunStats.Instance != null)
+            RunStats.Instance.RegisterShotFired();
 
         float cameraHeight = Camera.main.orthographicSize * 2f;
         //float cameraWidth = cameraHeight / Screen.height * Screen.width;

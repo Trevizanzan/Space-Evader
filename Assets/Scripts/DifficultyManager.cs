@@ -762,6 +762,9 @@ public class DifficultyManager : MonoBehaviour
 
     public void OnBossDefeated()
     {
+        if (RunStats.Instance != null)
+            RunStats.Instance.RegisterBossKilled();
+
         // Disattiva boss fight mode
         isBossFight = false;
         bossIndex++;
