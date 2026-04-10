@@ -28,7 +28,8 @@ public class EnemyPulsar : EnemyBase
     [Header("Burst Settings")]
     [SerializeField] private GameObject laserPrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private int burstsBeforeReposition = 0; // burst consecutivi prima di muoversi
+    [SerializeField] private int burstsBeforeReposition = 1; // burst consecutivi prima di muoversi
+    [SerializeField] private float cooldownAfterShot = 0.25f;
 
     // ── Stato ────────────────────────────────────────────────────────────────
     private enum PulsarState { Entering, Positioning, Aiming, Firing }
@@ -37,9 +38,7 @@ public class EnemyPulsar : EnemyBase
     private float targetY;
     private float targetX;
     private float minX, maxX;
-
     private float stateTimer;
-
     // Burst
     private Vector2 frozenAimDir;
     private int burstsThisCycle; // burst sparati dall'ultimo Positioning
@@ -67,7 +66,7 @@ public class EnemyPulsar : EnemyBase
             case PulsarState.Entering: UpdateEntering(); break;
             case PulsarState.Positioning: UpdatePositioning(); break;
             case PulsarState.Aiming: UpdateAiming(); break;
-            //case PulsarState.Firing: UpdateFiring(); break;  // rimetti questa riga
+            case PulsarState.Firing: UpdateFiring(); break;  
         }
     }
 
@@ -76,8 +75,7 @@ public class EnemyPulsar : EnemyBase
     {
         transform.rotation = Quaternion.Euler(0f, 0f, -90f);
 
-        float newY = Mathf.MoveTowards(
-            transform.position.y, targetY, verticalSpeed * Time.deltaTime);
+        float newY = Mathf.MoveTowards(transform.position.y, targetY, verticalSpeed * Time.deltaTime);
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
 
         if (Mathf.Abs(transform.position.y - targetY) < 0.1f)
@@ -113,7 +111,17 @@ public class EnemyPulsar : EnemyBase
             EnterFiring();
     }
     // ── FIRING ───────────────────────────────────────────────────────────────
-   
+    void UpdateFiring()
+    {
+        stateTimer += Time.deltaTime;
+        if (stateTimer < cooldownAfterShot) return;
+
+        burstsThisCycle++;
+        if (burstsThisCycle < burstsBeforeReposition)
+            EnterAiming();
+        else
+            EnterPositioning();
+    }
 
     // ── Transizioni ──────────────────────────────────────────────────────────
     void EnterPositioning()
@@ -121,10 +129,11 @@ public class EnemyPulsar : EnemyBase
         burstsThisCycle = 0;
 
         float halfWidth = (maxX - minX) * 0.5f;
-        if (transform.position.x > (minX + maxX) * 0.5f)
-            targetX = Random.Range(minX, minX + halfWidth);
-        else
-            targetX = Random.Range(minX + halfWidth, maxX);
+
+        // Se siamo più a destra, scegliamo una X a sinistra, e viceversa
+        targetX = transform.position.x > (minX + maxX) * 0.5f
+            ? Random.Range(minX, minX + halfWidth)
+            : Random.Range(minX + halfWidth, maxX);
 
         state = PulsarState.Positioning;
     }
@@ -137,18 +146,15 @@ public class EnemyPulsar : EnemyBase
 
     void EnterFiring()
     {
-        if (playerTransform != null)
-            frozenAimDir = (playerTransform.position - transform.position).normalized;
-        else
-            frozenAimDir = Vector2.down;
+        // Congeliamo la direzione verso il player al momento dello sparo, così i laser vanno tutti nella stessa direzione anche se il Pulsar continua a ruotare
+        frozenAimDir = playerTransform != null
+            ? (Vector2)(playerTransform.position - transform.position).normalized
+            : Vector2.down;
 
         FireLaser();
 
-        burstsThisCycle++;
-        if (burstsThisCycle < burstsBeforeReposition)
-            EnterAiming();
-        else
-            EnterPositioning();
+        stateTimer = 0f;
+        state = PulsarState.Firing;
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -163,7 +169,7 @@ public class EnemyPulsar : EnemyBase
         transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
     }
 
-    void FireLaser(float offset = 0f)
+    void FireLaser()
     {
         if (laserPrefab == null) return;
 
