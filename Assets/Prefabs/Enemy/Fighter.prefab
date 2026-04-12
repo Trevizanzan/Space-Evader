@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2579906096596851375, guid: 1b5bcb3fe34c6b44fb6d66e4087950f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -192,7 +192,6 @@ MonoBehaviour:
   scoreValue: 100
   damageToPlayer: 1
   flashMaterial: {fileID: 2100000, guid: b01ab75e2f6accf4c89786fd4eaf4432, type: 2}
-  flashDuration: 0.12
   moveSpeed: 9
   diagonalAngle: 35
   sCurveFrequency: 0.5
