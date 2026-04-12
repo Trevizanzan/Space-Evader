@@ -22,7 +22,11 @@ public class AsteroidSpawner : MonoBehaviour
     //[SerializeField] private float baseDiagonalSpeed = 7.5f;
     //[SerializeField] private float baseHorizontalSpeed = 9f;
 
-    [Header("Size Weights (quando asteroidSizeFocus = 0)")]
+    [Header("Big Asteroid Scale Variation")]
+    [SerializeField] private float bigScaleMin = 1f;
+    [SerializeField] private float bigScaleMax = 3f;
+
+    [Header("Size Weights (quando asteroidSizeDistribution = 0)")]
     [SerializeField] private float smallWeight = 0.5f;
     [SerializeField] private float mediumWeight = 0.3f;
     [SerializeField] private float largeWeight = 0.2f;
@@ -37,11 +41,14 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] private float topOffset = 2f;
 
     [Header("Debug")]
-    [SerializeField] private bool debugAsteroidOnly = false; // disabilita nemici, spawna solo asteroidi
-    [SerializeField] private bool debugNormalOnly = false;
-    [SerializeField] private bool debugDiagonalOnly = false;
-    [SerializeField] private bool debugHorizontalOnly = false;
-    [SerializeField] private float debugSpawnInterval = 2f;
+    [SerializeField] private bool d_AsteroidOnly = false; // disabilita nemici, spawna solo asteroidi
+    [SerializeField] private bool d_NormalOnly = false;
+    [SerializeField] private bool d_DiagonalOnly = false;
+    [SerializeField] private bool d_HorizontalOnly = false;
+    [Tooltip("0 = mix, 1 = piccoli, 2 = medi, 3 = grandi")]
+    [SerializeField] private int d_SizeDistribution = 0;
+    [SerializeField] private float d_SpawnInterval = 2f;
+    [SerializeField] private float d_Speed = 8f;
 
     private DifficultyManager difficultyManager;
 
@@ -62,7 +69,7 @@ public class AsteroidSpawner : MonoBehaviour
     private float sideSpawnMaxY;
 
     public static AsteroidSpawner Instance { get; private set; }
-    public static bool IsDebugMode => Instance != null && Instance.debugAsteroidOnly;
+    public static bool IsDebugMode => Instance != null && Instance.d_AsteroidOnly;
 
     void Awake()
     {
@@ -101,7 +108,7 @@ public class AsteroidSpawner : MonoBehaviour
     {
         if (difficultyManager == null) return;
 
-        if (debugAsteroidOnly)
+        if (d_AsteroidOnly)
         {
             UpdateDebug();
             return;
@@ -134,24 +141,26 @@ public class AsteroidSpawner : MonoBehaviour
     void UpdateDebug()
     {
         debugTimer += Time.deltaTime;
-        if (debugTimer < debugSpawnInterval) return;
+        if (debugTimer < d_SpawnInterval) return;
         debugTimer = 0f;
 
         PhaseConfig debugPhase = new PhaseConfig
         {
-            normalSpeed = 8f,
-            diagonalSpeed = 9f,
-            horizontalSpeed = 11f,
+            normalSpeed = d_Speed,
+            diagonalSpeed = d_Speed,
+            horizontalSpeed = d_Speed,
             healthMultiplier = 1f,
-            asteroidSizeFocus = 0,
-            normalSpawnInterval = debugSpawnInterval,
-            diagonalSpawnInterval = debugSpawnInterval,
-            horizontalSpawnInterval = debugSpawnInterval
+            normalSizeDistribution = d_SizeDistribution,
+            diagonalSizeDistribution = d_SizeDistribution,
+            horizontalSizeDistribution = d_SizeDistribution,
+            normalSpawnInterval = d_SpawnInterval,
+            diagonalSpawnInterval = d_SpawnInterval,
+            horizontalSpawnInterval = d_SpawnInterval
         };
 
-        if (debugNormalOnly) SpawnNormalAsteroid(debugPhase);
-        if (debugDiagonalOnly) SpawnDiagonalAsteroid(debugPhase);
-        if (debugHorizontalOnly) SpawnHorizontalAsteroid(debugPhase);
+        if (d_NormalOnly) SpawnNormalAsteroid(debugPhase);
+        if (d_DiagonalOnly) SpawnDiagonalAsteroid(debugPhase);
+        if (d_HorizontalOnly) SpawnHorizontalAsteroid(debugPhase);
     }
 
     // ======================== SPAWN NORMALI (VERTICALI) ========================
@@ -169,11 +178,12 @@ public class AsteroidSpawner : MonoBehaviour
 
     void SpawnNormalAsteroid(PhaseConfig phase)
     {
-        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.normalSizeDistribution);
         if (asteroidPrefab == null) return;
 
         Vector3 spawnPosition = GetSpawnPosition(topSpawnPoints, minX, maxX, spawnY);
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        ApplyBigScaleVariation(asteroid);
 
         Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -197,7 +207,7 @@ public class AsteroidSpawner : MonoBehaviour
 
     void SpawnDiagonalAsteroid(PhaseConfig phase)
     {
-        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.diagonalSizeDistribution);
         if (asteroidPrefab == null) return;
 
         bool spawnFromLeft = Random.value > 0.5f;
@@ -206,6 +216,7 @@ public class AsteroidSpawner : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnX, spawnPosY, 0f);
 
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        ApplyBigScaleVariation(asteroid);   // applica variazione di scala solo ai big asteroids
 
         Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -232,7 +243,7 @@ public class AsteroidSpawner : MonoBehaviour
 
     void SpawnHorizontalAsteroid(PhaseConfig phase)
     {
-        GameObject asteroidPrefab = GetAsteroidBySize(phase.asteroidSizeFocus);
+        GameObject asteroidPrefab = GetAsteroidBySize(phase.horizontalSizeDistribution);
         if (asteroidPrefab == null) return;
 
         bool spawnFromLeft = Random.value > 0.5f;
@@ -241,6 +252,7 @@ public class AsteroidSpawner : MonoBehaviour
         Vector3 spawnPosition = new Vector3(spawnX, spawnPosY, 0f);
 
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
+        ApplyBigScaleVariation(asteroid);
 
         Rigidbody2D rb = asteroid.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -330,5 +342,19 @@ public class AsteroidSpawner : MonoBehaviour
         //     health.maxHealth *= multiplier;
         //     health.currentHealth = health.maxHealth;
         // }
+    }
+
+    /// <summary>
+    /// Questo metodo applica una variazione casuale di scala solo agli asteroidi grandi (bigAsteroids),
+    /// per renderli più vari e meno uniformi. 
+    /// La variazione è limitata da bigScaleMin e bigScaleMax per evitare dimensioni troppo estreme.
+    /// </summary>
+    void ApplyBigScaleVariation(GameObject asteroid)
+    {
+        // Applica solo a asteroidi grandi (bigAsteroids)
+        if (!asteroid.name.Contains("Large")) return;
+
+        float randomScale = Random.Range(bigScaleMin, bigScaleMax);
+        asteroid.transform.localScale = new Vector3(randomScale, randomScale, 1f);
     }
 }

@@ -3,28 +3,34 @@
 [System.Serializable]
 public class PhaseConfig
 {
+    [Header("Design Notes")]
+    [TextArea(3, 10)]
+    public string designNotes = "";
+
     [Header("_____________ ASTEROIDS _____________")]
     [Header("Normal Asteroids")]
     public bool spawnNormal = false;
     public float normalSpawnInterval = 2f;
     public float normalSpeed = 8f;
+    [Tooltip("0 = mix pesato, 1 = solo piccoli, 2 = solo medi, 3 = solo grandi")]
+    public int normalSizeDistribution = 0;
 
     [Header("Diagonal Asteroids")]
     public bool spawnDiagonal = false;
     public float diagonalSpawnInterval = 3f;
     public float diagonalSpeed = 9f;
+    [Tooltip("0 = mix pesato, 1 = solo piccoli, 2 = solo medi, 3 = solo grandi")]
+    public int diagonalSizeDistribution = 0;
 
     [Header("Horizontal Asteroids")]
     public bool spawnHorizontal = false;
     public float horizontalSpawnInterval = 4f;
     public float horizontalSpeed = 11f;
+    [Tooltip("0 = mix pesato, 1 = solo piccoli, 2 = solo medi, 3 = solo grandi")]
+    public int horizontalSizeDistribution = 0;
 
     [Header("Asteroid Health")]
     public float healthMultiplier = 1f;
-
-    [Header("Asteroid Size Focus")]
-    [Tooltip("0 = tutti, 1 = solo piccoli, 2 = solo medi, 3 = solo grandi")]
-    public int asteroidSizeFocus = 0;
 
     [Header("_____________ ENEMIES _____________")]
     [Header("Fighters")]
