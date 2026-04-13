@@ -4101,11 +4101,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f129ef8b02a5604492b0b91dc785cb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnBoundsProvider
-  topMargin: 0.18
-  topHorizontalInset: 0.04
-  diagonalMinY: 0.1
-  diagonalMargin: 0.1
-  sideMargin: 0.1
+  topMarginPct: 0.18
+  topHorizontalInsetPct: 0.05
+  diagonalMinYPct: 0.75
+  diagonalMarginPct: 0.1
+  sideMarginPct: 0.1
+  destroyBottomMarginPct: 0.18
+  destroySideMarginPct: 0.3
 --- !u!4 &1366636625
 Transform:
   m_ObjectHideFlags: 0

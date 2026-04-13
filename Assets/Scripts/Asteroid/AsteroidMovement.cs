@@ -45,12 +45,7 @@ public class AsteroidMovement : MonoBehaviour
     [SerializeField] private float minRotationSpeed = -180f;
     [SerializeField] private float maxRotationSpeed = 180f;
 
-    [Header("Destroy Boundaries")]
-    [SerializeField] private float destroyBorderMultiplier = 2f; // Quanto fuori dallo schermo può andare prima di essere distrutto
     private Rigidbody2D rb;
-
-    private float destroyY;
-    private float destroyXLimit;
 
     public float defalutFallSpeed = 3f;
     private float rotationSpeed;
@@ -64,34 +59,29 @@ public class AsteroidMovement : MonoBehaviour
         rb.angularVelocity = rotationSpeed;
 
         // Calcola i bordi di distruzione (più ampi dello schermo per dare margine)
-        CalculateDestroyBounds();
+        //CalculateDestroyBounds();
     }
 
-    void CalculateDestroyBounds()
-    {
-        float cameraHeight = Camera.main.orthographicSize;
-        float cameraWidth = cameraHeight * Camera.main.aspect;
-        float camDistance = transform.position.z - Camera.main.transform.position.z;
-        Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
+    //void CalculateDestroyBounds()
+    //{
+    //    float cameraHeight = Camera.main.orthographicSize;
+    //    float cameraWidth = cameraHeight * Camera.main.aspect;
+    //    float camDistance = transform.position.z - Camera.main.transform.position.z;
+    //    Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
 
-        // Bordo inferiore (con margine)
-        destroyY = bottomLeft.y - (cameraHeight * 0.2f);
+    //    // Bordo inferiore (con margine)
+    //    destroyY = bottomLeft.y - (cameraHeight * 0.2f);
 
-        // Bordi laterali (più ampi per gestire asteroidi orizzontali/diagonali)
-        destroyXLimit = cameraWidth * destroyBorderMultiplier;
-    }
+    //    // Bordi laterali (più ampi per gestire asteroidi orizzontali/diagonali)
+    //    destroyXLimit = cameraWidth * destroyBorderMultiplier;
+    //}
 
     void Update()
     {
-        //// Forza la velocity OGNI FRAME (solo per debug!)
-        //if (rb.linearVelocity.magnitude > 0)
-        //{
-        //    // Non fare niente, lascia che la physics engine faccia il suo
-        //}
-
-        // Distruggi se l'asteroide esce completamente dallo schermo
-        if (transform.position.y < destroyY ||
-            Mathf.Abs(transform.position.x) > destroyXLimit)
+        var bounds = SpawnBoundsProvider.Instance;
+        if (transform.position.y < bounds.DestroyY ||
+            transform.position.x < bounds.DestroyMinX ||
+            transform.position.x > bounds.DestroyMaxX)
         {
             Destroy(gameObject);
         }

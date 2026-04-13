@@ -9,18 +9,26 @@ public class SpawnBoundsProvider : MonoBehaviour
     public static SpawnBoundsProvider Instance { get; private set; }
 
     [Header("Top Spawn (% altezza camera)")]
-    [Range(0f, 0.5f)][SerializeField] private float topMargin = 0.18f;       // quanto sopra il bordo superiore es. 0.1 = 10% sopra il bordo
-    [Range(0f, 0.5f)][SerializeField] private float topHorizontalInset = 0.05f; // rientro laterale per non spawnare negli angoli es. 0.05 = 5% rientro laterale
+    [Range(0f, 0.5f)][SerializeField] private float topMarginPct = 0.18f;       // quanto sopra il bordo superiore es. 0.1 = 10% sopra il bordo
+    [Range(0f, 0.5f)][SerializeField] private float topHorizontalInsetPct = 0.05f; // rientro laterale per non spawnare negli angoli es. 0.05 = 5% rientro laterale
 
     [Header("Diagonal Spawn (% altezza camera)")]
-    [Range(0f, 1f)][SerializeField] private float diagonalMinY = 0.75f; // 0=bottom, 1=top della camera
-    [Range(0f, 0.5f)][SerializeField] private float diagonalMargin = 0.1f; // quanto sopra il bordo top
+    [Range(0f, 1f)][SerializeField] private float diagonalMinYPct = 0.75f; // 0=bottom, 1=top della camera
+    [Range(0f, 0.5f)][SerializeField] private float diagonalMarginPct = 0.1f; // quanto sopra il bordo top
 
     public float DiagonalMinY { get; private set; }
     public float DiagonalMaxY { get; private set; }
 
     [Header("Side Spawn (% larghezza camera)")]
-    [Range(0f, 0.5f)][SerializeField] private float sideMargin = 0.1f;      // quanto fuori dai bordi laterali es. 0.1 = 10% fuori dai bordi laterali
+    [Range(0f, 0.5f)][SerializeField] private float sideMarginPct = 0.1f;      // quanto fuori dai bordi laterali es. 0.1 = 10% fuori dai bordi laterali
+
+    [Header("Destroy Bounds (% dimensioni camera)")]
+    [Range(0f, 1f)][SerializeField] private float destroyBottomMarginPct = 0.18f;  // sotto il bordo inferiore
+    [Range(0f, 1f)][SerializeField] private float destroySideMarginPct = 0.3f;   // fuori dai bordi laterali
+
+    public float DestroyY { get; private set; }
+    public float DestroyMinX { get; private set; }
+    public float DestroyMaxX { get; private set; }
 
     // ── Proprietà pubbliche read-only ────────────────────────────────────────
 
@@ -65,15 +73,21 @@ public class SpawnBoundsProvider : MonoBehaviour
         float camHeight = tr.y - bl.y;
         float camWidth = tr.x - bl.x;
 
-        TopY = tr.y + camHeight * topMargin;
-        TopMinX = bl.x + camWidth * topHorizontalInset;
-        TopMaxX = tr.x - camWidth * topHorizontalInset;
+        TopY = tr.y + camHeight * topMarginPct;
+        TopMinX = bl.x + camWidth * topHorizontalInsetPct;
+        TopMaxX = tr.x - camWidth * topHorizontalInsetPct;
 
-        LeftX = bl.x - camWidth * sideMargin;
-        RightX = tr.x + camWidth * sideMargin;
-        DiagonalMinY = bl.y + camHeight * diagonalMinY;
-        DiagonalMaxY = tr.y + camHeight * diagonalMargin;
+        // Calcola i bordi di spawn laterale (più ampi per gestire spawn diagonali)
+        LeftX = bl.x - camWidth * sideMarginPct;
+        RightX = tr.x + camWidth * sideMarginPct;
+        DiagonalMinY = bl.y + camHeight * diagonalMinYPct;
+        DiagonalMaxY = tr.y + camHeight * diagonalMarginPct;
         SideMinY = center.y;
-        SideMaxY = tr.y + camHeight * sideMargin;
+        SideMaxY = tr.y + camHeight * sideMarginPct;
+
+        // Calcola i bordi di distruzione (più ampi dello schermo per dare margine)
+        DestroyY = bl.y - camHeight * destroyBottomMarginPct;
+        DestroyMinX = bl.x - camWidth * destroySideMarginPct;
+        DestroyMaxX = tr.x + camWidth * destroySideMarginPct;
     }
 }
