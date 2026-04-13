@@ -15,13 +15,13 @@ MonoBehaviour:
   isBoss: 0
   bossPrefab: {fileID: 0}
   levelName: Default Level
-  levelDuration: 10
+  levelDuration: 45
   phase1:
     designNotes: test primo livello
     spawnNormal: 1
     normalSpawnInterval: 0.5
     normalSpeed: 9
-    normalSizeDistribution: 0
+    normalSizeDistribution: 1
     spawnDiagonal: 0
     diagonalSpawnInterval: 0
     diagonalSpeed: 0
@@ -46,16 +46,16 @@ MonoBehaviour:
     normalSpeed: 10
     normalSizeDistribution: 0
     spawnDiagonal: 1
-    diagonalSpawnInterval: 3
+    diagonalSpawnInterval: 1
     diagonalSpeed: 7
-    diagonalSizeDistribution: 0
+    diagonalSizeDistribution: 2
     spawnHorizontal: 0
     horizontalSpawnInterval: 0
     horizontalSpeed: 0
     horizontalSizeDistribution: 0
     healthMultiplier: 1
-    allowFighters: 1
-    fighterSpawnInterval: 2
+    allowFighters: 0
+    fighterSpawnInterval: 0
     allowKamikazes: 0
     kamikazeSpawnInterval: 0
     allowBombers: 0
@@ -70,15 +70,15 @@ MonoBehaviour:
     normalSizeDistribution: 0
     spawnDiagonal: 1
     diagonalSpawnInterval: 2
-    diagonalSpeed: 9
+    diagonalSpeed: 7
     diagonalSizeDistribution: 0
     spawnHorizontal: 1
     horizontalSpawnInterval: 1
     horizontalSpeed: 7
-    horizontalSizeDistribution: 0
+    horizontalSizeDistribution: 3
     healthMultiplier: 1
-    allowFighters: 1
-    fighterSpawnInterval: 2
+    allowFighters: 0
+    fighterSpawnInterval: 0
     allowKamikazes: 0
     kamikazeSpawnInterval: 0
     allowBombers: 0

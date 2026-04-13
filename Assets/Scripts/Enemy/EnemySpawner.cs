@@ -10,10 +10,10 @@ public class EnemySpawner : MonoBehaviour
     //[SerializeField] private float basePulsarInterval = 14f;  // leggermente più raro del Bomber
 
     [Header("Spawn Range Settings")]
-    [SerializeField] private float topSpawnMargin = .5f;  // quanto sopra la camera
-    [SerializeField] private float sideSpawnMargin = 20.1f;  // quanto fuori dai lati
-    [SerializeField] private float topHorizontalInset = 1f;    // rientra dai bordi sinistro/destro (top spawn)
-    //[SerializeField] private float sideVerticalInset = 1f;    // rientra dal bordo superiore (side spawn)
+    //[SerializeField] private float topSpawnMargin = .5f;  // quanto sopra la camera
+    //[SerializeField] private float sideSpawnMargin = 20.1f;  // quanto fuori dai lati
+    //[SerializeField] private float topHorizontalInset = 1f;    // rientra dai bordi sinistro/destro (top spawn)
+    
     [SerializeField] private float minSpawnDistance = 2f;    // distanza minima tra spawn consecutivi (stessa fascia)
     [SerializeField] private int maxRetries = 10;    // tentativi massimi per trovare posizione valida
 
@@ -47,15 +47,14 @@ public class EnemySpawner : MonoBehaviour
     private float lastLeftSpawnY = float.MinValue;
     private float lastRightSpawnY = float.MinValue;
 
-    // Range calcolati dalla camera
-    private float topSpawnY;          // Y di spawn top (sopra camera)
-    private float topSpawnMinX;       // X minima range top
-    private float topSpawnMaxX;       // X massima range top
-
-    private float sideSpawnMinY;      // Y minima range laterale (metà superiore camera)
-    private float sideSpawnMaxY;      // Y massima range laterale (appena sopra camera)
-    private float leftSpawnX;         // X di spawn sinistro
-    private float rightSpawnX;        // X di spawn destro
+    //// Range calcolati dalla camera
+    //private float topSpawnY;          // Y di spawn top (sopra camera)
+    //private float topSpawnMinX;       // X minima range top
+    //private float topSpawnMaxX;       // X massima range top
+    //private float sideSpawnMinY;      // Y minima range laterale (metà superiore camera)
+    //private float sideSpawnMaxY;      // Y massima range laterale (appena sopra camera)
+    //private float leftSpawnX;         // X di spawn sinistro
+    //private float rightSpawnX;        // X di spawn destro
 
     private DifficultyManager difficultyManager;
     void Awake()
@@ -66,39 +65,38 @@ public class EnemySpawner : MonoBehaviour
     void Start()
     {
         difficultyManager = DifficultyManager.Instance;
-        CalculateSpawnRanges();
+        //CalculateSpawnRanges();
 
         if (debugEnemyOnly)
         {
             // Disabilita asteroidi per isolare il test
             AsteroidSpawner asteroidSpawner = FindFirstObjectByType<AsteroidSpawner>();
             if (asteroidSpawner != null) asteroidSpawner.enabled = false;
-
             Debug.Log("[EnemySpawner] DEBUG MODE attivo — asteroidi disabilitati.");
         }
     }
 
-    void CalculateSpawnRanges()
-    {
-        Camera cam = Camera.main;
-        float camDist = -cam.transform.position.z;
+    //void CalculateSpawnRanges()
+    //{
+    //    Camera cam = Camera.main;
+    //    float camDist = -cam.transform.position.z;
 
-        Vector2 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, camDist));
-        Vector2 topRight = cam.ViewportToWorldPoint(new Vector3(1, 1, camDist));
-        Vector2 center = cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, camDist));
+    //    Vector2 bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, camDist));
+    //    Vector2 topRight = cam.ViewportToWorldPoint(new Vector3(1, 1, camDist));
+    //    Vector2 center = cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, camDist));
 
-        // TOP: appena sopra la camera, rientro orizzontale per non spawnare negli angoli
-        topSpawnY = topRight.y + topSpawnMargin;
-        topSpawnMinX = bottomLeft.x + topHorizontalInset;
-        topSpawnMaxX = topRight.x - topHorizontalInset;
+    //    // TOP: appena sopra la camera, rientro orizzontale per non spawnare negli angoli
+    //    topSpawnY = topRight.y + topSpawnMargin;
+    //    topSpawnMinX = bottomLeft.x + topHorizontalInset;
+    //    topSpawnMaxX = topRight.x - topHorizontalInset;
 
-        // LATI: dalla metà verticale della camera fino ad appena sopra il bordo
-        sideSpawnMinY = center.y;
-        sideSpawnMaxY = topRight.y + sideSpawnMargin;
+    //    // LATI: dalla metà verticale della camera fino ad appena sopra il bordo
+    //    sideSpawnMinY = center.y;
+    //    sideSpawnMaxY = topRight.y + sideSpawnMargin;
 
-        leftSpawnX = bottomLeft.x - sideSpawnMargin;
-        rightSpawnX = topRight.x + sideSpawnMargin;
-    }
+    //    leftSpawnX = bottomLeft.x - sideSpawnMargin;
+    //    rightSpawnX = topRight.x + sideSpawnMargin;
+    //}
 
     void Update()
     {
@@ -208,24 +206,17 @@ public class EnemySpawner : MonoBehaviour
 
     Vector3 GetTopSpawnPosition()
     {
-        float x = GetRandomWithMinDistance(
-            topSpawnMinX, topSpawnMaxX,
-            ref lastTopSpawnX,
-            minSpawnDistance);
-
-        return new Vector3(x, topSpawnY, 0f);
+        var b = SpawnBoundsProvider.Instance;
+        float x = GetRandomWithMinDistance(b.TopMinX, b.TopMaxX, ref lastTopSpawnX, minSpawnDistance);
+        return new Vector3(x, b.TopY, 0f);
     }
 
     Vector3 GetSideSpawnPosition(bool fromLeft)
     {
+        var b = SpawnBoundsProvider.Instance;
         ref float lastY = ref (fromLeft ? ref lastLeftSpawnY : ref lastRightSpawnY);
-
-        float y = GetRandomWithMinDistance(
-            sideSpawnMinY, sideSpawnMaxY,
-            ref lastY,
-            minSpawnDistance);
-
-        float x = fromLeft ? leftSpawnX : rightSpawnX;
+        float y = GetRandomWithMinDistance(b.SideMinY, b.SideMaxY, ref lastY, minSpawnDistance);
+        float x = fromLeft ? b.LeftX : b.RightX;
         return new Vector3(x, y, 0f);
     }
 

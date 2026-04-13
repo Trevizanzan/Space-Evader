@@ -7,11 +7,6 @@ public class AsteroidSpawner : MonoBehaviour
     [SerializeField] private GameObject[] mediumAsteroids;
     [SerializeField] private GameObject[] bigAsteroids;
 
-    [Header("Spawn Points")]
-    [SerializeField] private Transform[] topSpawnPoints; // Per spawn normali (verticali)
-    [SerializeField] private Transform[] leftSpawnPoints; // Per diagonali/orizzontali da sinistra
-    [SerializeField] private Transform[] rightSpawnPoints; // Per diagonali/orizzontali da destra
-
     //[Header("Base Spawn Intervals")]
     //[SerializeField] private float baseNormalInterval = 1f;
     //[SerializeField] private float baseDiagonalInterval = 3f;
@@ -36,9 +31,10 @@ public class AsteroidSpawner : MonoBehaviour
     private float diagonalSpawnTimer;
     private float horizontalSpawnTimer;
 
-    [Header("Spawn Offsets")]
-    [SerializeField] private float horizontalOffset = 1f;
-    [SerializeField] private float topOffset = 2f;
+    // TODO: siamo sicuri di eliminare questi?
+    //[Header("Spawn Offsets")]
+    //[SerializeField] private float horizontalOffset = 1f;
+    //[SerializeField] private float topOffset = 2f;
 
     [Header("Debug")]
     [SerializeField] private bool d_AsteroidOnly = false; // disabilita nemici, spawna solo asteroidi
@@ -56,17 +52,11 @@ public class AsteroidSpawner : MonoBehaviour
     ////[SerializeField] private float spawnWidth = 10f; // Larghezza spawn orizzontale
 
     // Bordi camera calcolati una volta
-    private float minX;
-    private float maxX;
-    private float spawnY;    // TODO: aumentarlo di un offset per evitare spawn troppo vicini alla camera (grandezza asteroide)
-    private float cameraWidth;
-    private float cameraHeight;
-
-    // Aggiungi questi campi
-    private float leftSpawnX;
-    private float rightSpawnX;
-    private float sideSpawnMinY;
-    private float sideSpawnMaxY;
+    //private float minX;
+    //private float maxX;
+    //private float spawnY;    // TODO: aumentarlo di un offset per evitare spawn troppo vicini alla camera (grandezza asteroide)
+    //private float cameraWidth;
+    //private float cameraHeight;
 
     public static AsteroidSpawner Instance { get; private set; }
     public static bool IsDebugMode => Instance != null && Instance.d_AsteroidOnly;
@@ -81,28 +71,39 @@ public class AsteroidSpawner : MonoBehaviour
         difficultyManager = FindFirstObjectByType<DifficultyManager>();
 
         // Calcola i bordi della camera UNA VOLTA SOLA
-        CalculateCameraBounds();
+        //CalculateCameraBounds();
+
+        //// Calcola solo i bounds top (ancora usati da SpawnNormalAsteroid come fallback)
+        //float camDistance = -Camera.main.transform.position.z;
+        //Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
+        //Vector2 topRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, camDistance));
+        //minX = bottomLeft.x + horizontalOffset;
+        //maxX = topRight.x - horizontalOffset;
+        //spawnY = topRight.y + topOffset;
+        //cameraHeight = Camera.main.orthographicSize;
+        //cameraWidth = cameraHeight * Camera.main.aspect;
     }
 
-    void CalculateCameraBounds()
-    {
-        float camDistance = -Camera.main.transform.position.z;
-        Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
-        Vector2 topRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, camDistance));
-        minX = bottomLeft.x + horizontalOffset;
-        maxX = topRight.x - horizontalOffset;
-        spawnY = topRight.y + topOffset;
-        cameraHeight = Camera.main.orthographicSize;
-        cameraWidth = cameraHeight * Camera.main.aspect;
 
-        // Calcola i range di spawn laterali basati sulla posizione centrale della camera
-        float camCenter = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, camDistance)).y;
+    //void CalculateCameraBounds()
+    //{
+    //    float camDistance = -Camera.main.transform.position.z;
+    //    Vector2 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, camDistance));
+    //    Vector2 topRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, camDistance));
+    //    minX = bottomLeft.x + horizontalOffset;
+    //    maxX = topRight.x - horizontalOffset;
+    //    spawnY = topRight.y + topOffset;
+    //    cameraHeight = Camera.main.orthographicSize;
+    //    cameraWidth = cameraHeight * Camera.main.aspect;
 
-        leftSpawnX = bottomLeft.x - 1f;   // appena fuori dal bordo sinistro
-        rightSpawnX = -(bottomLeft.x - 1f); // appena fuori dal bordo destro
-        sideSpawnMinY = camCenter + 1f;            // dalla metà camera in su
-        sideSpawnMaxY = spawnY + 5f;      // fino a 3 unità sopra il bordo superiore
-    }
+    //    // Calcola i range di spawn laterali basati sulla posizione centrale della camera
+    //    float camCenter = Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, camDistance)).y;
+
+    //    leftSpawnX = bottomLeft.x - 1f;   // appena fuori dal bordo sinistro
+    //    rightSpawnX = -(bottomLeft.x - 1f); // appena fuori dal bordo destro
+    //    sideSpawnMinY = camCenter + 1f;            // dalla metà camera in su
+    //    sideSpawnMaxY = spawnY + 5f;      // fino a 3 unità sopra il bordo superiore
+    //}
 
     void Update()
     {
@@ -181,7 +182,10 @@ public class AsteroidSpawner : MonoBehaviour
         GameObject asteroidPrefab = GetAsteroidBySize(phase.normalSizeDistribution);
         if (asteroidPrefab == null) return;
 
-        Vector3 spawnPosition = GetSpawnPosition(topSpawnPoints, minX, maxX, spawnY);
+        var bounds = SpawnBoundsProvider.Instance;
+        float randomX = Random.Range(bounds.TopMinX, bounds.TopMaxX);
+        Vector3 spawnPosition = new Vector3(randomX, bounds.TopY, 0f);
+
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
         ApplyBigScaleVariation(asteroid);
 
@@ -210,9 +214,10 @@ public class AsteroidSpawner : MonoBehaviour
         GameObject asteroidPrefab = GetAsteroidBySize(phase.diagonalSizeDistribution);
         if (asteroidPrefab == null) return;
 
+        var bounds = SpawnBoundsProvider.Instance;
         bool spawnFromLeft = Random.value > 0.5f;
-        float spawnX = spawnFromLeft ? leftSpawnX : rightSpawnX;
-        float spawnPosY = Random.Range(sideSpawnMinY, sideSpawnMaxY);
+        float spawnX = spawnFromLeft ? bounds.LeftX : bounds.RightX;
+        float spawnPosY = Random.Range(bounds.DiagonalMinY, bounds.DiagonalMaxY);
         Vector3 spawnPosition = new Vector3(spawnX, spawnPosY, 0f);
 
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
@@ -246,9 +251,10 @@ public class AsteroidSpawner : MonoBehaviour
         GameObject asteroidPrefab = GetAsteroidBySize(phase.horizontalSizeDistribution);
         if (asteroidPrefab == null) return;
 
+        var b = SpawnBoundsProvider.Instance;
         bool spawnFromLeft = Random.value > 0.5f;
-        float spawnX = spawnFromLeft ? leftSpawnX : rightSpawnX;
-        float spawnPosY = Random.Range(sideSpawnMinY, sideSpawnMaxY);
+        float spawnX = spawnFromLeft ? b.LeftX : b.RightX;
+        float spawnPosY = Random.Range(b.SideMinY, b.SideMaxY);
         Vector3 spawnPosition = new Vector3(spawnX, spawnPosY, 0f);
 
         GameObject asteroid = Instantiate(asteroidPrefab, spawnPosition, Quaternion.identity);
