@@ -15,9 +15,9 @@ MonoBehaviour:
   isBoss: 0
   bossPrefab: {fileID: 0}
   levelName: Default Level
-  levelDuration: 30
+  levelDuration: 45
   phase1:
-    designNotes: 
+    designNotes: bombersss
     spawnNormal: 1
     normalSpawnInterval: 1
     normalSpeed: 9
@@ -72,7 +72,7 @@ MonoBehaviour:
     kamikazeSpeedMult: 1
     kamikazeChargeDelayMult: 1
     allowBombers: 1
-    bomberSpawnInterval: 0.8
+    bomberSpawnInterval: 0.7
     bomberSpeedMult: 1
     bomberDropRateMult: 0.8
     allowPulsars: 0
