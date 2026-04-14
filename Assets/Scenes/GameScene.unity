@@ -823,7 +823,7 @@ MonoBehaviour:
   difficultyIncreasePerLoop: 0.5
   skipToFirstBoss: 0
   debugSpecificLevel: 1
-  debugLevelIndex: 1
+  debugLevelIndex: 4
   levelInfoGroup: {fileID: 2116371337}
   levelText: {fileID: 1669339249}
   levelProgressBarFill: {fileID: 631404793}
