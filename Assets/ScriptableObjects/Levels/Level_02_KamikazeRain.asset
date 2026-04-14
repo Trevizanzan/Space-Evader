@@ -22,30 +22,7 @@ MonoBehaviour:
     normalSpawnInterval: 0.5
     normalSpeed: 9
     normalSizeDistribution: 1
-    spawnDiagonal: 1
-    diagonalSpawnInterval: 0.8
-    diagonalSpeed: 7
-    diagonalSizeDistribution: 0
-    spawnHorizontal: 0
-    horizontalSpawnInterval: 0
-    horizontalSpeed: 0
-    horizontalSizeDistribution: 0
-    healthMultiplier: 1
-    allowFighters: 0
-    fighterSpawnInterval: 0
-    allowKamikazes: 1
-    kamikazeSpawnInterval: 1.5
-    allowBombers: 0
-    bomberSpawnInterval: 0
-    allowPulsars: 0
-    pulsarSpawnInterval: 0
-  phase2:
-    designNotes: 
-    spawnNormal: 1
-    normalSpawnInterval: 0.8
-    normalSpeed: 9
-    normalSizeDistribution: 0
-    spawnDiagonal: 1
+    spawnDiagonal: 0
     diagonalSpawnInterval: 0.8
     diagonalSpeed: 7
     diagonalSizeDistribution: 0
@@ -56,12 +33,53 @@ MonoBehaviour:
     healthMultiplier: 1
     allowFighters: 0
     fighterSpawnInterval: 0
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
     allowKamikazes: 1
     kamikazeSpawnInterval: 1
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
     allowBombers: 0
     bomberSpawnInterval: 0
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
     allowPulsars: 0
     pulsarSpawnInterval: 0
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
+  phase2:
+    designNotes: 
+    spawnNormal: 1
+    normalSpawnInterval: 0.8
+    normalSpeed: 9
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 1
+    diagonalSpeed: 9
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 1
+    horizontalSpeed: 7
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 0
+    fighterSpawnInterval: 0
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 1
+    kamikazeSpawnInterval: 1
+    kamikazeSpeedMult: 1.2
+    kamikazeChargeDelayMult: 1
+    allowBombers: 0
+    bomberSpawnInterval: 0
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 0
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
   phase3:
     designNotes: test primo livello
     spawnNormal: 1
@@ -69,8 +87,8 @@ MonoBehaviour:
     normalSpeed: 9
     normalSizeDistribution: 0
     spawnDiagonal: 1
-    diagonalSpawnInterval: 0.9
-    diagonalSpeed: 7
+    diagonalSpawnInterval: 1.2
+    diagonalSpeed: 9
     diagonalSizeDistribution: 0
     spawnHorizontal: 1
     horizontalSpawnInterval: 1.3
@@ -79,9 +97,18 @@ MonoBehaviour:
     healthMultiplier: 1
     allowFighters: 0
     fighterSpawnInterval: 0
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
     allowKamikazes: 1
-    kamikazeSpawnInterval: 0.6
+    kamikazeSpawnInterval: 1
+    kamikazeSpeedMult: 1.5
+    kamikazeChargeDelayMult: 1
     allowBombers: 0
     bomberSpawnInterval: 0
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
     allowPulsars: 0
     pulsarSpawnInterval: 0
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
