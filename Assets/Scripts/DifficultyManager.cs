@@ -43,7 +43,7 @@ public class DifficultyManager : MonoBehaviour
     private bool isInTransition = false;
     private bool isBossFight = false;
     private int currentLevelIndex = 0;
-    private int loopCount = 0;
+    //private int loopCount = 0;
 
     // Events
     public System.Action OnLevelComplete;
@@ -125,16 +125,24 @@ public class DifficultyManager : MonoBehaviour
     /// </summary>
     void AdvanceToNextLevel()
     {
+        // PRIMA di incrementare currentLevelIndex: registra le stats del livello appena completato, che si riferiscono al level corrente (quello che sta per finire, non quello che sta per iniziare)
+        if (StatsRecorder.Instance != null)
+            StatsRecorder.Instance.OnLevelEnded(completed: true);
+
         currentLevelIndex++;
 
-        if (currentLevelIndex >= gameSequence.levels.Length)
-        {
-            // Loop completo: ricomincia con difficoltà aumentata
-            currentLevelIndex = 0;
-            loopCount++;
-            globalDifficultyMultiplier += difficultyIncreasePerLoop;
-            Debug.Log($"[DifficultyManager] Loop {loopCount} iniziato! Difficoltà: {globalDifficultyMultiplier:F2}x");
-        }
+        // DOPO aver incrementato currentLevelIndex: registra l'inizio del nuovo livello, che si riferisce al level corrente (quello che sta per iniziare, non quello che sta per finire)
+        if (StatsRecorder.Instance != null)
+            StatsRecorder.Instance.OnLevelStarted();
+
+        //if (currentLevelIndex >= gameSequence.levels.Length)
+        //{
+        //    // Loop completo: ricomincia con difficoltà aumentata
+        //    currentLevelIndex = 0;
+        //    loopCount++;
+        //    globalDifficultyMultiplier += difficultyIncreasePerLoop;
+        //    Debug.Log($"[DifficultyManager] Loop {loopCount} iniziato! Difficoltà: {globalDifficultyMultiplier:F2}x");
+        //}
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -449,8 +457,11 @@ public class DifficultyManager : MonoBehaviour
         GUILayout.Label($"Level Time: {levelTime:F1}s");
         GUILayout.Label($"Progress: {progress:F2}");
         GUILayout.Label($"Phase: {GetCurrentPhase()}");
-        GUILayout.Label($"Loop: {loopCount}");
+        //GUILayout.Label($"Loop: {loopCount}");
         GUILayout.Label($"Global Multiplier: {globalDifficultyMultiplier:F2}x");
         GUILayout.Label($"Boss Fight: {isBossFight}");
     }
+
+    public int GetCurrentLevelIndex() => currentLevelIndex;
+    //public int GetLoopCount() => loopCount;
 }

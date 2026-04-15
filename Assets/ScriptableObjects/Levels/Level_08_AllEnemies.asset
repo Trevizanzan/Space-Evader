@@ -102,7 +102,7 @@ MonoBehaviour:
     allowKamikazes: 1
     kamikazeSpawnInterval: 3
     kamikazeSpeedMult: 1
-    kamikazeChargeDelayMult: 1
+    kamikazeChargeDelayMult: 0.9
     allowBombers: 1
     bomberSpawnInterval: 2
     bomberSpeedMult: 1

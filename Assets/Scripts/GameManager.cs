@@ -84,6 +84,10 @@ public class GameManager : MonoBehaviour
                 goShotsText.text = $"SHOTS FIRED: {RunStats.Instance.ShotsFired}";
             if (goDamageText != null)
                 goDamageText.text = $"DAMAGE TAKEN: {RunStats.Instance.DamageTaken}";
+
+            // Salva stats del tentativo
+            if (StatsRecorder.Instance != null)
+                StatsRecorder.Instance.OnLevelEnded(completed: false);
         }
 
         // Mostra UI dopo un attimo (usando tempo non scalato),
