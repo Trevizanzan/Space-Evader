@@ -72,14 +72,14 @@ public class StatsRecorder : MonoBehaviour
         allStats.attempts.Add(attempt);
         SaveToFile();
 
-        Debug.Log($"[StatsRecorder] Salvato tentativo: {attempt.levelName} | Completato: {completed} | Time: {attempt.timeAlive:F1}s");
+        //Debug.Log($"[StatsRecorder] Salvato tentativo: {attempt.levelName} | Completato: {completed} | Time: {attempt.timeAlive:F1}s");
     }
 
     private void SaveToFile()
     {
         string json = JsonUtility.ToJson(allStats, prettyPrint: true);
         File.WriteAllText(filePath, json);
-        Debug.Log($"[StatsRecorder] Stats salvate in: {filePath}");
+        //Debug.Log($"[StatsRecorder] Stats salvate in: {filePath}");
     }
 
     private void LoadExisting()
@@ -88,7 +88,7 @@ public class StatsRecorder : MonoBehaviour
         {
             string json = File.ReadAllText(filePath);
             allStats = JsonUtility.FromJson<AllStats>(json) ?? new AllStats();
-            Debug.Log($"[StatsRecorder] Caricate {allStats.attempts.Count} sessioni precedenti.");
+            //Debug.Log($"[StatsRecorder] Caricate {allStats.attempts.Count} sessioni precedenti.");
         }
     }
 

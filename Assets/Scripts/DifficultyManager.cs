@@ -14,7 +14,7 @@ public class DifficultyManager : MonoBehaviour
 
     [Header("Difficulty Scaling")]
     [SerializeField] private float globalDifficultyMultiplier = 1f;
-    [SerializeField] private float difficultyIncreasePerLoop = 0.5f; // +50% ogni loop completo
+    //[SerializeField] private float difficultyIncreasePerLoop = 0.5f; // +50% ogni loop completo
 
     [Header("Debug")]
     [SerializeField] private bool skipToFirstBoss = false;
@@ -131,9 +131,9 @@ public class DifficultyManager : MonoBehaviour
 
         currentLevelIndex++;
 
-        // DOPO aver incrementato currentLevelIndex: registra l'inizio del nuovo livello, che si riferisce al level corrente (quello che sta per iniziare, non quello che sta per finire)
-        if (StatsRecorder.Instance != null)
-            StatsRecorder.Instance.OnLevelStarted();
+        //// DOPO aver incrementato currentLevelIndex: registra l'inizio del nuovo livello, che si riferisce al level corrente (quello che sta per iniziare, non quello che sta per finire)
+        //if (StatsRecorder.Instance != null)
+        //    StatsRecorder.Instance.OnLevelStarted();
 
         //if (currentLevelIndex >= gameSequence.levels.Length)
         //{
@@ -216,6 +216,10 @@ public class DifficultyManager : MonoBehaviour
 
         ShowLevelUI();
 
+        // registra inizio livello (dopo la pausa e dopo che la scena è pulita, per avere dati più accurati)
+        if (StatsRecorder.Instance != null)
+            StatsRecorder.Instance.OnLevelStarted();
+
         // Riattiva spawner
         AsteroidSpawner asteroidSpawner = FindFirstObjectByType<AsteroidSpawner>();
         if (asteroidSpawner != null) asteroidSpawner.enabled = true;
@@ -237,13 +241,9 @@ public class DifficultyManager : MonoBehaviour
             Vector3 spawnPos = new Vector3(0, cameraTop * 1.1f, 0);
             Instantiate(level.bossPrefab, spawnPos, level.bossPrefab.transform.rotation);
         }
-        else
-        {
-            Debug.LogWarning("[DifficultyManager] Level Boss senza bossPrefab assegnato!");
-        }
 
         ShowBossUI();
-        Debug.Log($"[DifficultyManager] Boss fight iniziato!");
+        //Debug.Log($"[DifficultyManager] Boss fight iniziato!");
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -446,6 +446,7 @@ public class DifficultyManager : MonoBehaviour
         }
     }
 
+    #if UNITY_EDITOR
     void OnGUI()
     {
         if (!Application.isPlaying) return;
@@ -461,6 +462,7 @@ public class DifficultyManager : MonoBehaviour
         GUILayout.Label($"Global Multiplier: {globalDifficultyMultiplier:F2}x");
         GUILayout.Label($"Boss Fight: {isBossFight}");
     }
+    #endif
 
     public int GetCurrentLevelIndex() => currentLevelIndex;
     //public int GetLoopCount() => loopCount;

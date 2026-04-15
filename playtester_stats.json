@@ -1,0 +1,69 @@
+{
+    "attempts": [
+        {
+            "timestamp": "2026-04-15 15:23:54",
+            "levelName": "Default Level",
+            "levelIndex": 0,
+            "timeAlive": 80.01063537597656,
+            "score": 1110,
+            "enemiesKilled": 0,
+            "bossesKilled": 0,
+            "asteroidsDestroyed": 84,
+            "shotsFired": 524,
+            "damageTaken": 0,
+            "completedLevel": true
+        },
+        {
+            "timestamp": "2026-04-15 15:24:55",
+            "levelName": "Default Level",
+            "levelIndex": 1,
+            "timeAlive": 60.36210632324219,
+            "score": 3000,
+            "enemiesKilled": 13,
+            "bossesKilled": 0,
+            "asteroidsDestroyed": 56,
+            "shotsFired": 396,
+            "damageTaken": 1,
+            "completedLevel": true
+        },
+        {
+            "timestamp": "2026-04-15 15:25:49",
+            "levelName": "fighters",
+            "levelIndex": 2,
+            "timeAlive": 53.873779296875,
+            "score": 5700,
+            "enemiesKilled": 23,
+            "bossesKilled": 0,
+            "asteroidsDestroyed": 32,
+            "shotsFired": 354,
+            "damageTaken": 1,
+            "completedLevel": true
+        },
+        {
+            "timestamp": "2026-04-15 15:25:51",
+            "levelName": "",
+            "levelIndex": 3,
+            "timeAlive": 56.366668701171878,
+            "score": 5700,
+            "enemiesKilled": 23,
+            "bossesKilled": 0,
+            "asteroidsDestroyed": 32,
+            "shotsFired": 367,
+            "damageTaken": 2,
+            "completedLevel": false
+        },
+        {
+            "timestamp": "2026-04-15 15:29:11",
+            "levelName": "Default Level",
+            "levelIndex": 0,
+            "timeAlive": 11.908487319946289,
+            "score": 50,
+            "enemiesKilled": 0,
+            "bossesKilled": 0,
+            "asteroidsDestroyed": 5,
+            "shotsFired": 78,
+            "damageTaken": 8,
+            "completedLevel": false
+        }
+    ]
+}

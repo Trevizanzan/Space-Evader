@@ -42,6 +42,15 @@ public class GameManager : MonoBehaviour
             Instance = this;
     }
 
+    void Start()
+    {
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetGameplayCursor();
+
+        if (StatsRecorder.Instance != null)
+            StatsRecorder.Instance.OnLevelStarted();
+    }
+
     public void GameOver()
     {
         if (isGameOver) return;
@@ -84,11 +93,11 @@ public class GameManager : MonoBehaviour
                 goShotsText.text = $"SHOTS FIRED: {RunStats.Instance.ShotsFired}";
             if (goDamageText != null)
                 goDamageText.text = $"DAMAGE TAKEN: {RunStats.Instance.DamageTaken}";
-
-            // Salva stats del tentativo
-            if (StatsRecorder.Instance != null)
-                StatsRecorder.Instance.OnLevelEnded(completed: false);
         }
+
+        // Salva stats del tentativo
+        if (StatsRecorder.Instance != null)
+            StatsRecorder.Instance.OnLevelEnded(completed: false);
 
         // Mostra UI dopo un attimo (usando tempo non scalato),
         // questo per dare tempo alle animazioni di esplosione di completarsi
@@ -97,6 +106,9 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator GameOverRoutine()
     {
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetMenuCursor();
+
         // Aspetta un attimo (tempo reale, non affected dal timeScale)
         yield return new WaitForSecondsRealtime(0.333f); 
 
@@ -110,6 +122,9 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetGameplayCursor();
+
         Time.timeScale = 1f;
 
         // Reset difficulty (se vuoi ricominciare da zero)
@@ -123,10 +138,28 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
-        // Restart da tastiera
-        if (isGameOver && Input.GetKeyDown(KeyCode.Return))
+        //// Restart da tastiera
+        //if (isGameOver && Input.GetKeyDown(KeyCode.Return))
+        //{
+        //    RestartGame();
+        //}
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            RestartGame();
+            ReturnToMainMenu();
+            return;
         }
+
+        if (isGameOver && Input.GetKeyDown(KeyCode.Return))
+            RestartGame();
+    }
+
+    public void ReturnToMainMenu()
+    {
+        if (CursorManager.Instance != null)
+            CursorManager.Instance.SetMenuCursor();
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 }
