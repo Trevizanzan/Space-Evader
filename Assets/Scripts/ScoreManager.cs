@@ -73,7 +73,8 @@ public class ScoreManager : MonoBehaviour
     {
         if (livesText != null && playerHealth != null)
         {
-            livesText.text = playerHealth.CurrentHealth.ToString();
+            int currentHealth = playerHealth.CurrentHealth;
+            livesText.text = Mathf.Max(0, currentHealth).ToString();
         }
     }
 
