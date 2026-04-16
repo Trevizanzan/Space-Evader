@@ -69,6 +69,8 @@ public class DifficultyManager : MonoBehaviour
             StartCoroutine(DebugSkipToBoss());
         else if (debugSpecificLevel)
             StartCoroutine(DebugSkipToLevel());
+
+        ApplyLevelConstraints();
     }
 
     void Update()
@@ -131,18 +133,7 @@ public class DifficultyManager : MonoBehaviour
 
         currentLevelIndex++;
 
-        //// DOPO aver incrementato currentLevelIndex: registra l'inizio del nuovo livello, che si riferisce al level corrente (quello che sta per iniziare, non quello che sta per finire)
-        //if (StatsRecorder.Instance != null)
-        //    StatsRecorder.Instance.OnLevelStarted();
-
-        //if (currentLevelIndex >= gameSequence.levels.Length)
-        //{
-        //    // Loop completo: ricomincia con difficoltà aumentata
-        //    currentLevelIndex = 0;
-        //    loopCount++;
-        //    globalDifficultyMultiplier += difficultyIncreasePerLoop;
-        //    Debug.Log($"[DifficultyManager] Loop {loopCount} iniziato! Difficoltà: {globalDifficultyMultiplier:F2}x");
-        //}
+        ApplyLevelConstraints();
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -418,6 +409,7 @@ public class DifficultyManager : MonoBehaviour
         }
 
         StartBossFight(GetCurrentLevel());
+        ApplyLevelConstraints();
     }
 
     IEnumerator DebugSkipToLevel()
@@ -437,16 +429,28 @@ public class DifficultyManager : MonoBehaviour
             if (enemySpawner != null) enemySpawner.enabled = false;
 
             StartBossFight(GetCurrentLevel());
+            ApplyLevelConstraints();
         }
         else
         {
             levelTime = 0f;
             progress = 0f;
             ShowLevelUI();
+            ApplyLevelConstraints();
         }
     }
 
-    #if UNITY_EDITOR
+    void ApplyLevelConstraints()
+    {
+        LevelProfile level = GetCurrentLevel();
+        if (level == null) return;
+
+        PlayerShooting shooting = FindFirstObjectByType<PlayerShooting>();
+        if (shooting != null)
+            shooting.SetShootingDisabled(level.disableShooting);
+    }
+
+#if UNITY_EDITOR
     void OnGUI()
     {
         if (!Application.isPlaying) return;

@@ -81,6 +81,10 @@ public class LevelProfile : ScriptableObject
     public string levelName = "Default Level";
     public float levelDuration = 30f;
 
+    [Header("Player Constraints")]
+    [Tooltip("Se true, il player non può sparare in questo livello")]
+    public bool disableShooting = false;
+
     [Header("Phase Configurations")]
     public PhaseConfig phase1 = new PhaseConfig();
     public PhaseConfig phase2 = new PhaseConfig();

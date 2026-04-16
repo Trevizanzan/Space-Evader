@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d52c4dc37447f428b953f7f7598098, type: 3}
+  m_Name: Level_LastStand
+  m_EditorClassIdentifier: Assembly-CSharp::LevelProfile
+  isBoss: 0
+  bossPrefab: {fileID: 0}
+  levelName: Level_LastStand
+  levelDuration: 45
+  disableShooting: 1
+  phase1:
+    designNotes: "Concept: kamikaze e fighter ti attraversano lo schermo \u2014 non
+      puoi sparargli, devi solo sopravvivere agli impatti corpo a corpo."
+    spawnNormal: 1
+    normalSpawnInterval: 1.5
+    normalSpeed: 9
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 2
+    diagonalSpeed: 7
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 4
+    horizontalSpeed: 12
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 1
+    fighterSpawnInterval: 4
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 1
+    kamikazeSpawnInterval: 3
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
+    allowBombers: 0
+    bomberSpawnInterval: 4
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 8
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
+  phase2:
+    designNotes: 
+    spawnNormal: 1
+    normalSpawnInterval: 1
+    normalSpeed: 9
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 2
+    diagonalSpeed: 7
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 4
+    horizontalSpeed: 12
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 1
+    fighterSpawnInterval: 3
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 1
+    kamikazeSpawnInterval: 3
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
+    allowBombers: 0
+    bomberSpawnInterval: 3
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 5
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 1
+  phase3:
+    designNotes: 
+    spawnNormal: 1
+    normalSpawnInterval: 1
+    normalSpeed: 9
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 2
+    diagonalSpeed: 7
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 4
+    horizontalSpeed: 12
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 1
+    fighterSpawnInterval: 3
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 1
+    kamikazeSpawnInterval: 2
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 0.8
+    allowBombers: 0
+    bomberSpawnInterval: 2
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 4
+    pulsarSpeedMult: 2
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 2

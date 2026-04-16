@@ -12,6 +12,12 @@ public class PlayerShooting : MonoBehaviour
     // Aggiunta cooldown per evitare di sparare troppo velocemente
     private float lastShootTime = 0f;
 
+    private bool shootingDisabled = false;
+    public void SetShootingDisabled(bool disabled)
+    {
+        shootingDisabled = disabled;
+    }
+
     [Header("Auto Fire")]
     [SerializeField] private bool autoFire = false;
 
@@ -19,6 +25,8 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
+        if (shootingDisabled) return;
+
         // Il player non può sparare se il boss sta entrando
         if (BossBase.IsBossEntering) return;
 

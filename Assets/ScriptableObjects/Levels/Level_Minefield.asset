@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d52c4dc37447f428b953f7f7598098, type: 3}
+  m_Name: Level_Minefield
+  m_EditorClassIdentifier: Assembly-CSharp::LevelProfile
+  isBoss: 0
+  bossPrefab: {fileID: 0}
+  levelName: Level_Minefield
+  levelDuration: 35
+  disableShooting: 1
+  phase1:
+    designNotes: "Usa solo asteroidi lenti ma tantissimi e ravvicinati \u2014 il
+      player deve infilarsi nei varchi. Imposta asteroidSpawnInterval molto basso
+      e asteroidSpeedMult intorno a 0.6"
+    spawnNormal: 1
+    normalSpawnInterval: 1
+    normalSpeed: 12
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 1
+    diagonalSpeed: 12
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 0
+    horizontalSpawnInterval: 1
+    horizontalSpeed: 12
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 0
+    fighterSpawnInterval: 4
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 0
+    kamikazeSpawnInterval: 5
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
+    allowBombers: 0
+    bomberSpawnInterval: 4
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 8
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
+  phase2:
+    designNotes: 
+    spawnNormal: 1
+    normalSpawnInterval: 0.8
+    normalSpeed: 11
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 0.8
+    diagonalSpeed: 11
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 0.8
+    horizontalSpeed: 11
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 0
+    fighterSpawnInterval: 3
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 0
+    kamikazeSpawnInterval: 4
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
+    allowBombers: 0
+    bomberSpawnInterval: 3
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 5
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 1
+  phase3:
+    designNotes: 
+    spawnNormal: 1
+    normalSpawnInterval: 0.8
+    normalSpeed: 11
+    normalSizeDistribution: 0
+    spawnDiagonal: 1
+    diagonalSpawnInterval: 0.8
+    diagonalSpeed: 11
+    diagonalSizeDistribution: 0
+    spawnHorizontal: 1
+    horizontalSpawnInterval: 0.8
+    horizontalSpeed: 11
+    horizontalSizeDistribution: 0
+    healthMultiplier: 1
+    allowFighters: 0
+    fighterSpawnInterval: 2.5
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
+    allowKamikazes: 0
+    kamikazeSpawnInterval: 3
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 0.9
+    allowBombers: 0
+    bomberSpawnInterval: 2
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
+    allowPulsars: 0
+    pulsarSpawnInterval: 4
+    pulsarSpeedMult: 2
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 2
