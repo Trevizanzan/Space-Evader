@@ -1,0 +1,260 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.top{padding:1rem 0 0.5rem}
+.upload-zone{border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:2rem;text-align:center;cursor:pointer;transition:background 0.15s}
+.upload-zone:hover{background:var(--color-background-secondary)}
+.upload-zone input{display:none}
+.label{font-size:13px;color:var(--color-text-secondary);margin-bottom:4px}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:1rem 0}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.75rem 1rem}
+.metric .val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric .lbl{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.section{margin:1.5rem 0}
+.section h2{font-size:15px;font-weight:500;margin-bottom:0.75rem;color:var(--color-text-primary)}
+.runs-list{display:flex;flex-direction:column;gap:8px}
+.run-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:0.75rem 1rem;cursor:pointer;transition:background 0.1s}
+.run-card:hover{background:var(--color-background-secondary)}
+.run-card.active{border-color:var(--color-border-info);background:var(--color-background-info)}
+.run-header{display:flex;justify-content:space-between;align-items:center}
+.run-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.run-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.badge{font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500}
+.badge.ok{background:var(--color-background-success);color:var(--color-text-success)}
+.badge.ko{background:var(--color-background-danger);color:var(--color-text-danger)}
+.levels-table{width:100%;border-collapse:collapse;font-size:13px}
+.levels-table th{text-align:left;padding:6px 8px;font-weight:500;font-size:12px;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.levels-table td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+.levels-table tr:last-child td{border-bottom:none}
+.levels-table tr.died td{background:var(--color-background-danger)}
+.pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;font-weight:500}
+.pill.done{background:var(--color-background-success);color:var(--color-text-success)}
+.pill.dead{background:var(--color-background-danger);color:var(--color-text-danger)}
+.chart-wrap{position:relative;width:100%;height:220px;margin-top:0.5rem}
+.tabs{display:flex;gap:4px;margin-bottom:1rem}
+.tab{font-size:13px;padding:4px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:transparent;cursor:pointer;color:var(--color-text-secondary)}
+.tab.active{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-secondary)}
+.empty{color:var(--color-text-tertiary);font-size:14px;text-align:center;padding:2rem}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--color-text-secondary);margin-bottom:8px}
+.leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px}
+</style>
+
+<h2 class="sr-only">Visualizzatore statistiche playtester — carica un file JSON per analizzare le run</h2>
+
+<div class="top">
+  <div class="upload-zone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+    <input type="file" id="fileInput" accept=".json">
+    <div style="font-size:14px;color:var(--color-text-secondary)">Trascina qui il file <strong>playtester_stats.json</strong> oppure clicca per sceglierlo</div>
+    <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:6px">oppure usa i dati di esempio sotto</div>
+    <button onclick="event.stopPropagation();loadSample()" style="margin-top:10px;font-size:12px;padding:4px 14px">Carica dati di esempio</button>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none">
+  <div class="metrics" id="metrics"></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('runs')">Run</button>
+    <button class="tab" onclick="showTab('levels')">Per livello</button>
+    <button class="tab" onclick="showTab('charts')">Grafici</button>
+  </div>
+
+  <div id="tab-runs">
+    <div class="runs-list" id="runsList"></div>
+    <div class="section" id="runDetail"></div>
+  </div>
+
+  <div id="tab-levels" style="display:none">
+    <div class="section">
+      <h2>Statistiche aggregate per livello</h2>
+      <div id="levelsAgg"></div>
+    </div>
+  </div>
+
+  <div id="tab-charts" style="display:none">
+    <div class="section">
+      <div class="legend">
+        <span><span class="leg-dot" style="background:#378ADD"></span>Score finale run</span>
+        <span><span class="leg-dot" style="background:#1D9E75"></span>Livello raggiunto</span>
+      </div>
+      <div class="chart-wrap"><canvas id="chartScore" role="img" aria-label="Score per run"></canvas></div>
+    </div>
+    <div class="section">
+      <h2>Danni per livello (media tra run)</h2>
+      <div class="chart-wrap"><canvas id="chartDamage" role="img" aria-label="Danni subiti per livello"></canvas></div>
+    </div>
+    <div class="section">
+      <h2>Colpi sparati vs nemici uccisi per livello (media)</h2>
+      <div class="chart-wrap"><canvas id="chartShots" role="img" aria-label="Colpi e uccisioni per livello"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SAMPLE = {"attempts":[{"timestamp":"2026-04-15 17:30:08","levelName":"Level_01","levelIndex":0,"timeAlive":60.01,"score":950,"enemiesKilled":0,"bossesKilled":0,"asteroidsDestroyed":69,"shotsFired":279,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:31:07","levelName":"Level_02","levelIndex":1,"timeAlive":58.78,"score":3340,"enemiesKilled":16,"bossesKilled":0,"asteroidsDestroyed":59,"shotsFired":292,"damageTaken":2,"completedLevel":true},{"timestamp":"2026-04-15 17:32:07","levelName":"Level_03","levelIndex":2,"timeAlive":60.0,"score":5940,"enemiesKilled":22,"bossesKilled":0,"asteroidsDestroyed":29,"shotsFired":251,"damageTaken":1,"completedLevel":true},{"timestamp":"2026-04-15 17:32:21","levelName":"Boss_Angel","levelIndex":3,"timeAlive":73.81,"score":5940,"enemiesKilled":22,"bossesKilled":1,"asteroidsDestroyed":29,"shotsFired":291,"damageTaken":1,"completedLevel":true},{"timestamp":"2026-04-15 17:33:09","levelName":"Level_05","levelIndex":4,"timeAlive":48.86,"score":10640,"enemiesKilled":44,"bossesKilled":0,"asteroidsDestroyed":19,"shotsFired":272,"damageTaken":3,"completedLevel":false},{"timestamp":"2026-04-15 17:34:59","levelName":"Level_01","levelIndex":0,"timeAlive":60.01,"score":1030,"enemiesKilled":0,"bossesKilled":0,"asteroidsDestroyed":69,"shotsFired":218,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:35:56","levelName":"Level_02","levelIndex":1,"timeAlive":57.09,"score":2580,"enemiesKilled":9,"bossesKilled":0,"asteroidsDestroyed":54,"shotsFired":275,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:36:54","levelName":"Level_03","levelIndex":2,"timeAlive":58.0,"score":4410,"enemiesKilled":15,"bossesKilled":0,"asteroidsDestroyed":24,"shotsFired":166,"damageTaken":4,"completedLevel":true},{"timestamp":"2026-04-15 17:37:06","levelName":"Boss_Angel","levelIndex":3,"timeAlive":70.53,"score":4410,"enemiesKilled":15,"bossesKilled":1,"asteroidsDestroyed":24,"shotsFired":198,"damageTaken":4,"completedLevel":true},{"timestamp":"2026-04-15 17:37:55","levelName":"Level_05","levelIndex":4,"timeAlive":48.09,"score":9820,"enemiesKilled":52,"bossesKilled":0,"asteroidsDestroyed":15,"shotsFired":263,"damageTaken":2,"completedLevel":false},{"timestamp":"2026-04-15 17:43:30","levelName":"Level_01","levelIndex":0,"timeAlive":60.01,"score":1190,"enemiesKilled":0,"bossesKilled":0,"asteroidsDestroyed":85,"shotsFired":392,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:44:25","levelName":"Level_02","levelIndex":1,"timeAlive":55.03,"score":3210,"enemiesKilled":13,"bossesKilled":0,"asteroidsDestroyed":56,"shotsFired":361,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:45:20","levelName":"Level_03","levelIndex":2,"timeAlive":55.08,"score":6220,"enemiesKilled":26,"bossesKilled":0,"asteroidsDestroyed":27,"shotsFired":360,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:45:31","levelName":"Boss_Angel","levelIndex":3,"timeAlive":66.72,"score":6220,"enemiesKilled":26,"bossesKilled":1,"asteroidsDestroyed":27,"shotsFired":433,"damageTaken":0,"completedLevel":true},{"timestamp":"2026-04-15 17:46:31","levelName":"Level_05","levelIndex":4,"timeAlive":60.01,"score":13560,"enemiesKilled":71,"bossesKilled":0,"asteroidsDestroyed":15,"shotsFired":393,"damageTaken":1,"completedLevel":true},{"timestamp":"2026-04-15 17:47:31","levelName":"Level_06","levelIndex":5,"timeAlive":60.0,"score":21250,"enemiesKilled":74,"bossesKilled":0,"asteroidsDestroyed":24,"shotsFired":392,"damageTaken":4,"completedLevel":true},{"timestamp":"2026-04-15 17:48:09","levelName":"Level_08","levelIndex":6,"timeAlive":37.27,"score":24020,"enemiesKilled":25,"bossesKilled":0,"asteroidsDestroyed":22,"shotsFired":243,"damageTaken":2,"completedLevel":false}]};
+
+let allData = null;
+let runs = [];
+let charts = {};
+let activeRunIdx = null;
+
+function loadSample(){ processData(SAMPLE); }
+
+document.getElementById('fileInput').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{ try{ processData(JSON.parse(ev.target.result)); }catch(err){ alert('File JSON non valido'); } };
+  r.readAsText(f);
+});
+
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.style.background='var(--color-background-secondary)'; });
+dz.addEventListener('dragleave', ()=>{ dz.style.background=''; });
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.style.background=''; const f=e.dataTransfer.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{ processData(JSON.parse(ev.target.result)); }catch(err){ alert('File JSON non valido'); } }; r.readAsText(f); });
+
+function processData(data){
+  allData = data;
+  runs = splitRuns(data.attempts);
+  document.getElementById('dashboard').style.display='block';
+  renderMetrics();
+  renderRuns();
+  renderLevels();
+  setTimeout(renderCharts, 100);
+}
+
+function splitRuns(attempts){
+  const runs=[];
+  let cur=[];
+  for(let i=0;i<attempts.length;i++){
+    const a=attempts[i];
+    if(i>0 && a.levelIndex <= attempts[i-1].levelIndex && cur.length>0){
+      runs.push(cur); cur=[];
+    }
+    cur.push(a);
+  }
+  if(cur.length) runs.push(cur);
+  return runs;
+}
+
+function fmt(s){ const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
+
+function renderMetrics(){
+  const totalRuns=runs.length;
+  const maxScore=Math.max(...runs.map(r=>r[r.length-1].score));
+  const maxLevel=Math.max(...allData.attempts.map(a=>a.levelIndex));
+  const allNames=[...new Set(allData.attempts.map(a=>a.levelName).filter(n=>n))];
+  document.getElementById('metrics').innerHTML=`
+    <div class="metric"><div class="val">${totalRuns}</div><div class="lbl">Run totali</div></div>
+    <div class="metric"><div class="val">${maxScore.toLocaleString()}</div><div class="lbl">Score massimo</div></div>
+    <div class="metric"><div class="val">${maxLevel+1}</div><div class="lbl">Livello max raggiunto</div></div>
+    <div class="metric"><div class="val">${allNames.length}</div><div class="lbl">Livelli distinti</div></div>
+  `;
+}
+
+function renderRuns(){
+  const el=document.getElementById('runsList');
+  el.innerHTML=runs.map((r,i)=>{
+    const last=r[r.length-1];
+    const died=!last.completedLevel;
+    const total=r.reduce((s,a)=>s+a.timeAlive,0);
+    const diedAt=died?last.levelName||('Livello '+last.levelIndex):'';
+    return `<div class="run-card" id="rc${i}" onclick="selectRun(${i})">
+      <div class="run-header">
+        <div>
+          <div class="run-title">Run ${i+1} &nbsp;<span style="font-size:12px;color:var(--color-text-secondary)">${r[0].timestamp.split(' ')[1]}</span></div>
+          <div class="run-sub">Score: ${last.score.toLocaleString()} &nbsp;·&nbsp; Durata: ${fmt(total)} &nbsp;·&nbsp; ${r.length} livelli</div>
+        </div>
+        <div>${died?`<span class="badge ko">morto a ${diedAt}</span>`:'<span class="badge ok">completata</span>'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectRun(i){
+  if(activeRunIdx===i){ activeRunIdx=null; document.getElementById('runDetail').innerHTML=''; document.querySelectorAll('.run-card').forEach(c=>c.classList.remove('active')); return; }
+  activeRunIdx=i;
+  document.querySelectorAll('.run-card').forEach((c,j)=>c.classList.toggle('active',j===i));
+  const r=runs[i];
+  document.getElementById('runDetail').innerHTML=`
+    <h2 style="font-size:15px;font-weight:500;margin-bottom:0.75rem">Dettaglio run ${i+1}</h2>
+    <table class="levels-table">
+      <thead><tr><th>Livello</th><th>Tempo</th><th>Danno</th><th>Nemici</th><th>Asteroidi</th><th>Colpi</th><th>Score</th><th></th></tr></thead>
+      <tbody>${r.map(a=>`<tr class="${!a.completedLevel?'died':''}">
+        <td>${a.levelName||('Boss '+a.levelIndex)}</td>
+        <td>${fmt(a.timeAlive)}</td>
+        <td>${a.damageTaken}</td>
+        <td>${a.enemiesKilled+(a.bossesKilled>0?' +boss':'')}</td>
+        <td>${a.asteroidsDestroyed}</td>
+        <td>${a.shotsFired}</td>
+        <td>${a.score.toLocaleString()}</td>
+        <td><span class="pill ${a.completedLevel?'done':'dead'}">${a.completedLevel?'ok':'morto'}</span></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function renderLevels(){
+  const byName={};
+  allData.attempts.forEach(a=>{
+    const k=a.levelName||('index_'+a.levelIndex);
+    if(!byName[k]) byName[k]={name:a.levelName||('Boss '+a.levelIndex),idx:a.levelIndex,attempts:[],completed:0,died:0};
+    byName[k].attempts.push(a);
+    a.completedLevel?byName[k].completed++:byName[k].died++;
+  });
+  const sorted=Object.values(byName).sort((a,b)=>a.idx-b.idx);
+  const avg=(arr,key)=>arr.length?Math.round(arr.reduce((s,a)=>s+a[key],0)/arr.length):0;
+  document.getElementById('levelsAgg').innerHTML=`<table class="levels-table">
+    <thead><tr><th>Livello</th><th>Tentativi</th><th>Completati</th><th>Morti</th><th>% morti</th><th>Danno medio</th><th>Colpi medi</th><th>Tempo medio</th></tr></thead>
+    <tbody>${sorted.map(l=>{
+      const pct=Math.round(l.died/l.attempts.length*100);
+      return `<tr>
+        <td>${l.name}</td>
+        <td>${l.attempts.length}</td>
+        <td>${l.completed}</td>
+        <td>${l.died}</td>
+        <td><span style="color:${pct>60?'var(--color-text-danger)':pct>30?'var(--color-text-warning)':'var(--color-text-success)'};font-weight:500">${pct}%</span></td>
+        <td>${avg(l.attempts,'damageTaken')}</td>
+        <td>${avg(l.attempts,'shotsFired')}</td>
+        <td>${fmt(avg(l.attempts,'timeAlive'))}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function renderCharts(){
+  Object.values(charts).forEach(c=>c.destroy());
+  charts={};
+
+  const runLabels=runs.map((_,i)=>'Run '+(i+1));
+  const runScores=runs.map(r=>r[r.length-1].score);
+  const runMaxLevel=runs.map(r=>r[r.length-1].levelIndex+1);
+
+  const byName={};
+  allData.attempts.forEach(a=>{
+    const k=a.levelName||('index_'+a.levelIndex);
+    if(!byName[k]) byName[k]={name:a.levelName||('Boss '+a.levelIndex),idx:a.levelIndex,damage:[],shots:[],enemies:[]};
+    byName[k].damage.push(a.damageTaken);
+    byName[k].shots.push(a.shotsFired);
+    byName[k].enemies.push(a.enemiesKilled);
+  });
+  const lvlsSorted=Object.values(byName).sort((a,b)=>a.idx-b.idx);
+  const lvlLabels=lvlsSorted.map(l=>l.name);
+  const avgDmg=lvlsSorted.map(l=>+(l.damage.reduce((s,v)=>s+v,0)/l.damage.length).toFixed(1));
+  const avgShots=lvlsSorted.map(l=>Math.round(l.shots.reduce((s,v)=>s+v,0)/l.shots.length));
+  const avgEnemies=lvlsSorted.map(l=>Math.round(l.enemies.reduce((s,v)=>s+v,0)/l.enemies.length));
+
+  charts.score=new Chart(document.getElementById('chartScore'),{type:'bar',data:{labels:runLabels,datasets:[{label:'Score',data:runScores,backgroundColor:'#378ADD',borderRadius:4},{label:'Livello max',data:runMaxLevel,backgroundColor:'#1D9E75',borderRadius:4,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'Score',font:{size:11}}},y2:{position:'right',title:{display:true,text:'Livello',font:{size:11}},grid:{drawOnChartArea:false}}}}});
+
+  charts.dmg=new Chart(document.getElementById('chartDamage'),{type:'bar',data:{labels:lvlLabels,datasets:[{label:'Danno medio',data:avgDmg,backgroundColor:'#D85A30',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:11}}},y:{beginAtZero:true}}}});
+
+  charts.shots=new Chart(document.getElementById('chartShots'),{type:'bar',data:{labels:lvlLabels,datasets:[{label:'Colpi medi',data:avgShots,backgroundColor:'#7F77DD',borderRadius:4},{label:'Nemici medi',data:avgEnemies,backgroundColor:'#1D9E75',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{autoSkip:false,maxRotation:45,font:{size:11}}},y:{beginAtZero:true}}}});
+}
+
+function showTab(name){
+  ['runs','levels','charts'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===name?'block':'none'; });
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['runs','levels','charts'][i]===name));
+  if(name==='charts') setTimeout(()=>{ Object.values(charts).forEach(c=>c.resize()); },50);
+}
+</script>

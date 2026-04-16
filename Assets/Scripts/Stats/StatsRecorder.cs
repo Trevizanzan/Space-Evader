@@ -1,8 +1,11 @@
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class StatsRecorder : MonoBehaviour
 {
+    private string discordWebhookUrl = "https://discord.com/api/webhooks/1494313163061989496/P1MEt75N2Ih_gmskW9LldQGE2eEbXrnD9Aba_1Xcyv6jn_eobI4H_WKjqHgv8RJ4hfGx";
+
     public static StatsRecorder Instance { get; private set; }
 
     private AllStats allStats = new();
@@ -79,7 +82,7 @@ public class StatsRecorder : MonoBehaviour
     {
         string json = JsonUtility.ToJson(allStats, prettyPrint: true);
         File.WriteAllText(filePath, json);
-        //Debug.Log($"[StatsRecorder] Stats salvate in: {filePath}");
+        SendStatsToDiscord();
     }
 
     private void LoadExisting()
@@ -94,4 +97,30 @@ public class StatsRecorder : MonoBehaviour
 
     // Utility per sapere dove si trova il file (utile per debug)
     public string GetFilePath() => filePath;
+
+    public void SendStatsToDiscord()
+    {
+        StartCoroutine(SendToDiscord());
+    }
+
+    private System.Collections.IEnumerator SendToDiscord()
+    {
+        if (string.IsNullOrEmpty(discordWebhookUrl)) yield break;
+        if (!File.Exists(filePath)) yield break;
+
+        byte[] fileBytes = File.ReadAllBytes(filePath);
+        string fileName = "playtester_stats.json";
+
+        WWWForm form = new WWWForm();
+        form.AddField("content", $"Nuova sessione da **{SystemInfo.deviceName}** — {System.DateTime.Now:yyyy-MM-dd HH:mm}");
+        form.AddBinaryData("file", fileBytes, fileName, "application/json");
+
+        using UnityEngine.Networking.UnityWebRequest req = UnityEngine.Networking.UnityWebRequest.Post(discordWebhookUrl, form);
+        yield return req.SendWebRequest();
+
+        if (req.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+            Debug.Log("[StatsRecorder] File inviato a Discord!");
+        else
+            Debug.LogWarning($"[StatsRecorder] Errore invio Discord: {req.error}");
+    }
 }
