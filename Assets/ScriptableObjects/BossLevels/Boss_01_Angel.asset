@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelProfile
   isBoss: 1
   bossPrefab: {fileID: 3479421082226168616, guid: 913eb1d9235d5d84ca6ddf40e5d414c5, type: 3}
-  levelName: 
+  levelName: Boss_Angel
   levelDuration: 0
   phase1:
     designNotes: 
@@ -33,12 +33,21 @@ MonoBehaviour:
     healthMultiplier: 1
     allowFighters: 0
     fighterSpawnInterval: 5
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
     allowKamikazes: 0
     kamikazeSpawnInterval: 4
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
     allowBombers: 0
     bomberSpawnInterval: 8
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
     allowPulsars: 0
     pulsarSpawnInterval: 10
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
   phase2:
     designNotes: 
     spawnNormal: 0
@@ -56,12 +65,21 @@ MonoBehaviour:
     healthMultiplier: 1
     allowFighters: 0
     fighterSpawnInterval: 5
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
     allowKamikazes: 0
     kamikazeSpawnInterval: 4
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
     allowBombers: 0
     bomberSpawnInterval: 8
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
     allowPulsars: 0
     pulsarSpawnInterval: 10
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0
   phase3:
     designNotes: 
     spawnNormal: 0
@@ -79,9 +97,18 @@ MonoBehaviour:
     healthMultiplier: 1
     allowFighters: 0
     fighterSpawnInterval: 5
+    fighterSpeedMult: 1
+    fighterShootRateMult: 1
     allowKamikazes: 0
     kamikazeSpawnInterval: 4
+    kamikazeSpeedMult: 1
+    kamikazeChargeDelayMult: 1
     allowBombers: 0
     bomberSpawnInterval: 8
+    bomberSpeedMult: 1
+    bomberDropRateMult: 1
     allowPulsars: 0
     pulsarSpawnInterval: 10
+    pulsarSpeedMult: 1
+    pulsarAimDurationMult: 1
+    pulsarBurstsOverride: 0

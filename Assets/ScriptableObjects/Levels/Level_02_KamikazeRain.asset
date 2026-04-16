@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelProfile
   isBoss: 0
   bossPrefab: {fileID: 0}
-  levelName: Default Level
+  levelName: Level_02
   levelDuration: 45
   phase1:
     designNotes: test primo livello
