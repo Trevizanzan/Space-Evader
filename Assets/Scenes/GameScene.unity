@@ -866,7 +866,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
   gameSequence: {fileID: 11400000, guid: b6523555dc472994b91ae8b806a1ddc6, type: 2}
-  transitionDuration: 5
+  transitionDuration: 3
   globalDifficultyMultiplier: 1
   skipToFirstBoss: 0
   debugSpecificLevel: 0
@@ -878,9 +878,9 @@ MonoBehaviour:
   bossNameText: {fileID: 145164570}
   bossHealthBarFill: {fileID: 126431633}
   barColorStart: {r: 0.2, g: 1, b: 0.3, a: 1}
-  barColorMid: {r: 1, g: 0.9, b: 0.2, a: 1}
-  barColorEnd: {r: 1, g: 0.3, b: 0.2, a: 1}
-  barColorGold: {r: 1, g: 0.85, b: 0, a: 1}
+  barColorMid: {r: 0.2, g: 1, b: 0.29803923, a: 1}
+  barColorEnd: {r: 0.2, g: 1, b: 0.29803923, a: 1}
+  barColorGold: {r: 0.2, g: 1, b: 0.29803923, a: 1}
 --- !u!1 &204160164
 GameObject:
   m_ObjectHideFlags: 0
