@@ -341,7 +341,8 @@ public class DifficultyManager : MonoBehaviour
             }
         }
 
-        levelText.text = $"LEVEL {currentLevelNumber}/{totalLevels}";
+        //levelText.text = $"LEVEL {currentLevelNumber}/{totalLevels}";
+        levelText.text = $"LEVEL {currentLevelNumber}";
         levelProgressBarFill.fillAmount = progress;
     }
 
