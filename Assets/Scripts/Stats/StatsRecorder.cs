@@ -77,8 +77,6 @@ public class StatsRecorder : MonoBehaviour
 
         allStats.attempts.Add(attempt);
         SaveToFile();
-
-        //Debug.Log($"[StatsRecorder] Salvato tentativo: {attempt.levelName} | Completato: {completed} | Time: {attempt.timeAlive:F1}s");
     }
 
     private void SaveToFile()
@@ -94,13 +92,12 @@ public class StatsRecorder : MonoBehaviour
         {
             string json = File.ReadAllText(filePath);
             allStats = JsonUtility.FromJson<AllStats>(json) ?? new AllStats();
-            //Debug.Log($"[StatsRecorder] Caricate {allStats.attempts.Count} sessioni precedenti.");
         }
     }
 
     private void LoadWebhookUrl()
     {
-        string configPath = Path.Combine(Application.dataPath, "..", "webhook_config.txt");
+        string configPath = Path.Combine(Application.streamingAssetsPath, "webhook_config.txt");
         if (File.Exists(configPath))
         {
             discordWebhookUrl = File.ReadAllText(configPath).Trim();
@@ -136,11 +133,20 @@ public class StatsRecorder : MonoBehaviour
         using UnityEngine.Networking.UnityWebRequest req = UnityEngine.Networking.UnityWebRequest.Post(discordWebhookUrl, form);
         yield return req.SendWebRequest();
 
-        if (req.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
-            Debug.Log("[StatsRecorder] File inviato a Discord!");
-        else
-            Debug.LogWarning($"[StatsRecorder] Errore invio Discord: {req.error}");
+        Log($"Risultato: {req.result} | HTTP: {req.responseCode}");
+
+        //if (req.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+        //    //Log("[StatsRecorder] File inviato a Discord!");
+        //else
+        //    //Log($"[StatsRecorder] Errore invio Discord: {req.error}");
 
         IsSending = false;
+    }
+
+    private void Log(string message)
+    {
+        string logPath = Path.Combine(Application.dataPath, "..", "debug.log");
+        string line = $"[{System.DateTime.Now:HH:mm:ss}] {message}\n";
+        File.AppendAllText(logPath, line);
     }
 }
