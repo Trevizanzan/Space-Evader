@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 public class StatsRecorder : MonoBehaviour
 {
-    private string discordWebhookUrl = "https://discord.com/api/webhooks/1494313163061989496/P1MEt75N2Ih_gmskW9LldQGE2eEbXrnD9Aba_1Xcyv6jn_eobI4H_WKjqHgv8RJ4hfGx";
+    private string discordWebhookUrl = "";
 
     public static StatsRecorder Instance { get; private set; }
 
@@ -34,6 +34,7 @@ public class StatsRecorder : MonoBehaviour
 
         filePath = Path.Combine(Application.dataPath, "..", "playtester_stats.json");
         LoadExisting();
+        LoadWebhookUrl();
     }
 
     // Chiamato all'inizio di ogni livello
@@ -92,6 +93,19 @@ public class StatsRecorder : MonoBehaviour
             string json = File.ReadAllText(filePath);
             allStats = JsonUtility.FromJson<AllStats>(json) ?? new AllStats();
             //Debug.Log($"[StatsRecorder] Caricate {allStats.attempts.Count} sessioni precedenti.");
+        }
+    }
+
+    private void LoadWebhookUrl()
+    {
+        string configPath = Path.Combine(Application.dataPath, "..", "webhook_config.txt");
+        if (File.Exists(configPath))
+        {
+            discordWebhookUrl = File.ReadAllText(configPath).Trim();
+        }
+        else
+        {
+            Debug.LogWarning("[StatsRecorder] webhook_config.txt non trovato. Il webhook Discord non funzionerà.");
         }
     }
 
