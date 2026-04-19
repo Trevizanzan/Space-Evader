@@ -467,7 +467,7 @@ public class DifficultyManager : MonoBehaviour
         GUILayout.Label($"Global Multiplier: {globalDifficultyMultiplier:F2}x");
         GUILayout.Label($"Boss Fight: {isBossFight}");
     }
-    #endif
+#endif
 
     public int GetCurrentLevelIndex() => currentLevelIndex;
     //public int GetLoopCount() => loopCount;

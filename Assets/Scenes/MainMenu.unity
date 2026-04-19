@@ -1103,7 +1103,7 @@ GameObject:
   - component: {fileID: 2031345867}
   - component: {fileID: 2031345868}
   m_Layer: 5
-  m_Name: TitleText
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1156,7 +1156,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "SPACE \nEVADERS"
+  m_text: "SPACE \nEVADER"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a0a5dfad933922d4b837ac68fef16318, type: 2}
   m_sharedMaterial: {fileID: 207248713673495511, guid: a0a5dfad933922d4b837ac68fef16318, type: 2}
