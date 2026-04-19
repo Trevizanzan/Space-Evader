@@ -42,4 +42,9 @@ public class MainMenuManager : MonoBehaviour
         if (mainPanel != null) mainPanel.SetActive(true);
         if (creditsPanel != null) creditsPanel.SetActive(false);
     }
+
+    void OnDestroy()
+    {
+        Debug.Log("[MainMenuManager] DESTROYED");
+    }
 }
