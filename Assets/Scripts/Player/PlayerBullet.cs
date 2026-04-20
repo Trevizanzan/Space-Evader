@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ProjectileMovement : MonoBehaviour
+public class PlayerBullet : MonoBehaviour
 {
     public float speed = 42f; // Speed of the projectile
     private float destroyY;
