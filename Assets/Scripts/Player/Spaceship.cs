@@ -14,6 +14,9 @@ public class Spaceship : MonoBehaviour
     [SerializeField] private float thrusterExtraHeight = 1.15f; // Altezza motore
     [SerializeField][Range(0f, 0.2f)] private float topUIPaddingViewport = 0.08f; // altezza UI in % viewport
 
+    // Input System
+    private SpaceEvaderInputActions inputActions;
+
     private float minX, maxX, minY, maxY;
     private int lastScreenWidth, lastScreenHeight;
 
@@ -29,6 +32,10 @@ public class Spaceship : MonoBehaviour
         instanceSpaceShip = this;
         sr = GetComponent<SpriteRenderer>();
         cam = Camera.main;
+
+        // Initialize Input System
+        inputActions = new SpaceEvaderInputActions();
+        inputActions.Player.Enable();
     }
 
     void Start()
@@ -48,14 +55,10 @@ public class Spaceship : MonoBehaviour
             lastScreenHeight = Screen.height;
         }
 
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
-
-        // Fallback tastiera (sovrascrive solo se premuto)
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) verticalInput = 1f;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) horizontalInput = -1f;
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) verticalInput = -1f;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) horizontalInput = 1f;
+        // Read movement input from Input System
+        Vector2 moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+        float horizontalInput = moveInput.x;
+        float verticalInput = moveInput.y;
 
         float newX = transform.position.x + horizontalInput * moveSpeed * Time.deltaTime;
         float newY = transform.position.y + verticalInput * moveSpeed * Time.deltaTime;
@@ -114,5 +117,12 @@ public class Spaceship : MonoBehaviour
         minY = bottomLeft.y + ext.y + padding + thrusterExtraHeight; // Aggiunto offset motore
         //maxY = topRight.y - ext.y - padding;
         maxY = topRight.y - ext.y - padding - topUIWorldHeight; // ← solo questa riga cambia
+    }
+
+    void OnDestroy()
+    {
+        // Clean up Input System
+        inputActions?.Disable();
+        inputActions?.Dispose();
     }
 }
