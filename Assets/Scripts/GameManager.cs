@@ -37,10 +37,17 @@ public class GameManager : MonoBehaviour
         return Instance;
     }
 
+    // Input System
+    private SpaceEvaderInputActions inputActions;
+
     void Awake()
     {
         if (Instance == null)
             Instance = this;
+
+        // Initialize Input System
+        inputActions = new SpaceEvaderInputActions();
+        inputActions.Player.Enable();
     }
 
     void Start()
@@ -154,34 +161,22 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(current.name);
     }
 
-    //void Update()
-    //{
-    //    //// Restart da tastiera
-    //    //if (isGameOver && Input.GetKeyDown(KeyCode.Return))
-    //    //{
-    //    //    RestartGame();
-    //    //}
-
-    //    if (Input.GetKeyDown(KeyCode.Escape))
-    //    {
-    //        ReturnToMainMenu();
-    //        return;
-    //    }
-
-    //    if (isGameOver && Input.GetKeyDown(KeyCode.Return))
-    //        RestartGame();
-    //}
-
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7)) // Start button
+        // NOTA: "Pause" oggi triggera un "exit to menu" (nessuna pausa vera
+        // con Time.timeScale = 0). Il nome è mantenuto nell'asset di input 
+        // in vista della futura implementazione di pausa vera 
+        // (task dedicato post-migrazione).
+        if (inputActions.Player.Pause.WasPressedThisFrame())
         {
             ReturnToMainMenu();
             return;
         }
 
-        if (isGameOver && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.JoystickButton1))) // B button
+        if (isGameOver && inputActions.Player.Restart.WasPressedThisFrame())
+        {
             RestartGame();
+        }
     }
 
     public void ReturnToMainMenu()
@@ -191,5 +186,12 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
+    }
+
+    void OnDestroy()
+    {
+        // Clean up Input System
+        inputActions?.Disable();
+        inputActions?.Dispose();
     }
 }

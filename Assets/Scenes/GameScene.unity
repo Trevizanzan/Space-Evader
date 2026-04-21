@@ -453,7 +453,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooting
   projectilePrefab: {fileID: 2093506508120260160, guid: 0934b5481a133a949abcb2f8c7ee5e54, type: 3}
   firePoint: {fileID: 1050214666}
-  autoFire: 0
+  autoFire: 1
   shootCooldown: 0.15
 --- !u!114 &74886327
 MonoBehaviour:
@@ -4599,7 +4599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 142.98483, y: -9}
+  m_AnchoredPosition: {x: 142.95123, y: -9}
   m_SizeDelta: {x: 14.01, y: 14.01}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1449258773
@@ -5277,7 +5277,6 @@ MonoBehaviour:
   bossDeadClip: {fileID: 8300000, guid: 6e4e3b0420803244c968d2be81c19c7b, type: 3}
   playerHitClip: {fileID: 8300000, guid: 302a696e67d74134faad35f06e4a7f68, type: 3}
   gameOverClip: {fileID: 8300000, guid: 2c8acab18021e584c9f2ecffc0463f9d, type: 3}
-  shootSoundCooldown: 0.65
   asteroidExplodeSoundCooldown: 0.6
 --- !u!4 &1712983331
 Transform:
