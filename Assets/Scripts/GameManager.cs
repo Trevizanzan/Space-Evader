@@ -16,6 +16,10 @@ public class GameManager : MonoBehaviour
     public AsteroidSpawner asteroidSpawner;
     public EnemySpawner enemySpawner;
 
+    [Header("Pause UI")]
+    public GameObject pausePanel;
+    public GameObject confirmExitDialog;
+
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
     public TMP_Text goScoreText;
@@ -186,6 +190,10 @@ public class GameManager : MonoBehaviour
         // Mostra cursore per poter cliccare su eventuale UI
         if (CursorManager.Instance != null)
             CursorManager.Instance.SetMenuCursor();
+
+        // Mostra il pause panel
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
     }
 
     /// <summary>
@@ -202,6 +210,12 @@ public class GameManager : MonoBehaviour
 
         if (CursorManager.Instance != null)
             CursorManager.Instance.SetGameplayCursor();
+
+        // Nascondi pause panel + eventuale dialog di conferma aperto
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+        if (confirmExitDialog != null)
+            confirmExitDialog.SetActive(false);
     }
 
     /// <summary>
@@ -212,10 +226,50 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.GameOver) return;
 
+        // Se il dialog di conferma è aperto, Esc lo chiude prima
+        if (currentState == GameState.Paused && confirmExitDialog != null && confirmExitDialog.activeSelf)
+        {
+            CancelExitDialog();
+            return;
+        }
+
         if (currentState == GameState.Playing)
             Pause();
         else if (currentState == GameState.Paused)
             Resume();
+    }
+
+    /// <summary>
+    /// Mostra il dialog di conferma per uscire al main menu.
+    /// Chiamato dal pulsante "Back to Main Menu" del pause panel.
+    /// </summary>
+    public void ShowConfirmExitDialog()
+    {
+        if (confirmExitDialog != null)
+            confirmExitDialog.SetActive(true);
+    }
+
+    /// <summary>
+    /// Nasconde il dialog di conferma, torna al pause panel normale.
+    /// Chiamato dal pulsante "Cancel" del dialog di conferma.
+    /// </summary>
+    public void CancelExitDialog()
+    {
+        if (confirmExitDialog != null)
+            confirmExitDialog.SetActive(false);
+    }
+
+    /// <summary>
+    /// Conferma l'uscita al main menu dalla pausa.
+    /// Chiamato dal pulsante "Yes, Exit" del dialog di conferma.
+    /// Ripristina timeScale e audio prima di caricare la scena.
+    /// </summary>
+    public void ConfirmExitToMainMenu()
+    {
+        // Ripristina lo stato prima di cambiare scena
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
+        ReturnToMainMenu();
     }
 
     #endregion
