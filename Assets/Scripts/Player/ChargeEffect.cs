@@ -26,6 +26,13 @@ public class ChargeEffect : MonoBehaviour
     void Awake()
     {
         transform.localScale = Vector3.zero;
+
+        var sr = GetComponent<SpriteRenderer>();
+        var parentSr = transform.parent != null
+            ? transform.parent.GetComponentInParent<SpriteRenderer>()
+            : null;
+        if (sr != null && parentSr != null)
+            sr.sortingOrder = parentSr.sortingOrder - 1;
     }
 
     void Update()

@@ -48,17 +48,36 @@ public class PlayerShooting : MonoBehaviour
     {
         bool fireHeld = inputActions.Player.Fire.IsPressed();
 
-        if (currentWeapon.requiresCharging)
-            HandleChargingFire(fireHeld);
+        if (currentWeapon.autoFire && currentWeapon.requiresCharging)
+            HandleAutoChargingFire();
         else if (currentWeapon.autoFire)
         {
             if (Time.time - lastShootTime >= currentWeapon.shootCooldown)
                 Shoot();
         }
+        else if (currentWeapon.requiresCharging)
+            HandleChargingFire(fireHeld);
         else
         {
             if (fireHeld && Time.time - lastShootTime >= currentWeapon.shootCooldown)
                 Shoot();
+        }
+    }
+
+    // Carica automaticamente, mostra l'effetto e spara quando pronto, poi riparte
+    void HandleAutoChargingFire()
+    {
+        if (!isCharging)
+        {
+            isCharging = true;
+            chargeStartTime = Time.time;
+            SpawnChargeEffect();
+        }
+
+        if (Time.time - chargeStartTime >= currentWeapon.chargeTime)
+        {
+            CancelCharge();
+            Shoot();
         }
     }
 
@@ -75,9 +94,8 @@ public class PlayerShooting : MonoBehaviour
         if (!fireHeld && isCharging)
         {
             bool fullyCharged = (Time.time - chargeStartTime) >= currentWeapon.chargeTime;
-            bool cooldownReady = (Time.time - lastShootTime) >= currentWeapon.shootCooldown;
             CancelCharge();
-            if (fullyCharged && cooldownReady)
+            if (fullyCharged)
                 Shoot();
         }
     }

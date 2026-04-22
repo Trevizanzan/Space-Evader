@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailgunData
   weaponName: Railgun Weapon
   description: 'Railgun '
-  autoFire: 0
+  autoFire: 1
   shootCooldown: 1.5
   requiresCharging: 1
   chargeTime: 1
