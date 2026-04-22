@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Space Evaders is a Unity 6 (6000.3.9f1) 2D space shooter. Two scenes: `MainMenu` and `GameScene`. All gameplay code lives in `Assets/Scripts/`.
+Space Evaders is a Unity 6 (6000.3.9f1) 2D arcade shoot 'em up (SHMUP) verticale. Two scenes: `MainMenu` and `GameScene`. All gameplay code lives in `Assets/Scripts/`.
+
+**Target platform:** PC + Steam Deck (controller support required).
+
+**Visual style:** Pixel art "arcade moderno" — palette intensa (viola, magenta, arancione, ciano) su sfondo spaziale scuro. Stile tra R-Type e fumetto arcade anni '90. Boss con facce mostruose ed espressive, navicelle con animazioni thruster.
 
 ## Build & Run
 
@@ -16,7 +20,16 @@ This is a Unity project — there is no CLI build command. Open the project in U
 
 `DifficultyManager` (singleton) drives everything. It cycles through a `GameSequence` ScriptableObject — an ordered list of `LevelProfile` assets. Each `LevelProfile` defines three `PhaseConfig` structs with enemy/asteroid spawn rates and health multipliers. At level start, `EnemySpawner` and `AsteroidSpawner` read the current phase config and spawn accordingly. On level complete or boss death, `DifficultyManager` advances to the next level.
 
+**Loop mechanic:** 6 boss totali. Dopo averli sconfitti tutti il gioco looppa aumentando il moltiplicatore di difficoltà globale.
+
 `GameManager` (singleton) owns the `GameState` enum (`Playing`, `Paused`, `GameOver`) and manages pause/resume UI, game-over stats display, and spawner enable/disable.
+
+### Level Structure & Phases
+
+- Ogni **Level** dura `levelDuration` secondi, diviso in **3 fasi uguali** (`PhaseConfig × 3` in `LevelProfile`)
+- Lo switch di fase è calcolato automaticamente in `DifficultyManager.GetCurrentPhase()` in base alla percentuale di tempo trascorso (0–33%, 33–66%, 66–100%)
+- **`PhaseConfig`** per fase: abilita/disabilita tipi di asteroidi (Normal, Diagonal, Horizontal) e nemici (Fighters, Kamikazes, Bombers, Pulsars), imposta moltiplicatori di spawn rate, velocità, dimensione
+- I boss level usano il flag `isBoss` in `LevelProfile` e istanziano un prefab boss invece degli spawner normali; l'UI passa dalla progress bar alla boss health bar
 
 ### Game State
 
@@ -37,14 +50,38 @@ Most systems are singletons. Key ones:
 - `ExplosionManager` — spawns explosion prefabs
 - `SpawnBoundsProvider` — centralized camera-relative spawn boundaries
 
+### Weapon System
+
+- `WeaponData` (ScriptableObject astratto) → `BlasterData`, `RailgunData`, `SpreadGunData`
+- `PlayerShooting` delega lo spawn a `currentWeapon.Fire(firePoint)`; supporta `autoFire`, `requiresCharging`, e `autoFire + requiresCharging` (auto-charge loop)
+- `WeaponSelection` — classe statica di handoff tra menu pre-run e GameScene; il menu chiama `SetWeapon()`, `PlayerShooting` lo legge in `Awake()` con fallback al `defaultWeapon`
+- `ChargeEffect` — effetto visivo di carica parented al `firePoint`, sorting order automatico rispetto alla nave
+- Asset in `Assets/ScriptableObjects/Weapons/`; il danno e il piercing vivono nel `WeaponData`, non nel prefab del proiettile
+
+### Player Movement
+
+- WASD/Frecce via Input System; bounds calcolati da `Spaceship.cs` usando `ViewportToWorldPoint`
+- Il movimento è clampato ai bordi camera sottraendo l'altezza della top UI bar (`topUIPaddingViewport`)
+- I bounds vengono ricalcolati in `RecalculateBounds()` solo quando necessario (non ogni frame)
+- `SpawnBoundsProvider` espone le stesse misure a tutti gli spawner — usarlo sempre invece di ricalcolare camera bounds inline
+
 ### Enemy & Boss Hierarchy
 
 - `EnemyBase` (abstract) → `EnemyFighter`, `EnemyKamikaze`, `EnemyBomber`, `EnemyPulsar`
 - `BossBase` (abstract) → `BossAngel`
 
-`EnemyBase` handles health, scoring, death, flash-on-hit, and off-screen cleanup. Each subclass adds movement and attack patterns.
+`EnemyBase` handles health, scoring, death, flash-on-hit, off-screen cleanup, and bullet damage/piercing resolution. Each subclass adds movement and attack patterns.
 
-`BossBase` handles the entrance animation (descends from top, 2.5 s pause before combat), health bar UI, and death. `BossBase.IsBossEntering` is a static flag that `PlayerShooting` checks before allowing fire.
+`BossBase` handles the entrance animation (descends from top, 2.5 s pause before combat), health bar UI, and death. `BossBase.IsBossEntering` is a static flag that `PlayerShooting` checks before allowing fire. Boss always stops piercing projectiles (by design).
+
+### UI TopBar
+
+Trasparente, ancorata in alto, divisa in 3 sezioni:
+- **Left (20%):** icona + score (`ScoreManager`)
+- **Center (60%):** dinamico — durante la wave mostra `WAVE X/Y` + progress bar verde; durante il boss si nasconde e appare nome boss + health bar rossa
+- **Right (20%):** icona + vite rimanenti
+
+Transizione smooth alla morte del boss: barra rossa va a 0 → pausa → riappare UI wave successiva e spawner si riattivano.
 
 ### Input System
 
@@ -59,12 +96,20 @@ Most systems are singletons. Key ones:
 Game design data lives in ScriptableObjects, not in code:
 - `LevelProfile` — per-level settings with three `PhaseConfig` phases
 - `GameSequence` — ordered array of `LevelProfile` references
+- `WeaponData` — per-weapon fire behavior, damage, projectile prefab
 
 Editing difficulty/balance means editing these assets in the Unity Editor, not changing C# code.
 
 ### Stats & Telemetry
 
 `StatsRecorder` reads a Discord webhook URL from `Assets/StreamingAssets/webhook_config.txt` and POSTs level attempt data as JSON. Attempt history is also written to `playtester_stats.json` at the project root. Highscore is stored in `PlayerPrefs` under key `"highscore"`.
+
+## Code & Design Rules
+
+1. **Nessuna classe ridondante** — comportamenti simili vanno raggruppati (es. un solo `AsteroidSpawner` per 3 tipi di spawn, non 3 classi separate)
+2. **Nessun accoppiamento stretto UI/Logica** — l'UI legge dai Manager (`ScoreManager`, `DifficultyManager`), non li controlla
+3. **Camera bounds una volta sola** — usare `ViewportToWorldPoint` al momento giusto (init o resize), non ad ogni frame; usare `SpawnBoundsProvider` per gli spawner
+4. **Gameplay space priority** — lo spazio centrale dello schermo deve restare libero da UI ingombranti
 
 ## Debug Flags
 
