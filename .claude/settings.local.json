@@ -6,7 +6,9 @@
       "Bash(git -C \"C:/GameDevelopment/Space Evaders\" log origin/master..origin/claude/test-github-mcp-qIB8s --oneline)",
       "Bash(git -C \"C:/GameDevelopment/Space Evaders\" fetch origin claude/review-animationcontroller-tsCah)",
       "Bash(git -C \"C:/GameDevelopment/Space Evaders\" log origin/master..origin/claude/review-animationcontroller-tsCah --oneline)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "mcp__claude_ai_Google_Drive__search_files",
+      "mcp__claude_ai_Google_Drive__read_file_content"
     ]
   },
   "outputStyle": "default"

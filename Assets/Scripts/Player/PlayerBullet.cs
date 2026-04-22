@@ -3,8 +3,10 @@ using UnityEngine;
 public class PlayerBullet : MonoBehaviour
 {
     public float speed = 42f;
-    public int damage = 1;
-    public bool piercing = false;
+    // Impostati da WeaponData.Fire() via Initialize() — letti da EnemyBase/BossBase al momento della collisione.
+    // Il valore di default non ha effetto: Initialize() sovrascrive sempre prima che avvenga qualsiasi hit.
+    [HideInInspector] public int damage = 1;
+    [HideInInspector] public bool piercing = false;
 
     private Rigidbody2D rigidBody;
 

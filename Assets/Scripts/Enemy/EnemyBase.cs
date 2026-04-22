@@ -34,8 +34,8 @@ public abstract class EnemyBase : MonoBehaviour
 
         float camHeight = Camera.main.orthographicSize;
         float camWidth = camHeight * Camera.main.aspect;
-        destroyYBottom = -camHeight * 1.1f;     // Distruggi quando è un po' sotto la camera
-        destroyXLimit = camWidth * 1.1f;    // Distruggi quando è un po' oltre i bordi laterali
+        destroyYBottom = -camHeight * 1.1f;     // Distruggi quando ï¿½ un po' sotto la camera
+        destroyXLimit = camWidth * 1.1f;    // Distruggi quando ï¿½ un po' oltre i bordi laterali
 
         Spaceship ship = Spaceship.GetInstance();
         if (ship != null) playerTransform = ship.transform;
@@ -82,7 +82,7 @@ public abstract class EnemyBase : MonoBehaviour
         //    ExplosionManager.Instance.SpawnSmall(
         //        new Vector3(transform.position.x, transform.position.y, -1f), 0.7f);
 
-        // Base: nessuna esplosione, solo suono (già gestito in TakeDamage)
+        // Base: nessuna esplosione, solo suono (giï¿½ gestito in TakeDamage)
         // I boss possono overridare per aggiungere feedback visivo
 
         FlashWhite(); // ereditato da EnemyBase/BossBase
@@ -134,8 +134,16 @@ public abstract class EnemyBase : MonoBehaviour
 
         if (collision.CompareTag("Bullet"))
         {
-            TakeDamage(1);
-            Destroy(collision.gameObject);
+            int dmg = 1;
+            bool isPiercing = false;
+            if (collision.TryGetComponent<PlayerBullet>(out var bullet))
+            {
+                dmg = bullet.damage;
+                isPiercing = bullet.piercing;
+            }
+            TakeDamage(dmg);
+            if (!isPiercing)
+                Destroy(collision.gameObject);
         }
 
         if (collision.CompareTag("Player"))
@@ -151,7 +159,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     //______ CALCOLO BOUNDS CAMERA (regola n.3) __________________________________________
     /// <summary>
-    /// Bounds della camera in world units, con offset topbar già sottratto da topY.
+    /// Bounds della camera in world units, con offset topbar giï¿½ sottratto da topY.
     /// </summary>
     public struct CameraBounds
     {
