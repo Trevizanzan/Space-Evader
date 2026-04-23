@@ -5,6 +5,7 @@ public abstract class WeaponData : ScriptableObject
     [Header("Identity")]
     public string weaponName = "Weapon";
     [TextArea(2, 4)] public string description = "";
+    public Sprite icon;
 
     [Header("Fire Behavior")]
     public bool autoFire = false;

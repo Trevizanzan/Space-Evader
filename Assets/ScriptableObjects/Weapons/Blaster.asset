@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51686dc40d936f946acfee4cf89339f4, type: 3}
   m_Name: Blaster
   m_EditorClassIdentifier: Assembly-CSharp::BlasterData
-  weaponName: Weapon
-  description: Blaster
+  weaponName: BLASTER
+  description: Reliable standard-issue sidearm. Fast rate of fire, low damage per
+    shot. Best for crowd control and quick reflexes.
+  icon: {fileID: -8404016538654398156, guid: 66aa6cf18d1f7ac44b00b7bafd81e387, type: 3}
   autoFire: 1
   shootCooldown: 0.18
   requiresCharging: 0

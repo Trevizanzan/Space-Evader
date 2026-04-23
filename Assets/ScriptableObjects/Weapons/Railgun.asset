@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da200b6f0177ef448bbdea470f883d10, type: 3}
   m_Name: Railgun
   m_EditorClassIdentifier: Assembly-CSharp::RailgunData
-  weaponName: Railgun Weapon
-  description: 'Railgun '
+  weaponName: RAILGUN
+  description: Charges up and fires a high-energy beam that pierces through everything.
+    Slow, but devastating. One shot, one kill.
+  icon: {fileID: 9181646178151091701, guid: 66aa6cf18d1f7ac44b00b7bafd81e387, type: 3}
   autoFire: 1
   shootCooldown: 1.5
   requiresCharging: 1

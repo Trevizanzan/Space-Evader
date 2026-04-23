@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b8cae56a6f4fa4aa5d96c532cefec2, type: 3}
   m_Name: SpreadGun
   m_EditorClassIdentifier: Assembly-CSharp::SpreadGunData
-  weaponName: Weapon
-  description: 'SpreadGun '
+  weaponName: SPREAD GUN
+  description: "Fires a wide cone of bullets. Shreds anything in close range. Less
+    effective at distance \u2014 get in their face."
+  icon: {fileID: -8798480287975239998, guid: 66aa6cf18d1f7ac44b00b7bafd81e387, type: 3}
   autoFire: 1
   shootCooldown: 0.4
   requiresCharging: 0
