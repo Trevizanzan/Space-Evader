@@ -109,7 +109,9 @@ Massimo **1 gimmick per blocco**. Il Blocco 1 è 100% standard per insegnare il 
 Script di supporto:
 
 - `ChargeEffect.cs` — effetto visivo di carica (sprite che cresce + pulse) parented al `firePoint`, sorting order automatico rispetto alla nave
-- `WeaponSelection.cs` — classe statica di handoff tra il menu pre-run e la GameScene (ponte per task #4)
+- `WeaponSelection.cs` — classe statica di handoff tra il menu pre-run e la GameScene
+- `WeaponSelectionMenu.cs` — istanzia le `WeaponCard` da prefab; array `availableWeapons` configurabile in Inspector
+- `WeaponCard.cs` — singola card selezionabile (icona, nome, descrizione, stats); layout verticale auto-sizing via `VerticalLayoutGroup` + `ContentSizeFitter`
 
 ### Visione target: 3 armi sidegrade
 
@@ -408,7 +410,7 @@ In ordine consigliato di priorità:
 1. ✅ **Migrazione al nuovo Input System** (completata)
 2. ✅ **Sistema armi multiple** (`WeaponData` + `BlasterData`/`SpreadGunData`/`RailgunData`)
 3. **Sistema di meta-progressione persistente** (PlayerPrefs o JSON, tracking di sblocchi)
-4. **Schermata di selezione arma pre-run** (nel MainMenu o tra MainMenu e GameScene — `WeaponSelection.cs` già pronto come bridge)
+4. ✅ **Schermata di selezione arma pre-run** — `WeaponSelectionMenu` sub-panel del MainMenu; 3 card (Blaster, SpreadGun, Railgun) tutte sbloccate; selezione chiama `WeaponSelection.SetWeapon()` e carica la GameScene; layout orizzontale con `HorizontalLayoutGroup` + `VerticalLayoutGroup` interno per auto-sizing delle card
 5. **Sistema di lore in-game** (overlay all'inizio di ogni Level)
 6. **Popolamento del GameSequence** (definire i 4 blocchi + mega boss)
 7. **Creazione degli altri boss** (almeno 3 nuovi + mega boss)
