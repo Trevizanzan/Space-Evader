@@ -6,6 +6,7 @@ public abstract class WeaponData : ScriptableObject
     public string weaponName = "Weapon";
     [TextArea(2, 4)] public string description = "";
     public Sprite icon;
+    public bool alwaysUnlocked = false;
 
     [Header("Fire Behavior")]
     public bool autoFire = false;
@@ -19,5 +20,5 @@ public abstract class WeaponData : ScriptableObject
     public int damage = 1;
 
     // Spawna il/i proiettile/i. Chiamato da PlayerShooting quando le condizioni di fuoco sono soddisfatte.
-    public abstract void Fire(Transform firePoint);
+    public abstract void Fire(Transform firePoint, int damageBonus = 0);
 }

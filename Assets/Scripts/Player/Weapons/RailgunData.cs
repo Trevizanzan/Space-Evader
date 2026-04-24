@@ -4,11 +4,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Space Evader/Weapons/Railgun", fileName = "Railgun")]
 public class RailgunData : WeaponData
 {
-    public override void Fire(Transform firePoint)
+    public override void Fire(Transform firePoint, int damageBonus = 0)
     {
         // Usa la rotazione base del prefab (90° Z) per direzione verso l'alto
         var go = Instantiate(projectilePrefab, firePoint.position, projectilePrefab.transform.rotation);
         if (go.TryGetComponent<PlayerBullet>(out var bullet))
-            bullet.Initialize(damage, piercing: true);
+            bullet.Initialize(damage + damageBonus, piercing: true);
     }
 }

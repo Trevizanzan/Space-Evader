@@ -7,7 +7,7 @@ public class SpreadGunData : WeaponData
     [Min(1)] public int bulletCount = 3;
     [Range(5f, 90f)] public float spreadAngle = 30f;
 
-    public override void Fire(Transform firePoint)
+    public override void Fire(Transform firePoint, int damageBonus = 0)
     {
         float halfSpread = spreadAngle / 2f;
         float step = bulletCount > 1 ? spreadAngle / (bulletCount - 1) : 0f;
@@ -19,7 +19,7 @@ public class SpreadGunData : WeaponData
             Quaternion rotation = baseRotation * Quaternion.Euler(0, 0, offset);
             var go = Instantiate(projectilePrefab, firePoint.position, rotation);
             if (go.TryGetComponent<PlayerBullet>(out var bullet))
-                bullet.Initialize(damage);
+                bullet.Initialize(damage + damageBonus);
         }
     }
 }

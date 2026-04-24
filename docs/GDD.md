@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Status:** Living document (riflette sia la visione sia lo stato attuale del progetto)
-**Last updated:** 2026-04-22
+**Last updated:** 2026-04-24 ore 08:15 UTC
 **Repository:** Unity 2D project (C#, URP/built-in, Input System nuovo — migrazione completata)
 
 ---
@@ -46,7 +46,7 @@ MainMenu (PlayGame) → GameScene → Run (sequenza di Level + Boss da GameSeque
 
 - **Durata run completa target:** 15-20 minuti
 - **Permadeath:** sì, morte = ricarica della GameScene
-- **Meta-progressione:** ❌ non implementata (obiettivo futuro)
+- **Meta-progressione:** ✅ implementata (unlock armi + perk in-run)
 
 ---
 
@@ -163,15 +163,15 @@ Le 3 armi sono **sidegrade, non upgrade**. Il player sceglie una sola arma **pri
 - **Fire behavior:** manual fire (tieni premuto per caricare, rilascia per sparare — il "feel" di carica è parte integrante dell'arma); supporta anche modalità `autoFire + requiresCharging` per auto-caricare e sparare in loop
 - Vulnerabile durante la carica, inefficace contro sciami vicini
 
-### Sblocco armi (visione)
+### Sblocco armi (✅ implementato)
 
-| Arma | Condizione di sblocco | Quando arriva (stima) |
+| Arma | Condizione di sblocco | Quando arriva |
 |---|---|---|
-| **Blaster** | Disponibile dall'inizio | Run 1 |
-| **Spread Gun** | [TBD — raggiungere un certo Block per la prima volta] | ~Run 3-5 |
-| **Railgun** | Sconfiggi il Mega Boss finale per la prima volta | ~Run 10-20+ |
+| **Blaster** | Sempre disponibile (`alwaysUnlocked = true`) | Run 1 |
+| **Spread Gun** | 1° boss kill lifetime | ~Run 2-3 |
+| **Railgun** | 2° boss kill lifetime | ~Run 3-5 |
 
-⚠️ Richiede il sistema di **meta-progressione persistente** (vedi sezione 5).
+Gestito da `UnlockManager` (classe statica, PlayerPrefs). `WeaponSelectionMenu.BuildCards()` filtra le armi locked automaticamente. Vedi §5 per i dettagli.
 
 ### Fire behavior (autoFire vs manual vs auto-charging)
 
@@ -183,13 +183,9 @@ Ogni arma definisce il proprio fire behavior tramite i flag in `WeaponData`. Non
 
 ---
 
-### Menu di selezione armi (pre-run)
+### Menu di selezione armi (pre-run) — ✅ Implementato
 
-**❌ Non implementato.** Il MainMenu attuale (`MainMenuManager.cs`) ha solo `PlayGame()` e `QuitGame()`. Non c'è schermata di selezione arma.
-
-`WeaponSelection.cs` è già presente come ponte: il menu chiamerà `WeaponSelection.SetWeapon(weapon)` prima di caricare la GameScene; `PlayerShooting` lo legge in `Awake()` con fallback al `defaultWeapon`.
-
-Da aggiungere: schermata (probabilmente tra MainMenu e GameScene, o come sub-panel del MainMenu) con armi disponibili e bloccate.
+Sub-panel del MainMenu (`WeaponSelectionMenu.cs`). Mostra solo le armi sbloccate come card orizzontali (`WeaponCard` prefab). La selezione chiama `WeaponSelection.SetWeapon(weapon)` prima di caricare la GameScene; `PlayerShooting` lo legge in `Awake()` con fallback al `defaultWeapon`.
 
 ---
 
@@ -244,33 +240,59 @@ Oltre a scegliere un'arma prima della run (§4), il player potrebbe scegliere an
 
 ## 5. Meta-progressione
 
-### Stato attuale
+### ✅ Stato attuale — Implementato
 
-**❌ Nessuna meta-progressione implementata.** Ogni run inizia da zero.
+Sistema a due livelli implementato in `feat/weapon-selection-menu`.
 
-Sistemi che **esistono già e possono essere base per la meta-progressione:**
+#### Livello 1 — Unlock permanenti (tra run)
 
-- `RunStats` / `StatsRecorder`: raccolgono dati di ogni run (kills, tempo, shots, damage) e li salvano in `playtester_stats.json` (vengono anche inviati a un webhook Discord per playtesting remoto)
-- `LevelAttempt` struct per dati per-livello
+Le armi si sbloccano battendo i boss in qualsiasi run (contatore lifetime). Persistito in `PlayerPrefs`:
 
-### Visione target
+| Arma | Condizione | Chiave PlayerPrefs |
+|---|---|---|
+| **Blaster** | Sempre disponibile (`alwaysUnlocked = true`) | — |
+| **Spread Gun** | 1° boss kill lifetime | `unlock_spreadgun` |
+| **Railgun** | 2° boss kill lifetime | `unlock_railgun` |
 
-Meta-progressione **minima**, centrata su:
+Chiave aggiuntiva: `lifetime_boss_kills` (int). Gestita da `UnlockManager` (classe statica in `Assets/Scripts/Meta/`). `WeaponSelectionMenu.BuildCards()` filtra automaticamente le armi locked.
 
-- Sblocco permanente delle 2 armi aggiuntive (§4)
-- Sblocco permanente delle movement abilities (§4.5), se l'idea viene validata
-- Sblocco lore entries
+#### Livello 2 — Perk in-run (reset ogni run)
+
+Dopo ogni boss kill appare un overlay fullscreen (`PerkSelectionOverlay`) con 3 perk casuali estratti da un pool. Il player ne sceglie 1. I perk durano solo per la run corrente (reset al game over o al ritorno al menu).
+
+**Perk disponibili** (`Assets/ScriptableObjects/Perks/`):
+
+| Asset | Tipo | Valore | Effetto |
+|---|---|---|---|
+| `ExtraLife.asset` | ExtraLife | — | +1 vita immediata |
+| `FireBoost.asset` | FireRate | +15% | `FireRateMultiplier` in `PerkManager` |
+| `SpeedBoost.asset` | MoveSpeed | +15% | `SpeedMultiplier` in `PerkManager` |
+| `DamageBoost.asset` | Damage | +1 | `DamageBonus` passato a `WeaponData.Fire()` |
+| `Shield.asset` | Shield | — | Assorbe 1 colpo (`ShieldActive` in `PerkManager`) |
+
+**Architettura:**
+
+- `PerkData` (ScriptableObject): definisce un perk (nome, descrizione, icona, tipo, valore)
+- `PerkManager` (singleton MonoBehaviour in GameScene): accumula i moltiplicatori attivi per la run
+- `PerkSelectionOverlay` (MonoBehaviour su pannello in GameScene, starts inactive): usa `OnEnable`/`OnDisable` per disabilitare/riabilitare input player; `DifficultyManager.BossDefeatedTransition()` chiama `SetActive(true)` e attende `WaitUntil(() => perkOverlay.IsDone)`
+- `PerkCard` (MonoBehaviour su prefab): card selezionabile con icona, nome, descrizione
+
+**Dove vengono applicati i perk in gameplay:**
+
+- `PlayerShooting.cs`: `shootCooldown / FireRateMultiplier`; `damage + DamageBonus`
+- `Spaceship.cs`: velocità × `SpeedMultiplier`
+- `PlayerHealth.cs`: se `ShieldActive`, il primo colpo viene assorbito
+
+#### TODO — Perk icon in HUD
+
+**Da implementare:** dopo aver scelto un perk, mostrare una piccola icona (+ valore percentuale se applicabile) nell'HUD in-game per ricordare al player quale bonus è attivo. Design: icona piccola (32×32 px circa) con TMP accanto (es. `+15%`, `×2`, `SCUDO`). Zona suggerita: angolo in basso a destra fuori dalla gameplay area centrale. Ogni perk scelto aggiunge un'icona; rimangono visibili per tutta la run. Implementazione minimale: `HorizontalLayoutGroup` con `Image` + `TMP_Text` per ogni perk attivo, popolato da `PerkManager.ApplyPerk()`.
 
 ### Cosa NON si sblocca (esplicitamente escluso)
 
-- Nessuno stat boost permanente
+- Nessuno stat boost permanente tra run
 - Nessun upgrade passivo permanente
 - Nessuna skin/cosmetico
 - Nessuna nave aggiuntiva
-
-### Implementazione futura
-
-Servirà un sistema di save persistente (es: `PlayerPrefs` per iniziare, JSON separato per scalare). Da progettare insieme al menu di selezione armi.
 
 ---
 
@@ -429,7 +451,7 @@ In ordine consigliato di priorità:
 
 1. ✅ **Migrazione al nuovo Input System** (completata)
 2. ✅ **Sistema armi multiple** (`WeaponData` + `BlasterData`/`SpreadGunData`/`RailgunData`)
-3. **Sistema di meta-progressione persistente** (PlayerPrefs o JSON, tracking di sblocchi)
+3. ✅ **Sistema di meta-progressione** — unlock armi permanenti via PlayerPrefs + perk in-run dopo ogni boss
 4. ✅ **Schermata di selezione arma pre-run** — `WeaponSelectionMenu` sub-panel del MainMenu; 3 card (Blaster, SpreadGun, Railgun) tutte sbloccate; selezione chiama `WeaponSelection.SetWeapon()` e carica la GameScene; layout orizzontale con `HorizontalLayoutGroup` + `VerticalLayoutGroup` interno per auto-sizing delle card
 5. **Sistema di lore in-game** (overlay all'inizio di ogni Level)
 6. **Popolamento del GameSequence** (definire i 4 blocchi + mega boss)

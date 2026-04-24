@@ -16,6 +16,7 @@ MonoBehaviour:
   description: Reliable standard-issue sidearm. Fast rate of fire, low damage per
     shot. Best for crowd control and quick reflexes.
   icon: {fileID: -8404016538654398156, guid: 66aa6cf18d1f7ac44b00b7bafd81e387, type: 3}
+  alwaysUnlocked: 1
   autoFire: 1
   shootCooldown: 0.18
   requiresCharging: 0

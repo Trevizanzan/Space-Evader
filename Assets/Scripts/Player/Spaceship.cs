@@ -60,8 +60,9 @@ public class Spaceship : MonoBehaviour
         float horizontalInput = moveInput.x;
         float verticalInput = moveInput.y;
 
-        float newX = transform.position.x + horizontalInput * moveSpeed * Time.deltaTime;
-        float newY = transform.position.y + verticalInput * moveSpeed * Time.deltaTime;
+        float effectiveSpeed = moveSpeed * (PerkManager.Instance != null ? PerkManager.Instance.SpeedMultiplier : 1f);
+        float newX = transform.position.x + horizontalInput * effectiveSpeed * Time.deltaTime;
+        float newY = transform.position.y + verticalInput * effectiveSpeed * Time.deltaTime;
 
         // Clampa posizione per rimanere dentro i bordi
         newX = Mathf.Clamp(newX, minX, maxX);

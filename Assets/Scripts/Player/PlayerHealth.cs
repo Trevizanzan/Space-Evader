@@ -24,6 +24,12 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        if (PerkManager.Instance != null && PerkManager.Instance.ShieldActive)
+        {
+            PerkManager.Instance.OnShieldHit();
+            return;
+        }
+
         if (RunStats.Instance != null)
             RunStats.Instance.RegisterHitReceived(amount);
 
@@ -43,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
         if (ScoreManager.Instance != null)
             ScoreManager.Instance.UpdateLivesUI();
 
-        // Controlla se il giocatore è morto
+        // Controlla se il giocatore ï¿½ morto
         if (currentHealth <= 0)
         {
             // disabilita il player (invece di distruggerlo) per mostrare esplosione e suono
@@ -54,19 +60,26 @@ public class PlayerHealth : MonoBehaviour
 
             GetComponent<Collider2D>().enabled = false;
             GameManager.GetInstance().GameOver();
-            return; // non avviare i-frames se è morto
+            return; // non avviare i-frames se ï¿½ morto
         }
 
-        // Avvia i-frames solo se è ancora vivo
+        // Avvia i-frames solo se ï¿½ ancora vivo
         if (blinkCoroutine != null) StopCoroutine(blinkCoroutine);
         blinkCoroutine = StartCoroutine(InvulnerabilityRoutine());
     }
 
     /// <summary>
-    /// I-frames (invincibility frames) — finestra di tempo dopo aver ricevuto un colpo durante la quale il giocatore è invulnerabile. 
+    /// I-frames (invincibility frames) ï¿½ finestra di tempo dopo aver ricevuto un colpo durante la quale il giocatore ï¿½ invulnerabile. 
     /// Evita che danni multipli ravvicinati (es. asteroide + proiettile nello stesso frame, o attraversamento di un campo di detriti) svuotino la vita in modo frustrante. 
-    /// Il blink visivo comunica al giocatore che l'invulnerabilità è attiva.
+    /// Il blink visivo comunica al giocatore che l'invulnerabilitï¿½ ï¿½ attiva.
     /// </summary>
+    public void AddLife()
+    {
+        currentHealth = Mathf.Min(currentHealth + 1, maxHealth);
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.UpdateLivesUI();
+    }
+
     private IEnumerator InvulnerabilityRoutine()
     {
         isInvulnerable = true;

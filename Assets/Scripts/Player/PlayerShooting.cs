@@ -52,14 +52,14 @@ public class PlayerShooting : MonoBehaviour
             HandleAutoChargingFire();
         else if (currentWeapon.autoFire)
         {
-            if (Time.time - lastShootTime >= currentWeapon.shootCooldown)
+            if (Time.time - lastShootTime >= EffectiveCooldown())
                 Shoot();
         }
         else if (currentWeapon.requiresCharging)
             HandleChargingFire(fireHeld);
         else
         {
-            if (fireHeld && Time.time - lastShootTime >= currentWeapon.shootCooldown)
+            if (fireHeld && Time.time - lastShootTime >= EffectiveCooldown())
                 Shoot();
         }
     }
@@ -74,7 +74,7 @@ public class PlayerShooting : MonoBehaviour
             SpawnChargeEffect();
         }
 
-        if (Time.time - chargeStartTime >= currentWeapon.chargeTime)
+        if (Time.time - chargeStartTime >= EffectiveChargeTime())
         {
             CancelCharge();
             Shoot();
@@ -93,7 +93,7 @@ public class PlayerShooting : MonoBehaviour
 
         if (!fireHeld && isCharging)
         {
-            bool fullyCharged = (Time.time - chargeStartTime) >= currentWeapon.chargeTime;
+            bool fullyCharged = (Time.time - chargeStartTime) >= EffectiveChargeTime();
             CancelCharge();
             if (fullyCharged)
                 Shoot();
@@ -120,9 +120,22 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot()
     {
-        currentWeapon.Fire(firePoint);
+        int damageBonus = PerkManager.Instance != null ? PerkManager.Instance.DamageBonus : 0;
+        currentWeapon.Fire(firePoint, damageBonus);
         if (RunStats.Instance != null) RunStats.Instance.RegisterShotFired();
         lastShootTime = Time.time;
+    }
+
+    private float EffectiveCooldown()
+    {
+        float mult = PerkManager.Instance != null ? PerkManager.Instance.FireRateMultiplier : 1f;
+        return currentWeapon.shootCooldown / mult;
+    }
+
+    private float EffectiveChargeTime()
+    {
+        float mult = PerkManager.Instance != null ? PerkManager.Instance.FireRateMultiplier : 1f;
+        return currentWeapon.chargeTime / mult;
     }
 
     public void SetShootingDisabled(bool disabled)

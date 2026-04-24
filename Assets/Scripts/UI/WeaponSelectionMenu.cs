@@ -28,6 +28,7 @@ public class WeaponSelectionMenu : MonoBehaviour
         foreach (var weapon in availableWeapons)
         {
             if (weapon == null) continue;
+            if (!UnlockManager.IsWeaponUnlocked(weapon)) continue;
             WeaponCard card = Instantiate(cardPrefab, cardsContainer);
             card.Bind(weapon, HandleWeaponSelected);
         }

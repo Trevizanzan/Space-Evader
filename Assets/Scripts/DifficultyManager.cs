@@ -16,6 +16,11 @@ public class DifficultyManager : MonoBehaviour
     [SerializeField] private float globalDifficultyMultiplier = 1f;
     //[SerializeField] private float difficultyIncreasePerLoop = 0.5f; // +50% ogni loop completo
 
+    [Header("Meta-Progression")]
+    [SerializeField] private WeaponData spreadGunWeapon;
+    [SerializeField] private WeaponData railgunWeapon;
+    [SerializeField] private PerkSelectionOverlay perkOverlay;
+
     [Header("Debug")]
     [SerializeField] private bool skipToFirstBoss = false;
     [SerializeField] private bool debugSpecificLevel = false;
@@ -246,6 +251,9 @@ public class DifficultyManager : MonoBehaviour
         if (RunStats.Instance != null)
             RunStats.Instance.RegisterBossKilled();
 
+        int lifetimeBossKills = UnlockManager.IncrementAndGetLifetimeBossKills();
+        UnlockManager.CheckWeaponUnlocks(lifetimeBossKills, spreadGunWeapon, railgunWeapon);
+
         isBossFight = false;
 
         StartCoroutine(BossDefeatedTransition());
@@ -276,7 +284,13 @@ public class DifficultyManager : MonoBehaviour
             bossHealthBarFill.fillAmount = 0f;
         }
 
-        yield return new WaitForSeconds(3f);
+        if (perkOverlay != null)
+        {
+            perkOverlay.gameObject.SetActive(true);
+            yield return new WaitUntil(() => perkOverlay.IsDone);
+        }
+        else
+            yield return new WaitForSeconds(3f);
 
         // Avanza al prossimo level
         AdvanceToNextLevel();
