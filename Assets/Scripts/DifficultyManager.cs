@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ public class DifficultyManager : MonoBehaviour
     [SerializeField] private bool skipToFirstBoss = false;
     [SerializeField] private bool debugSpecificLevel = false;
     [SerializeField] private int debugLevelIndex = 0; // Quale level testare (0-based)
+    [SerializeField] private bool debugApplyTestPerks = false;
+    [SerializeField] private List<PerkData> debugTestPerks = new List<PerkData>();
 
     [Header("Top Bar - Unified Progress Bar")]
     [Tooltip("Image Fill della barra unificata (verde in level, rossa in boss). Usata sia per level progress che per boss HP.")]
@@ -44,18 +47,6 @@ public class DifficultyManager : MonoBehaviour
     private static readonly Color BarColorLevel = new Color(0.184f, 0.408f, 0.863f);
     private static readonly Color BarColorBoss  = new Color(0.984f, 0.310f, 0.412f);
     private static readonly Color BarColorFlash = new Color(0.980f, 0.851f, 0.275f);
-
-//    |---|---|---|
-//| Nero | `#000000` | Sfondo spazio, ombre profonde |
-//| Viola scuro | `#2A0E54` | Sfondo nebula, UI dark |
-//| Magenta | `#AA1E65` | Nemici, accenti ostili |
-//| Rosa/Rosso | `#FB4F69` | Pericolo, proiettili nemici, HP basso |
-//| Bianco caldo | `#F9F7F7` | Testi, highlight neutri |
-//| Arancione | `#FC8141` | Esplosioni, energia, thruster |
-//| Giallo | `#FAD946` | Score, loot, accenti dorati |
-//| Blu | `#2F68DC` | Player, proiettili player, UI primaria |
-//| Ciano | `#46E7EC` | Armi speciali, charge effect, UI secondaria |
-
 
     // State
     private float levelTime = 0f;
@@ -84,6 +75,9 @@ public class DifficultyManager : MonoBehaviour
             DifficultyManager.Instance.OnWaveComplete += ShowLevelComplete;
 
         ShowLevelUI();
+
+        if (debugApplyTestPerks && PerkManager.Instance != null)
+            foreach (var p in debugTestPerks) PerkManager.Instance.ApplyPerk(p);
 
         if (skipToFirstBoss)
             StartCoroutine(DebugSkipToBoss());
