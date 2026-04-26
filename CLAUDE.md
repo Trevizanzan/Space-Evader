@@ -76,12 +76,13 @@ Most systems are singletons. Key ones:
 
 ### UI TopBar
 
-Trasparente, ancorata in alto, divisa in 3 sezioni:
-- **Left (20%):** icona + score (`ScoreManager`)
-- **Center (60%):** dinamico — durante la wave mostra `WAVE X/Y` + progress bar verde; durante il boss si nasconde e appare nome boss + health bar rossa
-- **Right (20%):** icona + vite rimanenti
+Trasparente, ancorata in alto. Layout rielaborato (stile Vampire Survivors):
 
-Transizione smooth alla morte del boss: barra rossa va a 0 → pausa → riappare UI wave successiva e spawner si riattivano.
+- **Barra full-width** in cima: unica `Image` tintata in `#2F68DC` (blu) durante i livelli, `#FB4F69` (rosso) durante i boss. Gestita da `DifficultyManager` tramite `levelProgressBarFill` e `bossHealthBarFill` (entrambi puntano alla stessa Image in Inspector). Testo al bordo destro (`barRightText`): numero livello durante la wave, nome boss durante il boss.
+- **Sotto la barra — sinistra:** `LeftPanel_Score` con icona + score (`ScoreManager`)
+- **Sotto la barra — destra:** `RightPanel_Lives` con icona + vite; a sinistra delle vite, `PerkHUD` — colonna verticale di `PerkHUDIcon` (icona 12×12 + valore TMP auto-width). Ogni perk scelto aggiunge una riga; il Shield scompare quando consumato.
+
+`BossHealthBar.cs` funge da bridge con lerp smooth: riceve HP dal boss e chiama `DifficultyManager.UpdateBossHealthDirect()`. Transizione smooth alla morte del boss: barra rossa va a 0 → pausa → barra torna blu e spawner si riattivano.
 
 ### Input System
 

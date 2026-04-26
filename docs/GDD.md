@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Status:** Living document (riflette sia la visione sia lo stato attuale del progetto)
-**Last updated:** 2026-04-24 ore 08:15 UTC
+**Last updated:** 2026-04-26
 **Repository:** Unity 2D project (C#, URP/built-in, Input System nuovo — migrazione completata)
 
 ---
@@ -283,9 +283,15 @@ Dopo ogni boss kill appare un overlay fullscreen (`PerkSelectionOverlay`) con 3 
 - `Spaceship.cs`: velocità × `SpeedMultiplier`
 - `PlayerHealth.cs`: se `ShieldActive`, il primo colpo viene assorbito
 
-#### TODO — Perk icon in HUD
+#### ✅ Perk icon in HUD — Implementato
 
-**Da implementare:** dopo aver scelto un perk, mostrare una piccola icona (+ valore percentuale se applicabile) nell'HUD in-game per ricordare al player quale bonus è attivo. Design: icona piccola (32×32 px circa) con TMP accanto (es. `+15%`, `×2`, `SCUDO`). Zona suggerita: angolo in basso a destra fuori dalla gameplay area centrale. Ogni perk scelto aggiunge un'icona; rimangono visibili per tutta la run. Implementazione minimale: `HorizontalLayoutGroup` con `Image` + `TMP_Text` per ogni perk attivo, popolato da `PerkManager.ApplyPerk()`.
+Dopo aver scelto un perk appare una piccola icona (+ valore se applicabile) nel Perk HUD in-game. Architettura:
+
+- `PerkHUD.cs` — MonoBehaviour nell'HUD. Si sottoscrive a `PerkManager.OnPerkAdded` / `OnShieldConsumed`. Istanzia un `PerkHUDIcon` per ogni perk attivo; il Shield viene rimosso quando consumato.
+- `PerkHUDIcon.prefab` — icona quadrata 12×12 + `TMP_Text` auto-width (ContentSizeFitter). Layout orizzontale interno (`HorizontalLayoutGroup`).
+- Posizione: colonna verticale ancorata in basso-destra della TopBar, immediatamente a sinistra del pannello vite. Ogni nuovo perk aggiunge una riga sotto le precedenti (VerticalLayoutGroup + ContentSizeFitter).
+- Valori mostrati: `+X%` per FireRate/MoveSpeed, `+X` per Damage, nessun testo per Shield/ExtraLife.
+- `PerkManager` espone `List<PerkData> ActivePerks`, `event Action<PerkData> OnPerkAdded`, `event Action OnShieldConsumed`.
 
 ### Cosa NON si sblocca (esplicitamente escluso)
 
@@ -452,8 +458,9 @@ In ordine consigliato di priorità:
 
 1. ✅ **Migrazione al nuovo Input System** (completata)
 2. ✅ **Sistema armi multiple** (`WeaponData` + `BlasterData`/`SpreadGunData`/`RailgunData`)
-3. ✅ **Sistema di meta-progressione** — unlock armi permanenti via PlayerPrefs + perk in-run dopo ogni boss
+3. ✅ **Sistema di meta-progressione** — unlock armi permanenti via PlayerPrefs + perk in-run dopo ogni boss + Perk HUD in-game (icone verticali accanto alle vite, auto-width)
 4. ✅ **Schermata di selezione arma pre-run** — `WeaponSelectionMenu` sub-panel del MainMenu; 3 card (Blaster, SpreadGun, Railgun) tutte sbloccate; selezione chiama `WeaponSelection.SetWeapon()` e carica la GameScene; layout orizzontale con `HorizontalLayoutGroup` + `VerticalLayoutGroup` interno per auto-sizing delle card
+4.5. ✅ **TopBar rework** — barra full-width unificata (blu per livelli, rossa per boss); testo bordo destro mostra numero livello o nome boss; pannello score a sinistra, vite + perk HUD a destra
 5. **Sistema di lore in-game** (overlay all'inizio di ogni Level)
 6. **Popolamento del GameSequence** (definire i 4 blocchi + mega boss)
 7. **Creazione degli altri boss** (almeno 3 nuovi + mega boss)
