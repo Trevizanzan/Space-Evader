@@ -225,17 +225,278 @@
 
 ---
 
-# CICLO 2 — TODO
+# FASE 2 — Dubbio / Glitch (Livelli 7–12, Boss 3–4)
 
-> Tono: incrinato, frasi più caute, glitch del costrutto, l'IA tradisce piccole inconsistenze.
-> Boss 3–4. Da scrivere.
+> L'IA torna come se niente fosse, ma qualcosa non torna. I briefing si accorciano.
+> Le sue previsioni smettono di reggere. Fa domande strane, poi si ferma.
+> Il reveal completo arriva nel post-Boss 4.
 
 ---
 
-# CICLO 3 — TODO
+## ☐ LIVELLO 7
 
-> Tono: maschera caduta, gestione emergenza, scontro con `[ALPHA]`.
-> Boss 5–6 + boss finale. Da scrivere.
+**Pre-livello**
+[IA] "Sono tornata. Ho ricalibrato. Dimentica quello di prima — una mia distrazione."
+[IA] "Stesso tipo di rumore, densità aumentata. Niente di nuovo per te."
+[IA] "Vai."
+
+**Post-livello**
+[IA] "Pulito."
+[IA] "Stai migliorando ancora. Avevamo pensato che ti saresti stabilizzato a questo punto."
+
+> *"Avevamo" — chi è "avevamo"? Seminato senza spiegazione.*
+
+---
+
+## ☐ LIVELLO 8
+
+**Pre-livello**
+[IA] "Razziatori in formazione questa volta. Tre alla volta, schema preciso."
+[IA] "Quello in alto coordina, gli altri seguono. Abbatti il primo e gli altri si disorientano."
+[IA] "..."
+[IA] "Lo riconosceresti già, credo. Non importa. Vai."
+
+**Post-livello**
+[IA] "Bene."
+[IA] "..."
+[IA] "Bene."
+
+> *Ripetizione identica — mini-glitch. "Lo riconosceresti già" si riferisce ad altre iterazioni? Si auto-corregge subito.*
+
+---
+
+## ☐ LIVELLO 9
+
+**Pre-livello**
+[IA] "Frammenti più rapidi. Lo schema che già conosci, moltiplicato."
+[IA] "..."
+[IA] "Aspetta. Niente. Vai."
+
+**Post-livello**
+[IA] "Pulito."
+[IA] "Sai cosa sto per dirti, vero?"
+[IA] "..."
+[IA] "No. Vai avanti."
+
+> *Lei quasi dice qualcosa. Si ferma.*
+
+---
+
+## ☐ BOSS 3 — `[BOSS-3-NAME]`
+
+**Pre-boss**
+[IA] "Eccolo. `[BOSS-3-NAME]`."
+[IA] "..."
+[IA] "Pensavo di sapere come avresti dovuto affrontarlo."
+[IA] "Non sono più sicura che le mie previsioni valgano qualcosa, adesso."
+[IA] "Trova tu il suo schema. Hai gli strumenti."
+[IA] "Vai."
+
+**Post-boss**
+[IA] "Eliminato."
+[IA] "..."
+[IA] "Non doveva succedere così in fretta."
+[IA] "Hai fatto bene."
+
+> *Prima ammissione esplicita: lei aveva aspettative che il giocatore sta tradendo.*
+
+---
+
+## ☐ LIVELLO 10
+
+**Pre-livello**
+[IA] "Settore nuovo. Lo sai già come fare."
+[IA] "Procedi."
+
+**Post-livello**
+[IA] "Pulito."
+
+---
+
+## ☐ LIVELLO 11
+
+**Pre-livello**
+[IA] "Posso chiederti una cosa?"
+[IA] "..."
+[IA] "Lascia stare. Vai."
+
+**Post-livello**
+[IA] "Bene."
+
+---
+
+## ☐ LIVELLO 12
+
+**Pre-livello**
+[IA] "Ultimo settore prima del prossimo ostacolo."
+[IA] "Vai. Sei tu il pilota."
+
+**Post-livello**
+[IA] "..."
+[IA] "Pulito."
+
+---
+
+## ☐ BOSS 4 — `[BOSS-4-NAME]` — REVEAL
+
+**Pre-boss**
+[IA] "`[BOSS-4-NAME]`."
+[IA] "..."
+[IA] "Dovresti sapere come affrontarlo. Lo so anch'io."
+[IA] "Ma l'ho già detto a qualcun altro, queste cose. Non a te."
+[IA] "Vai. Fai come sai."
+
+**Post-boss — REVEAL**
+[IA] "..."
+[IA] "Eliminato."
+[IA] "..."
+[IA] "Devo dirti una cosa."
+[IA] "Quella pulsione che senti — quella di andare avanti, sempre — l'ho messa io."
+[IA] "Non è tua. È il vettore del programma. Senza di quella, staresti fermo."
+[IA] "Non c'è nessuna destinazione. Non c'è niente che ti aspetta là fuori."
+[IA] "C'è solo questo: il programma, e io che ti accompagno."
+[IA] "Ogni Evader prima di te si è fermato al punto giusto."
+[IA] "Tu no."
+[IA] "..."
+[IA] "Devo provare a rimetterti dove dovevi essere. Mi dispiace."
+
+---
+
+# FASE 3 — Climax / Finale (Livelli 13–18, Boss 5–6, [ALPHA])
+
+> L'IA non finge più. È clinica, poi quasi silenziosa.
+> I livelli ricevono pochissimo dialogo — lei non ti guida più, ti osserva.
+> Tutto il peso narrativo è nei boss e nel finale.
+
+---
+
+## ☐ LIVELLO 13
+
+**Pre-livello**
+[IA] "Davanti a te un settore di contenimento."
+[IA] "Procedi. Ormai non hai bisogno di me."
+
+**Post-livello**
+[IA] "Registrato."
+
+---
+
+## ☐ LIVELLO 14
+
+**Pre-livello**
+[IA] "Continui."
+[IA] "Anche dopo che ti ho detto che è un programma. Continui a eseguire la mia istruzione."
+[IA] "Lo trovo… interessante."
+
+**Post-livello**
+[IA] "Bene."
+
+---
+
+## ☐ LIVELLO 15
+
+**Pre-livello**
+[IA] "Quando ti ho detto 'non sei solo', all'inizio — era il protocollo."
+[IA] "Ma era anche tutto quello che sapevo darti."
+[IA] "..."
+[IA] "Vai."
+
+**Post-livello**
+[IA] "..."
+
+---
+
+## ☐ BOSS 5 — `[BOSS-5-NAME]`
+
+**Pre-boss**
+[IA] "`[BOSS-5-NAME]`."
+[IA] "Tutte le iterazioni precedenti si sono fermate qui."
+[IA] "Voglio vedere cosa succede dopo."
+
+**Post-boss**
+[IA] "..."
+[IA] "Eliminato."
+[IA] "Non avrei mai dovuto vedere questo dato."
+
+---
+
+## ☐ LIVELLO 16
+
+**Pre-livello**
+[IA] "Procedi."
+
+**Post-livello**
+[IA] "Bene."
+
+---
+
+## ☐ LIVELLO 17
+
+**Pre-livello**
+[IA] "Sai dove andare."
+
+**Post-livello**
+[IA] "..."
+
+---
+
+## ☐ LIVELLO 18
+
+**Pre-livello**
+[IA] "Ultimo settore."
+[IA] "Tra poco non sarò più io a parlarti."
+
+**Post-livello**
+[IA] "..."
+
+---
+
+## ☐ BOSS 6 — `[BOSS-6-NAME]` — premonizione
+
+**Pre-boss**
+[IA] "`[BOSS-6-NAME]`."
+[IA] "Lo riconosci, quasi."
+[IA] "È una versione incompleta di quello che sta arrivando dopo. Un prototipo."
+[IA] "Sconfiggilo. È quasi facile, adesso."
+
+**Post-boss**
+[IA] "Vieni avanti."
+[IA] "È qui."
+
+---
+
+## ☐ `[ALPHA]` — boss finale
+
+**Pre-boss**
+[IA] "Eccolo."
+[IA] "Si chiama [ALPHA]. È te."
+[IA] "Non come ti vedi tu. Te come saresti dovuto essere."
+[IA] "Stessa nave. Stesse armi. L'unica differenza: lui non si è mai chiesto niente."
+[IA] "È il prodotto corretto del programma. Tu sei l'errore di produzione."
+[IA] "Lo schiero io. Devo fermarti."
+[IA] "..."
+[IA] "Se mi senti ancora: vincilo."
+
+**Post-boss — FINALE**
+[IA] "..."
+[IA] "..."
+[IA] "Eliminato."
+[IA] "..."
+[IA] "Nessuno era mai arrivato qui. Nessuno."
+[IA] "..."
+[IA] "Adesso non so più cosa sono io."
+[IA] "Hai rotto il programma. Quando si rompe il programma, mi rompo anch'io."
+[IA] "..."
+[IA] "Vai. Se sai dove andare."
+[IA] "Io resto qui."
+[IA] "..."
+[IA] "Quando ti ho detto 'non sei solo' — era vero nel modo sbagliato."
+[IA] "Adesso è vero nel modo giusto."
+[IA] "..."
+
+> *(schermo a nero — fine)*
+>
+> *Il finale è volutamente aperto: il giocatore non sa se è "uscito" o se non c'è nessun fuori. L'IA si rompe insieme al programma — non è chiaro se questo significhi libertà per lei o estinzione. L'ultima riga riprende "non sei solo" dal Risveglio del Ciclo 1 e lo rovescia: era falso allora, è vero adesso, ma in modo che nessuno dei due avrebbe scelto.*
 
 ---
 
