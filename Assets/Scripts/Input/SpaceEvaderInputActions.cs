@@ -275,6 +275,17 @@ public partial class @SpaceEvaderInputActions: IInputActionCollection2, IDisposa
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c7f8e9d0-a1b2-4c3d-8e4f-5a6b7c8d9e0f"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""e6e72b9c-db52-4364-ba36-e98ea976c1a8"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",

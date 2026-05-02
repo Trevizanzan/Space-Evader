@@ -98,8 +98,20 @@ public abstract class BossBase : MonoBehaviour
         // Riabilita sparo del player dopo l'entrata
         IsBossEntering = false;
 
-        // Pausa drammatica: boss fermo, nessuno spara
-        yield return new WaitForSeconds(2.5f);
+        // Intro narrativa del boss (se la LevelProfile corrente ha un dialogueIntro)
+        bool playedDialogue = false;
+        LevelProfile currentLevel = DifficultyManager.Instance != null
+            ? DifficultyManager.Instance.GetCurrentLevel()
+            : null;
+        if (DialogueOverlay.Instance != null && currentLevel != null && currentLevel.dialogueIntro != null)
+        {
+            yield return DialogueOverlay.Instance.Play(currentLevel.dialogueIntro);
+            playedDialogue = true;
+        }
+
+        // Pausa drammatica: boss fermo, nessuno spara.
+        // Se c'è stato un dialogo l'effetto teatrale è già stato dato → pausa minima.
+        yield return new WaitForSeconds(playedDialogue ? 0.5f : 2.5f);
 
         isEntering = false;
 

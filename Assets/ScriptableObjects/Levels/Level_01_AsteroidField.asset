@@ -15,8 +15,10 @@ MonoBehaviour:
   isBoss: 0
   bossPrefab: {fileID: 0}
   levelName: Level_01
-  levelDuration: 30
+  levelDuration: 5
   disableShooting: 0
+  dialogueIntro: {fileID: 11400000, guid: 0a7aec9fe7e28aa42996dbd8ed8467a9, type: 2}
+  dialogueOutro: {fileID: 11400000, guid: 8972b23135f906045b8a6d55f1837aa1, type: 2}
   phase1:
     designNotes: test primo livello
     spawnNormal: 1

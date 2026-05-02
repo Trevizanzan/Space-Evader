@@ -85,6 +85,12 @@ public class LevelProfile : ScriptableObject
     [Tooltip("Se true, il player non può sparare in questo livello")]
     public bool disableShooting = false;
 
+    [Header("Narrative")]
+    [Tooltip("Dialogo IA mostrato PRIMA del livello/boss. Lasciare null per nessun dialogo.")]
+    public DialogueSequence dialogueIntro;
+    [Tooltip("Dialogo IA mostrato DOPO il livello/boss completato. Lasciare null per nessun dialogo.")]
+    public DialogueSequence dialogueOutro;
+
     [Header("Phase Configurations")]
     public PhaseConfig phase1 = new PhaseConfig();
     public PhaseConfig phase2 = new PhaseConfig();

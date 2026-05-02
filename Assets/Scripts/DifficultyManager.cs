@@ -78,8 +78,34 @@ public class DifficultyManager : MonoBehaviour
             StartCoroutine(DebugSkipToBoss());
         else if (debugSpecificLevel)
             StartCoroutine(DebugSkipToLevel());
+        else
+            StartCoroutine(FirstLevelIntroRoutine());
 
         ApplyLevelConstraints();
+    }
+
+    /// <summary>
+    /// All'avvio del gioco la scena è già "in level 1": gli spawner sono attivi
+    /// di default. Se Level 1 ha un dialogueIntro (es. "Risveglio") lo riproduciamo
+    /// qui, sospendendo gli spawner per la durata.
+    /// </summary>
+    IEnumerator FirstLevelIntroRoutine()
+    {
+        yield return null; // attende un frame: DialogueOverlay.Instance / scene refs pronti
+
+        LevelProfile firstLevel = GetCurrentLevel();
+        if (firstLevel == null || firstLevel.dialogueIntro == null) yield break;
+        if (DialogueOverlay.Instance == null) yield break;
+
+        AsteroidSpawner asteroidSpawner = FindFirstObjectByType<AsteroidSpawner>();
+        EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
+        if (asteroidSpawner != null) asteroidSpawner.enabled = false;
+        if (enemySpawner != null) enemySpawner.enabled = false;
+
+        yield return DialogueOverlay.Instance.Play(firstLevel.dialogueIntro);
+
+        if (asteroidSpawner != null) asteroidSpawner.enabled = true;
+        if (enemySpawner != null) enemySpawner.enabled = true;
     }
 
     void Update()
@@ -158,6 +184,9 @@ public class DifficultyManager : MonoBehaviour
         OnLevelComplete?.Invoke();
         OnWaveComplete?.Invoke();
 
+        // Cattura il livello appena finito PRIMA di avanzare, per riprodurne l'outro
+        LevelProfile finishedLevel = GetCurrentLevel();
+
         // Ferma spawner
         AsteroidSpawner asteroidSpawner = FindFirstObjectByType<AsteroidSpawner>();
         if (asteroidSpawner != null) asteroidSpawner.enabled = false;
@@ -168,7 +197,11 @@ public class DifficultyManager : MonoBehaviour
         // Aspetta che la scena sia vuota
         yield return StartCoroutine(WaitForSceneClear());
 
-        // Pausa prima del boss
+        // Outro del livello appena finito
+        if (DialogueOverlay.Instance != null && finishedLevel != null && finishedLevel.dialogueOutro != null)
+            yield return DialogueOverlay.Instance.Play(finishedLevel.dialogueOutro);
+
+        // Pausa prima del boss / next level
         yield return new WaitForSeconds(transitionDuration);
 
         AdvanceToNextLevel();
@@ -177,7 +210,7 @@ public class DifficultyManager : MonoBehaviour
         if (nextLevel.isBoss)
             StartBossFight(nextLevel);
         else
-            StartLevel();
+            yield return StartCoroutine(StartLevelRoutine());
 
         isInTransition = false;
     }
@@ -208,13 +241,23 @@ public class DifficultyManager : MonoBehaviour
         //    Destroy(e);
     }
 
-    void StartLevel()
+    /// <summary>
+    /// Avvio livello con eventuale intro narrativa. Gli spawner si riabilitano
+    /// SOLO dopo la fine del dialogo, per non far comparire nemici durante la lettura.
+    /// </summary>
+    IEnumerator StartLevelRoutine()
     {
         levelTime = 0f;
         progress = 0f;
         isBossFight = false;
 
         ShowLevelUI();
+
+        LevelProfile level = GetCurrentLevel();
+
+        // Intro narrativa del livello (se presente)
+        if (DialogueOverlay.Instance != null && level != null && level.dialogueIntro != null)
+            yield return DialogueOverlay.Instance.Play(level.dialogueIntro);
 
         // registra inizio livello (dopo la pausa e dopo che la scena è pulita, per avere dati più accurati)
         if (StatsRecorder.Instance != null)
@@ -227,7 +270,6 @@ public class DifficultyManager : MonoBehaviour
         EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
         if (enemySpawner != null) enemySpawner.enabled = true;
 
-        LevelProfile level = GetCurrentLevel();
         Debug.Log($"[DifficultyManager] Iniziato Level: {(level != null ? level.levelName : "NULL")}");
     }
 
@@ -271,6 +313,9 @@ public class DifficultyManager : MonoBehaviour
     {
         isInTransition = true;
 
+        // Cattura il boss appena sconfitto PRIMA di avanzare, per il suo outro
+        LevelProfile defeatedBossLevel = GetCurrentLevel();
+
         // Anima barra boss a 0
         if (bossHealthBarFill != null)
         {
@@ -287,6 +332,10 @@ public class DifficultyManager : MonoBehaviour
 
             bossHealthBarFill.fillAmount = 0f;
         }
+
+        // Outro del boss (prima dei perk)
+        if (DialogueOverlay.Instance != null && defeatedBossLevel != null && defeatedBossLevel.dialogueOutro != null)
+            yield return DialogueOverlay.Instance.Play(defeatedBossLevel.dialogueOutro);
 
         if (perkOverlay != null)
         {
@@ -308,7 +357,7 @@ public class DifficultyManager : MonoBehaviour
         }
         else
         {
-            StartLevel();
+            yield return StartCoroutine(StartLevelRoutine());
         }
 
         isInTransition = false;
