@@ -4,59 +4,35 @@ public class EnemyBullet : MonoBehaviour
 {
     [SerializeField] private float speed = 24f;
     [SerializeField] private int damage = 10;
-    // TODO: calcolare un limite di distanza dalla camera e distruggerlo se supera quel limite, invece di usare un timer, per evitare che i proiettili "fantasma" continuino a esistere fuori dalla vista del giocatore.
 
-    private float destroyYBottom;
-    private float destroyYTop;
-    private float destroyXLimit;
+    private Vector3 moveDirection = Vector3.down;
 
-    private void Start()
-    {
-        // calcola i bordi una volta sola, con un margine generoso
-        Camera cam = Camera.main;
-        float camHeight = cam.orthographicSize;
-        float camWidth = camHeight * cam.aspect;
-
-        destroyYBottom = -camHeight * 1.2f; // Distruggi quando è un po' sotto la camera
-        destroyYTop = camHeight * 1.2f; // Distruggi quando è un po' sopra la camera (per proiettili che potrebbero rimbalzare o essere sparati verso l'alto)
-        destroyXLimit = camWidth * 1.2f;    // Distruggi quando è un po' oltre i bordi laterali
-    }
+    public void SetDirection(Vector3 dir) => moveDirection = dir.normalized;
+    public void SetSpeed(float s) => speed = s;
+    public float GetSpeed() => speed;
 
     private void Update()
     {
-        // I FighterBullet usano Rigidbody2D con velocity diretta
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb == null)
-            transform.Translate(Vector3.down * speed * Time.deltaTime, Space.World);
+            transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
 
-        // distruggi se fuori dai bordi
-        if (transform.position.y < destroyYBottom ||
-            transform.position.y > destroyYTop ||
-            Mathf.Abs(transform.position.x) > destroyXLimit)
-        {
+        Vector3 vp = Camera.main.WorldToViewportPoint(transform.position);
+        if (vp.x < -0.1f || vp.x > 1.1f || vp.y < -0.1f || vp.y > 1.1f)
             Destroy(gameObject);
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Colpisci il player
         if (collision.CompareTag("Player"))
         {
             PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
             if (playerHealth != null)
-            {
                 playerHealth.TakeDamage(damage);
-            }
             Destroy(gameObject);
         }
 
-        // distruggi il proiettile se colpisce un asteroide, ma non danneggia l'asteroide
         if (collision.CompareTag("Asteroid"))
-        {
-            Destroy(gameObject);    
-        }
+            Destroy(gameObject);
     }
-
-    public float GetSpeed() => speed;
 }

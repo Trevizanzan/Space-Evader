@@ -4,37 +4,34 @@ public class BossBullet : MonoBehaviour
 {
     [SerializeField] private float speed = 24f;
     [SerializeField] private int damage = 10;
-    [SerializeField] private float lifetime = 4f; // Distruggi dopo 5 secondi se non colpisce nulla 
-    // TODO: calcolare un limite di distanza dalla camera e distruggerlo se supera quel limite, invece di usare un timer, per evitare che i proiettili "fantasma" continuino a esistere fuori dalla vista del giocatore.
 
-    private void Start()
-    {
-        Destroy(gameObject, lifetime);
-    }
+    private Vector3 moveDirection = Vector3.down;
+
+    public void SetDirection(Vector3 dir) => moveDirection = dir.normalized;
+    public void SetSpeed(float s) => speed = s;
+    public float GetSpeed() => speed;
 
     private void Update()
     {
-        // Muovi verso il basso (o la direzione impostata)
-        transform.Translate(Vector3.down * speed * Time.deltaTime, Space.World);
+        if (GetComponent<Rigidbody2D>() == null)
+            transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
+
+        Vector3 vp = Camera.main.WorldToViewportPoint(transform.position);
+        if (vp.x < -0.1f || vp.x > 1.1f || vp.y < -0.1f || vp.y > 1.1f)
+            Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Colpisci il player
         if (collision.CompareTag("Player"))
         {
             PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
             if (playerHealth != null)
-            {
                 playerHealth.TakeDamage(damage);
-            }
             Destroy(gameObject);
         }
 
-        // Opzionale: distruggi anche se colpisce gli asteroidi o altri oggetti
         if (collision.CompareTag("Asteroid"))
-        {
             Destroy(gameObject);
-        }
     }
 }
