@@ -17,6 +17,8 @@ MonoBehaviour:
   levelName: Level_03
   levelDuration: 5
   disableShooting: 0
+  dialogueIntro: {fileID: 0}
+  dialogueOutro: {fileID: 0}
   phase1:
     designNotes: 'thri directional caos
 

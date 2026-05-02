@@ -385,8 +385,8 @@ Per far emergere i tradeoff delle armi serve il giusto mix di nemici in ogni Lev
 Tutti gli script del player usano il nuovo Input System tramite l'asset `SpaceEvaderInputActions.inputactions` (in `Assets/Scripts/Input/`) con action map `Player` contenente:
 
 - **Move** (Value/Vector2): WASD + Frecce + Gamepad Left Stick
-- **Fire** (Button): Space + Mouse Left + Gamepad South (A/Cross)
-- **Pause** (Button): Escape + Gamepad Start
+- **Fire** (Button): Space + Mouse Left + Gamepad South (A/Cross) — usato anche per avanzare i dialoghi
+- **Pause** (Button): Escape + Gamepad Start + Gamepad North (Y) — tenuto ~0.6s durante un dialogo skippa l'intera sequenza
 - **Restart** (Button): Enter + Gamepad East (B/Circle) — attivo solo durante Game Over
 
 Script migrati: `Spaceship.cs` (movimento), `PlayerShooting.cs` (fuoco), `GameManager.cs` (pause/restart). La classe C# `SpaceEvaderInputActions` è auto-generata dall'asset — non modificarla direttamente.

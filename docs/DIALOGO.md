@@ -43,43 +43,20 @@
 
 ## ☐ RISVEGLIO — pre-Livello 1 (opening monologue)
 
-[IA] "Sei sveglio."
-
+[IA] "Sei sveglio, finalmente."
 [IA] "Calma. Respira. Lascia che la nave si stabilizzi intorno a te."
-
-[IA] "Stiamo derivando in zona di calma. Niente in raggio. Niente che ti minacci, per ora."
-
 [IA] "..."
-
-[IA] "Mi senti? Bene."
-
-[IA] "Sono io. Sono qui con te. Sono sempre stata qui."
-
-[IA] "Non ricordi tutto, vero? È normale. La memoria torna a strati. Tornerà."
-
-[IA] "Per adesso ti basta sapere una cosa: questa nave."
-
-[IA] "È tua. Ti conosce. È stata costruita su di te — sulla tua mano, sui tuoi riflessi, sul tuo respiro."
-
-[IA] "I comandi rispondono al pensiero un istante prima del gesto. Le armi pesano quanto pesa la tua intenzione."
-
-[IA] "Non sei tu dentro una macchina. Siete una cosa sola. Fidati di lei: ti porterà dove vuoi andare."
-
+[IA] "Mi senti?"
+[IA] "Bene. Sono io. Sono qui con te. Sono sempre stata qui. Non ricordi tutto, vero? È normale. La memoria torna a strati. Tornerà."
+[IA] "Per adesso ti basta sapere una cosa: questa nave. È tua. Ti conosce. È stata costruita su di te — sulla tua mano, sui tuoi riflessi, sul tuo respiro."
+[IA] "I comandi rispondono al pensiero un istante prima del gesto. Le armi pesano quanto pesa la tua intenzione. Non sei tu dentro una macchina. Siete una cosa sola. Fidati di lei: ti porterà dove vuoi andare."
 [IA] "..."
-
 [IA] "Siamo nello spazio profondo. Lontani da tutto, lontani da tutti. Davanti a noi solo nero, e qualche luce tra il nero."
-
 [IA] "Tu vuoi andare avanti. Lo senti, vero? Quel tirare dentro al petto, quel desiderio di non fermarti."
-
 [IA] "Non te lo spiego oggi. Te lo spiegherai da solo, strada facendo. Per ora seguilo: è giusto seguirlo."
-
 [IA] "Tra noi e ciò che cerchi c'è del rumore. Detriti. Cacciatori. Vecchi relitti che si sono dimenticati di essere stati navi."
-
 [IA] "Te ne occuperai uno alla volta. Io sarò qui. Ti dirò cosa vedo, ti dirò cosa fare. Non sei solo."
-
-[IA] "Ce n'è già qualcosa in arrivo. Niente di serio — un campo di detriti per scaldarti."
-
-[IA] "Quando ti senti pronto, vai."
+[IA] "Ce n'è già qualcosa in arrivo. Niente di serio — un campo di detriti per scaldarti. Quando ti senti pronto, vai."
 
 > *Semi: "sempre stata qui" (= tante iterazioni). "La memoria torna a strati" (= la sta installando lei). "Costruita su di te" (= letteralmente: tu sei il prodotto di un programma). "Ciò che cerchi" lasciato indefinito apposta — il bersaglio non esiste, è la pulsione stessa.*
 

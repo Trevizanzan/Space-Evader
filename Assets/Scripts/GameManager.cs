@@ -226,6 +226,10 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.GameOver) return;
 
+        // Durante un dialogo l'input Pausa è gestito dal DialogueOverlay (hold = skip).
+        // Non aprire la pausa, altrimenti si congela il dialogo nel timeScale=0 della pausa.
+        if (DialogueOverlay.Instance != null && DialogueOverlay.Instance.IsActive) return;
+
         // Se il dialog di conferma è aperto, Esc lo chiude prima
         if (currentState == GameState.Paused && confirmExitDialog != null && confirmExitDialog.activeSelf)
         {
