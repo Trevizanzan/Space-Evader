@@ -215,6 +215,20 @@ public class DifficultyManager : MonoBehaviour
         isInTransition = false;
     }
 
+    IEnumerator WaitForBossBulletsClear()
+    {
+        float timeout = 5f;
+        float elapsed = 0f;
+        while (elapsed < timeout)
+        {
+            if (FindObjectsByType<BossBullet>(FindObjectsSortMode.None).Length == 0) yield break;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        foreach (var b in FindObjectsByType<BossBullet>(FindObjectsSortMode.None))
+            Destroy(b.gameObject);
+    }
+
     /// <summary>
     /// Questo metodo aspetta che non ci siano più asteroidi o nemici in scena prima di continuare, per evitare di farli sparire magicamente.
     /// </summary>
@@ -336,6 +350,8 @@ public class DifficultyManager : MonoBehaviour
         // Outro del boss (prima dei perk)
         if (DialogueOverlay.Instance != null && defeatedBossLevel != null && defeatedBossLevel.dialogueOutro != null)
             yield return DialogueOverlay.Instance.Play(defeatedBossLevel.dialogueOutro);
+
+        yield return StartCoroutine(WaitForBossBulletsClear());
 
         if (perkOverlay != null)
         {
