@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BossAngel : BossBase
@@ -6,30 +6,47 @@ public class BossAngel : BossBase
     [Header("BossAngel Specifics")]
     [SerializeField] private float shootIntervalMin = 0.25f;
     [SerializeField] private float shootIntervalMax = 0.8f;
-    [SerializeField] private GameObject enemyBulletPrefab;
-    [SerializeField] private float cameraEdgeOffset = .25f;    // Distanza dal bordo camera
+    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private float cameraEdgeOffset = .25f;
 
     [Header("Vertical Movement (% camera)")]
-    [SerializeField][Range(0f, 1f)] private float topYPercent = 0.8f;    // 80% del bordo superiore
-    [SerializeField][Range(0f, 1f)] private float centerYPercent = 0.1f; // 10% sopra il centro
+    [SerializeField][Range(0f, 1f)] private float topYPercent = 0.8f;
+    [SerializeField][Range(0f, 1f)] private float centerYPercent = 0.1f;
     [SerializeField] private float timeAtCenterMin = 2f;
     [SerializeField] private float timeAtCenterMax = 5f;
 
+    [Header("Phase 2 (HP < 66%)")]
+    [SerializeField] private float phase2ShootIntervalMin = 0.15f;
+    [SerializeField] private float phase2ShootIntervalMax = 0.5f;
+    [SerializeField][Range(0f, 1f)] private float phase2AimedShotChance = 0.5f;
+
+    [Header("Phase 3 (HP < 33%)")]
+    [SerializeField] private float phase3ShootIntervalMin = 0.1f;
+    [SerializeField] private float phase3ShootIntervalMax = 0.35f;
+    [SerializeField] private float phase3MoveSpeed = 4.5f;
+    [SerializeField] private float aimedShotSpeed = 14f;
+
+    // Soglie HP fisse (non serializzate per evitare accidentale reset a 0 nell'Inspector)
+    private const float Phase2Threshold = 0.66f;
+    private const float Phase3Threshold = 0.33f;
+
     // Calcolati a runtime in OnEntranceComplete
-    private float topY;     // Posizione Y del livello superiore (dove arriva l'entrata)
-    private float centerY;  // Posizione Y del livello inferiore (dove scende)
+    private float topY;
+    private float centerY;
     private float targetX;
     private float targetY;
     private float shootTimer;
-    private float currentShootInterval; // Intervallo corrente per lo sparo, che varia ogni volta
-    private float minX; // limite sinistro
-    private float maxX; // limite destro
-    private float startY;   // posizione Y di partenza (dove arriva l'entrata)
+    private float currentShootInterval;
+    private float minX;
+    private float maxX;
 
-    protected override void Start()  // ← "protected override", non "void"
+    private int currentPhase = 1;
+    private Transform playerTransform;
+
+    protected override void Start()
     {
         bossDisplayName = "The Angel";
-        base.Start();   // esegue tutto lo Start() di BossBase
+        base.Start();
     }
 
     protected override void OnEntranceComplete()
@@ -38,114 +55,146 @@ public class BossAngel : BossBase
         float cameraTop = cam.orthographicSize;
         float cameraWidth = cameraTop * cam.aspect;
 
-        // topY rispetta il padding UI — calcolato da BossBase
         topY = cameraTop * topYPercent - TopUIWorldHeight;
         centerY = cameraTop * centerYPercent;
-
         minX = -cameraWidth + cameraEdgeOffset;
         maxX = cameraWidth - cameraEdgeOffset;
 
-        startY = topY;
-        targetY = startY;
+        targetY = topY;
         targetX = transform.position.x;
+
+        playerTransform = FindFirstObjectByType<Spaceship>()?.transform;
 
         ChooseNewXTarget();
         ChooseNewShootInterval();
         StartCoroutine(VerticalMovementPattern());
     }
 
-    // Pattern verticale: scende → pausa → risale → pausa → ripete
     IEnumerator VerticalMovementPattern()
     {
         while (!isDead)
         {
-            // Scende
-            targetY = centerY;
-            yield return new WaitUntil(() => Mathf.Abs(transform.position.y - centerY) < 0.1f);
+            targetY = Random.Range(centerY, topY);
+            yield return new WaitUntil(() => Mathf.Abs(transform.position.y - targetY) < 0.1f);
 
-            // Rimane giù per un tempo random
-            float timeDown = Random.Range(timeAtCenterMin, timeAtCenterMax);
-            yield return new WaitForSeconds(timeDown);
-
-            // Risale
-            targetY = startY;
-            yield return new WaitUntil(() => Mathf.Abs(transform.position.y - startY) < 0.1f);
-
-            // Rimane su per un tempo random
-            float timeUp = Random.Range(timeAtCenterMin, timeAtCenterMax);
-            yield return new WaitForSeconds(timeUp);
+            float waitTime = Random.Range(timeAtCenterMin, timeAtCenterMax);
+            yield return new WaitForSeconds(waitTime);
         }
     }
 
-    /// <summary>
-    /// Gestisce movimento e attacco del boss.
-    /// Movimento: il boss si muove orizzontalmente avanti e indietro (ping-pong) attorno a un punto centrale.
-    /// </summary>
     protected override void UpdateBehavior()
     {
-        // 1) MOVIMENTO X random
+        // Movimento X
         float currentX = transform.position.x;
-
-        // Se ha raggiunto il target (o è molto vicino), scegline uno nuovo
         if (Mathf.Abs(currentX - targetX) < 0.1f)
-        {
             ChooseNewXTarget();
-        }
 
         float newX = Mathf.MoveTowards(currentX, targetX, moveSpeed * Time.deltaTime);
-
-        // Movimento Y verso targetY a velocità moveSpeed
-        float currentY = transform.position.y;
-        float newY = Mathf.MoveTowards(currentY, targetY, moveSpeed * Time.deltaTime);
-
+        float newY = Mathf.MoveTowards(transform.position.y, targetY, moveSpeed * Time.deltaTime);
         transform.position = new Vector3(newX, newY, transform.position.z);
 
-        // 2) ATTACCO
-        // Pattern attacco: spara verso il basso ogni N secondi
+        // Attacco
         shootTimer += Time.deltaTime;
         if (shootTimer >= currentShootInterval)
         {
-            Shoot();
             shootTimer = 0f;
-            ChooseNewShootInterval(); // Cambia intervallo ogni colpo
+            ChooseNewShootInterval();
+            Shoot();
+        }
+    }
+
+    // Chiamato da TakeDamage() — controlla la fase solo quando la vita cambia
+    public override void TakeDamage(int amount)
+    {
+        base.TakeDamage(amount);
+        if (!isDead) CheckPhaseTransition();
+    }
+
+    void CheckPhaseTransition()
+    {
+        float hpPercent = (float)currentHealth / maxHealth;
+        int newPhase = hpPercent > Phase2Threshold ? 1 : hpPercent > Phase3Threshold ? 2 : 3;
+
+        if (newPhase != currentPhase)
+        {
+            currentPhase = newPhase;
+            OnPhaseChanged();
+        }
+    }
+
+    void OnPhaseChanged()
+    {
+        if (currentPhase == 3)
+            moveSpeed = phase3MoveSpeed;
+
+        // Resetta il timer così il prossimo sparo parte pulito con il nuovo intervallo
+        shootTimer = 0f;
+        ChooseNewShootInterval();
+
+        StartCoroutine(PhaseTransitionFlash());
+    }
+
+    IEnumerator PhaseTransitionFlash()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            FlashWhite();
+            yield return new WaitForSeconds(0.12f);
         }
     }
 
     void ChooseNewXTarget()
     {
-        // Sceglie un X random entro i limiti della camera
         targetX = Random.Range(minX, maxX);
     }
 
-    // Sceglie un nuovo intervallo random per lo sparo
     void ChooseNewShootInterval()
     {
-        currentShootInterval = Random.Range(shootIntervalMin, shootIntervalMax);
+        float min, max;
+        switch (currentPhase)
+        {
+            case 2:  min = phase2ShootIntervalMin; max = phase2ShootIntervalMax; break;
+            case 3:  min = phase3ShootIntervalMin; max = phase3ShootIntervalMax; break;
+            default: min = shootIntervalMin;        max = shootIntervalMax;       break;
+        }
+        // Clamp: mai sotto 0.05s indipendentemente dai valori Inspector
+        currentShootInterval = Mathf.Max(0.05f, Random.Range(min, max));
     }
 
     void Shoot()
     {
-        if (enemyBulletPrefab == null) return;
+        if (bulletPrefab == null) return;
 
-        // Spawna proiettile sotto il boss
         Vector3 spawnPos = transform.position + Vector3.down * 0.5f;
 
-        // usa la rotazione del prefab per orientare correttamente il proiettile
-        GameObject bullet = Instantiate(enemyBulletPrefab, spawnPos, enemyBulletPrefab.transform.rotation);
+        // Fase 2: % colpi mirati configurabile; Fase 3: tutti mirati
+        bool useAiming = playerTransform != null && (
+            currentPhase == 3 ||
+            (currentPhase == 2 && Random.value < phase2AimedShotChance));
 
-        // Suono (opzionale)
+        Vector3 shootDir = useAiming
+            ? (playerTransform.position - spawnPos).normalized
+            : Vector3.down;
+
+        float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+        GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.Euler(0f, 0f, angle));
+
+        BossBullet bb = bullet.GetComponent<BossBullet>();
+        if (bb != null)
+        {
+            bb.SetDirection(shootDir);
+            if (useAiming) bb.SetSpeed(aimedShotSpeed);
+        }
+
+        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+        if (rb != null) rb.linearVelocity = shootDir * (bb != null ? bb.GetSpeed() : 24f);
+
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlayEnemyShoot();
     }
 
     protected override void OnDamageFeedback()
     {
-        FlashWhite(); // ereditato da EnemyBase/BossBase
-
-        //Vector3 explosionPos = new Vector3(transform.position.x, transform.position.y, -1f);
-        //if (ExplosionManager.Instance != null)
-        //{
-        //    ExplosionManager.Instance.SpawnSmall(explosionPos, 1f);
-        //}
+        FlashWhite();
     }
 }

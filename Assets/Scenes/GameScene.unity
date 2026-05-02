@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86386dbe2dd8b96498617c988f7db6eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 5
+  maxHealth: 500
   invulnerabilityDuration: 1
   blinkInterval: 0.1
 --- !u!60 &74886329
@@ -853,8 +853,8 @@ MonoBehaviour:
   railgunWeapon: {fileID: 11400000, guid: cf86476cc3c1d3346beebddac0d9261d, type: 2}
   perkOverlay: {fileID: 981633471}
   skipToFirstBoss: 0
-  debugSpecificLevel: 0
-  debugLevelIndex: 0
+  debugSpecificLevel: 1
+  debugLevelIndex: 3
   debugApplyTestPerks: 1
   debugTestPerks:
   - {fileID: 11400000, guid: 3c6d7a6190424f645b09bdeb684a2bd0, type: 2}
@@ -2494,7 +2494,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 16, y: 1.0050001}
-  m_SizeDelta: {x: 0, y: 14.01}
+  m_SizeDelta: {x: 90.01, y: 14.01}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &619264379
 MonoBehaviour:

@@ -182,17 +182,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911866595ec0ac644af03e3544e23913, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossAngel
-  maxHealth: 10
+  maxHealth: 200
   moveSpeed: 9
   explosionDiePrefab: {fileID: 5670646399192729188, guid: c776b2872c4679e4e8f72fbe60c24c1f, type: 3}
   bossDisplayName: The Angel
   flashMaterial: {fileID: 2100000, guid: b01ab75e2f6accf4c89786fd4eaf4432, type: 2}
   topUIPaddingViewport: 0.08
-  shootIntervalMin: 0.25
-  shootIntervalMax: 0.7
-  enemyBulletPrefab: {fileID: 2093506508120260160, guid: 8eb7cba3c948f594c86bc62e06db91ce, type: 3}
+  shootIntervalMin: 0.4
+  shootIntervalMax: 0.8
+  bulletPrefab: {fileID: 2093506508120260160, guid: 8eb7cba3c948f594c86bc62e06db91ce, type: 3}
   cameraEdgeOffset: 0.25
   topYPercent: 0.8
   centerYPercent: 0.1
   timeAtCenterMin: 2
   timeAtCenterMax: 5
+  phase2ShootIntervalMin: 0.25
+  phase2ShootIntervalMax: 0.5
+  phase2AimedShotChance: 0.658
+  phase3ShootIntervalMin: 0.15
+  phase3ShootIntervalMax: 0.35
+  phase3MoveSpeed: 14
+  aimedShotSpeed: 25
